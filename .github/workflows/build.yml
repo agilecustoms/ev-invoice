@@ -64,13 +64,12 @@ jobs:
         run: npm run build
 
       - name: Package
-        if: inputs.artifacts
         run: |
           npm prune --production
           make app3-package
 
       - name: Upload artifacts
-        if: inputs.artifacts
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v6
         with:
           path: dist/app.zip
@@ -82,6 +81,9 @@ jobs:
       - Build
     runs-on: ubuntu-latest
     environment: release
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6
