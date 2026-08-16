@@ -1,0 +1,15 @@
+# IDEs and editors
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# tmp files
+.tmp
+
+# Build
+/dist
+
+# dependencies
+/node_modules

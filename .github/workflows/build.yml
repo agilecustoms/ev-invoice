@@ -1,0 +1,99 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  Validate-infra:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .github
+            infrastructure
+
+      - name: Setup Terraform
+        uses: agilecustoms/gha-prepare-terraform@main
+        with:
+          git-token: ${{ secrets.GIT_TF_TOKEN }}
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infrastructure
+
+      - name: Terraform validate
+        run: terraform validate
+        working-directory: infrastructure
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infrastructure
+          output_format: cli
+          config_file: .github/checkov.yml
+
+
+  Build:
+    runs-on: ubuntu-latest # slim has no 'zip' command
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      # Once I have reusable npm package - add 'Prepare for Build' step like in Java build to generate npm token
+      - name: Install dependencies
+        run: npm ci
+
+#      - name: Lint
+#        run: npm run lint
+
+#      - name: Test
+#        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Package
+        if: inputs.artifacts
+        run: |
+          npm prune --production
+          make app3-package
+
+      - name: Upload artifacts
+        if: inputs.artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          path: dist/app.zip
+
+  Release:
+    if: github.ref == 'refs/heads/main'
+    needs: Build
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: dist
+
+      - name: Release
+        uses: agilecustoms/gha-release@main
+        with:
+          gitops-token: ${{ secrets.GH_TOKEN }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
