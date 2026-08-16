@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/agilecustoms/ev-invoice/compare/1.0.2...1.0.3) (2026-08-16)
+
+### Miscellaneous
+
+* add empty line to retest release flow ([14e8993](https://github.com/agilecustoms/ev-invoice/commit/14e8993cbe1ae8835fa9d742f6176891c568ef0d))
+
+
 ## [1.0.2](https://github.com/agilecustoms/ev-invoice/compare/1.0.1...1.0.2) (2026-08-16)
 
 ### Bug Fixes
