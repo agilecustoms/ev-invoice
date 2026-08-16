@@ -77,7 +77,9 @@ jobs:
 
   Release:
     if: github.ref == 'refs/heads/main'
-    needs: Build
+    needs:
+      - Validate-infra
+      - Build
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -89,7 +91,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v7
         with:
-          path: dist
+          path: s3
 
       - name: Release
         uses: agilecustoms/gha-release@main
