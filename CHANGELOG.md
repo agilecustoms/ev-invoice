@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/agilecustoms/ev-invoice/compare/1.0.1...1.0.2) (2026-08-16)
+
+### Bug Fixes
+
+* release workflow 2 ([54f7bf0](https://github.com/agilecustoms/ev-invoice/commit/54f7bf098557f481e5a61a1b76ad76087d3eb745))
+
+
 ## [1.0.1](https://github.com/agilecustoms/ev-invoice/compare/1.0.0...1.0.1) (2026-08-16)
 
 ### Bug Fixes
