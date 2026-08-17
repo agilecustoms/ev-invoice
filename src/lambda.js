@@ -9,13 +9,23 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
   hour12: false,
 })
 
+const destination = pino.destination({
+  dest: 1,    // stdout
+  sync: true, // default is false causing lots of logs are LOST! If use async, then do this at the end of the lambda handler:
+  // destination.flushSync() or await new Promise((resolve) => { destination.flush(resolve)})
+});
+
 let context = {};
 
 const logger = pino({
+  // respect the log level set in AWS Lambda environment variable, default to INFO if not set
   level: (process.env.AWS_LAMBDA_LOG_LEVEL ?? "INFO").toLowerCase(),
 
-  mixin() {
-    return { ...context };
+  mixin(_, __, logger) {
+    return {
+      ...context,
+      ...logger.bindings(), // prioritize bindings over mixin context, particularly to override 'module' in .child logger
+    };
   },
 
   formatters: {
@@ -34,7 +44,7 @@ const logger = pino({
   base: {
     lambda: process.env.AWS_LAMBDA_FUNCTION_NAME,
   },
-});
+}, destination);
 
 logger.silly = function (...args) {
   return this.trace(...args);
@@ -64,9 +74,9 @@ function outer() {
 export const handler = async (event, context) => {
   logger.addContext(event, context);
 
-  logger.info("Lambda invoked4");
+  logger.info("Lambda invoked48")
 
-  const logger2 = logger.child({ component: "service" });
+  const logger2 = logger.child({ module: "service" });
   logger2.warn("child warning");
 
   try {
@@ -75,10 +85,12 @@ export const handler = async (event, context) => {
     logger2.error(err, "Error occurred");
   }
 
+  // await new Promise((resolve) => { destination.flush(resolve)});
+
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: "Hello, world 3!",
+      message: "Hello, world 49!",
     }),
   };
 };
