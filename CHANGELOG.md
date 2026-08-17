@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/agilecustoms/ev-invoice/compare/1.0.3...1.1.0) (2026-08-17)
+
+### Features
+
+* pino logger ([5ee112b](https://github.com/agilecustoms/ev-invoice/commit/5ee112b3c15b3e5502440443847c31b6d068cb51))
+* pino logger [skip ci] ([b224eb1](https://github.com/agilecustoms/ev-invoice/commit/b224eb1e16fa602ea2cf072442f18586670f25b5))
+
+
 ## [1.0.3](https://github.com/agilecustoms/ev-invoice/compare/1.0.2...1.0.3) (2026-08-16)
 
 ### Miscellaneous
