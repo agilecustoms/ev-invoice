@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/agilecustoms/ev-invoice/compare/1.1.0...1.2.0) (2026-08-17)
+
+### Features
+
+* traceparent ([3128739](https://github.com/agilecustoms/ev-invoice/commit/3128739ab9cdbab7bd4458eb2a677007b9d174f6))
+
+
 ## [1.1.0](https://github.com/agilecustoms/ev-invoice/compare/1.0.3...1.1.0) (2026-08-17)
 
 ### Features
