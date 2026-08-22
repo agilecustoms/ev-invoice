@@ -1,5 +1,5 @@
 locals {
-  log_group_name = local.app_name
+  log_group_name = "/aws/lambda/${local.app_name}"
   # shared among multiple environments, so retention depends on account, not env_size
   logs_retention = var.env_type == "dev" ? 30 : 365
 }
