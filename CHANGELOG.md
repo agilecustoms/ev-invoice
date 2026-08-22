@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/agilecustoms/ev-invoice/compare/1.2.0...1.2.1) (2026-08-22)
+
+### Miscellaneous
+
+* rename log group ([06b033d](https://github.com/agilecustoms/ev-invoice/commit/06b033d8a4343c5dcd9fb3928f26f34640c78c0f))
+
+
 ## [1.2.0](https://github.com/agilecustoms/ev-invoice/compare/1.1.0...1.2.0) (2026-08-17)
 
 ### Features
