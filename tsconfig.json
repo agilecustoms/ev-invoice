@@ -1,0 +1,27 @@
+{
+  "include": [
+    "src"
+  ],
+  // Runtime is Node 24 (max available in AWS Lambda as of Apr 2026)
+  "compilerOptions": {
+    // MAIN SETTINGS (based on runtime)
+    "target": "ES2025",      // highest available, fully supported by Node 24
+    "types": ["node"],       // include Node types for built-in modules and globals
+    "module": "nodenext",    // preferred for modern Node projects
+    "rootDir": "./src",      // if not specified, we get ./dist/src/ :(
+    "outDir": "dist",        // standard output folder for all emitted files
+
+    // DEFAULTS that are always "good to have" - expect to be the same for all projects
+    "allowJs": false,        // no need to compile JS, all is TS
+    "noUncheckedIndexedAccess": true,
+    "removeComments": true,
+    "skipLibCheck": true,    // skip type checking of declaration files (.d.ts) - allows quick hot reload
+    "strict": true,          // enable all strict type-checking options
+    "verbatimModuleSyntax": true, // force using 'import type' for types
+
+    // ADDITIONAL SETTINGS (vary per project)
+    "experimentalDecorators": true, // as of TypeScript 5 the decorators still not part of language and need to be enabled explicitly
+    "emitDecoratorMetadata": true,  // another config for the same issue above
+    "sourceMap": true,
+  }
+}

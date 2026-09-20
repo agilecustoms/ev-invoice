@@ -12,8 +12,20 @@ app0-install-deps:
 app0-update-deps:
 	@npm update; npm install; npm outdated; npm find-dupes
 
+app1-lint:
+	@npm run lint
+
+app1-lint-fix:
+	@npm run lint:fix
+
+app2-test:
+	@npm run test
+
 app3-build:
 	@rm -rf dist; npm run build
+
+app3-generate-openapi: app3-build # needs to be called after build (ts ~~> js) but before package (bcz it remove --save-dev libs)
+	@npm run openapi
 
 app3-package:
 	@set -e; \
@@ -39,6 +51,14 @@ app4-build-as-ci: app0-install-deps app3-build app3-package
 app4-hot-redeploy: app3-build app3-package
 	@export AWS_PROFILE=ac-ev-prod-admin; \
 	aws lambda update-function-code --function-name $(ENV)-$(APP_NAME) --zip-file fileb://dist/app.zip --no-cli-pager > /dev/null
+
+#---------------------------------------------------
+
+local-run:
+	@npm run start
+
+local-run-dev:
+	@npm run start:dev
 
 #---------------------------------------------------
 
