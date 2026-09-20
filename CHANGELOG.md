@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.1](https://github.com/agilecustoms/ev-invoice/compare/1.6.0...1.6.1) (2026-09-20)
+
+### Bug Fixes
+
+* health path ([eb90ec2](https://github.com/agilecustoms/ev-invoice/commit/eb90ec22936cab8e0cc3b5560bfe155b8b70a790))
+
+### Miscellaneous
+
+* remove build warning [skip ci] ([23be312](https://github.com/agilecustoms/ev-invoice/commit/23be312c35c4803f223efb2f07f8284a791b00b0))
+
+
 ## [1.6.0](https://github.com/agilecustoms/ev-invoice/compare/1.5.1...1.6.0) (2026-09-20)
 
 ### Features
