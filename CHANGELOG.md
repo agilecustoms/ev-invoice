@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/agilecustoms/ev-invoice/compare/1.3.2...1.3.3) (2026-09-20)
+
+### Bug Fixes
+
+* condition to upload artifacts ([c5a395c](https://github.com/agilecustoms/ev-invoice/commit/c5a395c8d9b82880ad09d2c623b228023dfc7b43))
+
+
 ## [1.3.2](https://github.com/agilecustoms/ev-invoice/compare/1.3.1...1.3.2) (2026-09-20)
 
 ### Miscellaneous
