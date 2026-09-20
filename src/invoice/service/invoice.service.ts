@@ -6,7 +6,7 @@ export class InvoiceService {
 
   constructor() { }
 
-  public generateInvoice(): void {
-    this.logger.log(`Generating invoice...`)
+  public createInvoice(orderId: number): void {
+    this.logger.log(`Creating invoice for order ${orderId}...`)
   }
 }

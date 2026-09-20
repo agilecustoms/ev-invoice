@@ -5,11 +5,15 @@ info:
 
 http:
   method: GET
-  url: "{{base-url}}/create"
+  url: "{{base-url}}/create?orderId=1"
   headers:
     - name: x-command-id
       value: test
       disabled: true
+  params:
+    - name: orderId
+      value: "1"
+      type: query
   auth: inherit
 
 settings:

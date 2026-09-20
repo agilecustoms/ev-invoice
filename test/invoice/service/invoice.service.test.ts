@@ -5,6 +5,6 @@ describe('InvoiceService', () => {
   const invoiceService = new InvoiceService()
 
   it('should be defined', () => {
-    invoiceService.generateInvoice()
+    invoiceService.createInvoice(1)
   })
 })
