@@ -19,8 +19,8 @@ Object.values(document.paths).forEach((methods) => {
   Object.values(methods).forEach((method) => {
     method['x-amazon-apigateway-integration'] = {
       type: 'aws_proxy',
-      uri: '${FUNCTION_ARN}',
-      httpMethod: 'POST'
+      httpMethod: 'POST',
+      uri: '${INVOKE_ARN}'
     }
   })
 })
