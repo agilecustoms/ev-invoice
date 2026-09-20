@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/agilecustoms/ev-invoice/compare/1.3.0...1.3.1) (2026-09-20)
+
+### Miscellaneous
+
+* add output 'apis' ([d98bbfb](https://github.com/agilecustoms/ev-invoice/commit/d98bbfbe509743b4b1caccf02a9da3e2717bf199))
+
+
 ## [1.3.0](https://github.com/agilecustoms/ev-invoice/compare/1.2.1...1.3.0) (2026-09-20)
 
 ### Features
