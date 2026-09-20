@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/agilecustoms/ev-invoice/compare/1.3.1...1.3.2) (2026-09-20)
+
+### Miscellaneous
+
+* generate openapi as part of build ([246b592](https://github.com/agilecustoms/ev-invoice/commit/246b59241b7d6322a82916d15b1a55e02fe72970))
+
+
 ## [1.3.1](https://github.com/agilecustoms/ev-invoice/compare/1.3.0...1.3.1) (2026-09-20)
 
 ### Miscellaneous
