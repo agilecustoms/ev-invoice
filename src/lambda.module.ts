@@ -18,7 +18,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
         autoLogging: false, // do not log each request/response
         messageKey: 'message',
         base: {
-          service: 'tt-auth',
+          service: 'ev-invoice',
           env: process.env['AWS_ENV']
         },
         redact: ['req'],
