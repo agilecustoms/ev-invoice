@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/agilecustoms/ev-invoice/compare/1.6.1...1.6.2) (2026-09-20)
+
+### Bug Fixes
+
+* rollback some upgrades to fix lambda at runtime ([40ce1ca](https://github.com/agilecustoms/ev-invoice/commit/40ce1ca4010932bf6c7737734a82953c6e7acc4a))
+
+
 ## [1.6.1](https://github.com/agilecustoms/ev-invoice/compare/1.6.0...1.6.1) (2026-09-20)
 
 ### Bug Fixes
