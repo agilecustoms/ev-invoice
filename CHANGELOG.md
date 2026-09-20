@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/agilecustoms/ev-invoice/compare/1.3.3...1.4.0) (2026-09-20)
+
+### Features
+
+* add bruno collection ([cf565f8](https://github.com/agilecustoms/ev-invoice/commit/cf565f8ce5b6d385f55d2b0dff6528d49b14a6ec))
+* invoice service stub ([5c7a4e4](https://github.com/agilecustoms/ev-invoice/commit/5c7a4e48be105f7ad23b2ea1d961060c123f204a))
+
+### Bug Fixes
+
+* openapi generation ([688bf4c](https://github.com/agilecustoms/ev-invoice/commit/688bf4c959f4d484998db51bb7f703aa9119c755))
+
+### Miscellaneous
+
+* rename base directory to invoice ([f6e8c35](https://github.com/agilecustoms/ev-invoice/commit/f6e8c3551e2d6be9c6da588e740259888dd726f9))
+
+
 ## [1.3.3](https://github.com/agilecustoms/ev-invoice/compare/1.3.2...1.3.3) (2026-09-20)
 
 ### Bug Fixes
