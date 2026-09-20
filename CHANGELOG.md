@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0](https://github.com/agilecustoms/ev-invoice/compare/1.4.0...1.5.0) (2026-09-20)
+
+### Features
+
+* make lambda handler work with both REST API and HTTP API ([e930a5a](https://github.com/agilecustoms/ev-invoice/commit/e930a5a7859036db2a0250946a42e763ddcc9549))
+
+### Miscellaneous
+
+* reshape normalizePath function ([1a52b4e](https://github.com/agilecustoms/ev-invoice/commit/1a52b4ebccb014deb8e0287cc44403fb59d121ec))
+
+
 ## [1.4.0](https://github.com/agilecustoms/ev-invoice/compare/1.3.3...1.4.0) (2026-09-20)
 
 ### Features
