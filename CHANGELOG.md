@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/agilecustoms/ev-invoice/compare/1.5.1...1.6.0) (2026-09-20)
+
+### Features
+
+* update dependencies ([c816474](https://github.com/agilecustoms/ev-invoice/commit/c8164744ed062e62a14fd30dec3bdfc02e79787b))
+
+
 ## [1.5.1](https://github.com/agilecustoms/ev-invoice/compare/1.5.0...1.5.1) (2026-09-20)
 
 ### Bug Fixes
