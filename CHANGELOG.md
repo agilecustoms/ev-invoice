@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/agilecustoms/ev-invoice/compare/1.2.1...1.3.0) (2026-09-20)
+
+### Features
+
+* copy-paste from tt-auth ([c90fbe8](https://github.com/agilecustoms/ev-invoice/commit/c90fbe8b8043cc5240401f308264e4d2bf651171))
+
+### Miscellaneous
+
+* add gclid to [Book Your Service] url to pass to Tally ([111534b](https://github.com/agilecustoms/ev-invoice/commit/111534b63a900f879d272b38979d6df8522d0944))
+* combine book_makeup_click event and fixing url with gclid [skip ci] ([e499bbe](https://github.com/agilecustoms/ev-invoice/commit/e499bbe738fb37665fbee1e3dd660b425b6c8cbd))
+* count book_makeup_click when someone clicks [Book Your Service] ([0e8ee86](https://github.com/agilecustoms/ev-invoice/commit/0e8ee8650216a780504a2111479d12ffcb89cecb))
+* google analytics and google ads in head ([93a1d21](https://github.com/agilecustoms/ev-invoice/commit/93a1d21d6cba60142f169cfba9f59c7c11c0938d))
+
+
 ## [1.2.1](https://github.com/agilecustoms/ev-invoice/compare/1.2.0...1.2.1) (2026-08-22)
 
 ### Miscellaneous
