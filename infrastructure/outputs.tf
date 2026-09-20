@@ -1,3 +1,8 @@
-output "lambda_arn" {
-  value = aws_lambda_function.lambda.arn
+output "api" {
+  value = {
+    name        = local.app_name
+    version     = var.aVersion
+    invoke_arn  = aws_lambda_function.app.arn
+    healthcheck = "/public/health"
+  }
 }
