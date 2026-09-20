@@ -1,6 +1,6 @@
 import { Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
-import { AppModule } from './auth/app.module.js'
+import { AppModule } from '././invoice/app.module.js'
 import { LoggerContextMiddleware } from './LoggerContextMiddleware.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {

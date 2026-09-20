@@ -25,7 +25,7 @@
 
 ### Features
 
-* copy-paste from tt-auth ([c90fbe8](https://github.com/agilecustoms/ev-invoice/commit/c90fbe8b8043cc5240401f308264e4d2bf651171))
+* copy-paste from tt-invoice ([c90fbe8](https://github.com/agilecustoms/ev-invoice/commit/c90fbe8b8043cc5240401f308264e4d2bf651171))
 
 ### Miscellaneous
 

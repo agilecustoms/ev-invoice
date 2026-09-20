@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { Logger, LoggerModule } from 'nestjs-pino'
-import { AppModule } from './auth/app.module.js'
+import { AppModule } from '././invoice/app.module.js'
 
 @Module({
   imports: [
