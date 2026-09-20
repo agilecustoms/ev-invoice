@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/agilecustoms/ev-invoice/compare/1.5.0...1.5.1) (2026-09-20)
+
+### Bug Fixes
+
+* invoke_arn ([9164968](https://github.com/agilecustoms/ev-invoice/commit/91649685bfd9f11264d9bc49174839cba7cbc105))
+* service name and headers to log [skip ci] ([87ff1d7](https://github.com/agilecustoms/ev-invoice/commit/87ff1d729e6bb6e3b41ad3137911ac700687f024))
+
+
 ## [1.5.0](https://github.com/agilecustoms/ev-invoice/compare/1.4.0...1.5.0) (2026-09-20)
 
 ### Features
