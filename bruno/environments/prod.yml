@@ -1,5 +1,5 @@
 name: prod
 variables:
   - name: base-url
-    value: https://ev.agilecustoms.com/invoice
+    value: https://ev.agilecustoms.com/ev-invoice
     description: ""
