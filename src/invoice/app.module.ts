@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { HealthController } from './controller/health.controller.js'
+import { InvoiceController } from './controller/invoice.controller.js'
 import { InvoiceService } from './service/invoice.service.js'
 
 const profile = process.env['APP_PROFILE']
@@ -13,7 +14,8 @@ const profile = process.env['APP_PROFILE']
     })
   ],
   controllers: [
-    HealthController
+    HealthController,
+    InvoiceController
   ],
   providers: [InvoiceService]
 })

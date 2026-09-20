@@ -1,7 +1,7 @@
 opencollection: 1.0.0
 
 info:
-  name: ev
+  name: ev-invoice
 config:
   proxy:
     inherit: true
