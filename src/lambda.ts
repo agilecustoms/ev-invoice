@@ -1,14 +1,27 @@
 import serverlessExpress from '@codegenie/serverless-express'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter } from '@nestjs/platform-express'
-import type { Context, APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from 'aws-lambda'
+import type {
+  APIGatewayProxyEvent,
+  APIGatewayProxyEventV2,
+  APIGatewayProxyResult,
+  APIGatewayProxyStructuredResultV2,
+  Context
+} from 'aws-lambda'
 import express from 'express'
 import { LoggerErrorInterceptor } from 'nestjs-pino'
 import { LambdaModule } from './lambda.module.js'
 
-let proxyHandler: APIGatewayProxyHandlerV2
+// REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
+// serverless-express understands both, it picks the adapter per invocation, so this handler
+// only needs to normalize what it touches itself: headers and the request path
+type ApiGatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2
+type ApiGatewayResult = APIGatewayProxyResult | APIGatewayProxyStructuredResultV2
+type ProxyHandler = (event: ApiGatewayEvent, context: Context) => Promise<ApiGatewayResult>
 
-async function bootstrap(): Promise<APIGatewayProxyHandlerV2> {
+let proxyHandler: ProxyHandler
+
+async function bootstrap(): Promise<ProxyHandler> {
   const expressApp = express()
   const app = await NestFactory.create(
     LambdaModule,
@@ -20,30 +33,62 @@ async function bootstrap(): Promise<APIGatewayProxyHandlerV2> {
   await app.init()
 
   // @ts-expect-error by design
-  return serverlessExpress({ app: expressApp })
+  return serverlessExpress({ app: expressApp }) as ProxyHandler
+}
+
+// same discriminator serverless-express uses to choose its event adapter
+function isV2(event: ApiGatewayEvent): event is APIGatewayProxyEventV2 {
+  return (event as APIGatewayProxyEventV2).version === '2.0'
+}
+
+/**
+ * v1 events carry the same header twice: `headers` and `multiValueHeaders`.
+ * serverless-express reads `multiValueHeaders` whenever it is present, so write both
+ */
+function setHeader(event: ApiGatewayEvent, name: string, value: string): void {
+  if (!event.headers) {
+    event.headers = {}
+  }
+  event.headers[name] = value
+  if (!isV2(event) && event.multiValueHeaders) {
+    event.multiValueHeaders[name] = [value]
+  }
+}
+
+/**
+ * The path is used to map request -> route, and it arrives with prefixes NestJS must not see:
+ *   HTTP API (v2): rawPath = /{stage}/{app-name}/{our-endpoint}
+ *   REST API (v1): path    = /{app-name}/{our-endpoint}, the stage lives in requestContext only
+ * We use a multi-tenant AGW, so each microservice has prefix = app-name. Drop the stage when the
+ * path happens to carry it, then drop the app-name
+ */
+function normalizePath(path: string, stage: string): string {
+  const withoutStage = path.startsWith(`/${stage}/`) ? path.substring(stage.length + 1) : path
+  const appNameEnd = withoutStage.indexOf('/', 1)
+  return appNameEnd === -1 ? '/' : withoutStage.substring(appNameEnd) // no '/' left = the app-name was the whole path
 }
 
 // noinspection JSUnusedGlobalSymbols
-export const handler = async (event: APIGatewayProxyEventV2, context: Context) => {
+export const handler = async (event: ApiGatewayEvent, context: Context): Promise<ApiGatewayResult> => {
   if (!proxyHandler) {
     proxyHandler = await bootstrap()
   }
 
   // need to enrich the logging context with requestId and agwRequestId,
   // but unfortunately, PinoLogger is not available here, so pass via headers
-  event.headers['x-request-id'] = context.awsRequestId
-  event.headers['x-agw-request-id'] = event.requestContext.requestId
+  setHeader(event, 'x-request-id', context.awsRequestId)
+  setHeader(event, 'x-agw-request-id', event.requestContext.requestId)
 
-  // event.rawPath is used to map request -> route
-  // AWS Lambda API Gateway v2 includes "stage" name in the rawPath
-  // plus we use multi-tenant AGW so each microservice has prefix = app-name,
-  // so rawPath looks like /{stage}/{app-name}/{our-endpoint}
-  // need to remove first two pieces so NestJS mapping works correctly
-  const rawPath = event.rawPath
-  let fixedPath = rawPath.substring(rawPath.indexOf('/', 1)) // strip stage
-  fixedPath = fixedPath.substring(fixedPath.indexOf('/', 1)) // strip app-name
-  event.rawPath = fixedPath
+  const stage = event.requestContext.stage
+  if (isV2(event)) {
+    event.rawPath = normalizePath(event.rawPath, stage)
+  } else {
+    event.path = normalizePath(event.path, stage)
+    // serverless-express prefers pathParameters.proxy over event.path, drop it so the path above wins
+    // (with a {proxy+} resource the proxy value is the endpoint already, but not when the REST API
+    // declares every route explicitly, so do not rely on it)
+    delete event.pathParameters?.['proxy']
+  }
 
-  // @ts-expect-error APIGatewayProxyHandlerV2 takes 3 parameters, but the 3rd is deprecated, just do not pass it
   return proxyHandler(event, context)
 }
