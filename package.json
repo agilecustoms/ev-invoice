@@ -40,6 +40,7 @@
   },
   "allowScripts": {
     "@scarf/scarf": false,
-    "fsevents": true
+    "fsevents": true,
+    "unrs-resolver": false
   }
 }
