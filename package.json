@@ -16,14 +16,18 @@
   },
   "dependencies": {
     "@codegenie/serverless-express": "^5.0.0",
-    "@nestjs/common": "^12.0.3",
-    "@nestjs/config": "^12.0.0",
-    "@nestjs/core": "^12.0.3",
-    "@nestjs/platform-express": "^12.0.3",
-    "@nestjs/swagger": "^12.0.1",
-    "nestjs-pino": "^5.2.0",
+    "@nestjs/common": "^11.2.5",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.2.5",
+    "@nestjs/platform-express": "^11.2.5",
+    "@nestjs/swagger": "^11.4.7",
+    "nestjs-pino": "^4.6.1",
     "pino": "^10.3.1"
   },
+  "notes": [
+    "wait until nestjs-pino ships an ESM-compatible build, then upgrade all @nestjs to v12",
+    "wait until eslint start support TS 7, then upgrade TS to v7"
+  ],
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.6.1",
     "@types/aws-lambda": "^8.10.159",
@@ -42,5 +46,8 @@
     "@scarf/scarf": false,
     "fsevents": true,
     "unrs-resolver": false
+  },
+  "overrides": {
+    "multer": "^2.4.0"
   }
 }
