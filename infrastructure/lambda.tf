@@ -20,6 +20,12 @@ resource "aws_lambda_function" "app" {
 
   timeout = 10
 
+  environment {
+    variables = {
+      PAYPAL_SECRET_ID = aws_secretsmanager_secret.paypal.name
+    }
+  }
+
   logging_config {
     log_format = "JSON"
     log_group  = local.log_group_name

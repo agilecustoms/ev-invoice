@@ -15,6 +15,7 @@
     "start:dev": "APP_PROFILE=local tsc-watch --onSuccess \"node dist/local\""
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1136.0",
     "@codegenie/serverless-express": "^5.0.0",
     "@nestjs/common": "^11.2.5",
     "@nestjs/config": "^4.0.4",

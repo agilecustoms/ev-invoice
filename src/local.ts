@@ -1,7 +1,27 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { Logger, LoggerModule } from 'nestjs-pino'
 import { AppModule } from '././invoice/app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/config/paypal.credentials.js'
+
+/**
+ * Credentials come from .env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).
+ * Global, so PaypalClient in the shared AppModule can inject it
+ */
+@Global()
+@Module({
+  providers: [{
+    provide: PAYPAL_CREDENTIALS,
+    useFactory: (config: ConfigService): PayPalCredentials => ({
+      clientId: config.getOrThrow<string>('PAYPAL_CLIENT_ID'),
+      clientSecret: config.getOrThrow<string>('PAYPAL_CLIENT_SECRET')
+    }),
+    inject: [ConfigService]
+  }],
+  exports: [PAYPAL_CREDENTIALS]
+})
+class PaypalCredentialsModule {}
 
 @Module({
   imports: [
@@ -19,6 +39,7 @@ import { AppModule } from '././invoice/app.module.js'
         }
       }
     }),
+    PaypalCredentialsModule,
     AppModule
   ]
 })

@@ -1,6 +1,8 @@
-import { Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
+import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
 import { AppModule } from '././invoice/app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/config/paypal.credentials.js'
+import { loadSecret } from './invoice/config/secrets.js'
 import { LoggerContextMiddleware } from './LoggerContextMiddleware.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
@@ -10,6 +12,20 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
   fractionalSecondDigits: 3,
   hour12: false,
 })
+
+/**
+ * AWS: PayPal credentials come from Secrets Manager (PAYPAL_SECRET_ID is set in infrastructure/lambda.tf).
+ * Global, so PaypalClient in the shared AppModule can inject it (see local.ts for the local counterpart)
+ */
+@Global()
+@Module({
+  providers: [{
+    provide: PAYPAL_CREDENTIALS,
+    useFactory: (): Promise<PayPalCredentials> => loadSecret<PayPalCredentials>(process.env['PAYPAL_SECRET_ID']!)
+  }],
+  exports: [PAYPAL_CREDENTIALS]
+})
+class PaypalCredentialsModule {}
 
 @Module({
   imports: [
@@ -34,6 +50,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
       },
       renameContext: 'logger'
     }),
+    PaypalCredentialsModule,
     AppModule
   ]
 })

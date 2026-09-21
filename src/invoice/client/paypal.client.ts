@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { Inject, Injectable, Logger } from '@nestjs/common'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from '../config/paypal.credentials.js'
 
-const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
+// const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
 const LIVE_URL = 'https://api-m.paypal.com'
 
 interface AccessToken {
@@ -15,16 +15,12 @@ interface AccessToken {
 @Injectable()
 export class PaypalClient {
   private readonly logger = new Logger(PaypalClient.name)
-  private readonly clientId: string
-  private readonly clientSecret: string
-  private readonly baseUrl: string
   private token?: AccessToken
 
-  constructor(config: ConfigService) {
-    this.clientId = config.getOrThrow<string>('PAYPAL_CLIENT_ID')
-    this.clientSecret = config.getOrThrow<string>('PAYPAL_CLIENT_SECRET')
-    this.baseUrl = config.get<string>('PAYPAL_ENV') === 'live' ? LIVE_URL : SANDBOX_URL
-  }
+  constructor(
+    @Inject(PAYPAL_CREDENTIALS)
+    private readonly credentials: PayPalCredentials,
+  ) {}
 
   /**
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
@@ -58,7 +54,7 @@ export class PaypalClient {
   }
 
   private async request(path: string, body: unknown): Promise<Response> {
-    const response = await fetch(this.baseUrl + path, {
+    const response = await fetch(LIVE_URL + path, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${await this.getAccessToken()}`,
@@ -81,8 +77,8 @@ export class PaypalClient {
       return this.token.value
     }
 
-    const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')
-    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
+    const credentials = Buffer.from(`${this.credentials.clientId}:${this.credentials.clientSecret}`).toString('base64')
+    const response = await fetch(`${LIVE_URL}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${credentials}`,
