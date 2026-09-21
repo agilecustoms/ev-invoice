@@ -1,8 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from '../config/paypal.credentials.js'
 
 // const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
 const LIVE_URL = 'https://api-m.paypal.com'
+
+export interface PayPalCredentials {
+  clientId: string
+  clientSecret: string
+}
+
+export const PAYPAL_CREDENTIALS = Symbol('PAYPAL_CREDENTIALS')
 
 interface AccessToken {
   value: string
