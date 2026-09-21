@@ -30,7 +30,7 @@ app3-generate-openapi: app3-build # needs to be called after build (ts ~~> js) b
 app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
-	zip -rq dist/app.zip dist; \
+	zip -rq dist/app.zip dist -x 'dist/local.*' 'dist/openapi.*'; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
 	cd tmp; \
@@ -42,8 +42,7 @@ app3-package:
 	 '**/.jshintrc' '**/.editorconfig' '**/.eslintrc' '**/.eslintrc.js' '**/.nycrc' '**/.npmignore' '**/.prettierrc.json' \
 	 '**/.gitkeep' '**/Makefile' '**/karma.conf.js' '**/.nycrc' '**/.eslintignore' '**/.babelrc' \
 	 '**/__tests__/**' '**/test/**' '**/tests/**' '**/.idea/**' '**/.vscode/**' '**/.husky/**' \
-	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**' \
-	 'dist/local.*' 'dist/openapi.*'; \
+	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**'; \
 	rm -rf ../tmp
 
 app4-build-as-ci: app0-install-deps app3-build app3-package

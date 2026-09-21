@@ -43,7 +43,7 @@ export class PaypalClient {
       },
       primary_recipients: [{
         billing_info: {
-          name: { alternate_full_name: customer.name }, // single 'name' string, can not be reliably split into given_name/surname
+          name: { alternate_full_name: customer.name }, // a single 'name' string can not be reliably split into given_name/surname
           email_address: customer.email
         }
       }],
