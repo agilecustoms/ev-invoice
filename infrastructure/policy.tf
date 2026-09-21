@@ -16,9 +16,18 @@ data "aws_iam_policy_document" "logs" {
   }
 }
 
+data "aws_iam_policy_document" "secrets" {
+  statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [aws_secretsmanager_secret.paypal.arn]
+  }
+}
+
 data "aws_iam_policy_document" "app" {
   source_policy_documents = [
     data.aws_iam_policy_document.logs.json,
+    data.aws_iam_policy_document.secrets.json,
   ]
 }
 

@@ -21,7 +21,6 @@ export class PaypalClient {
   private token?: AccessToken
 
   constructor(config: ConfigService) {
-    // getOrThrow: fail at startup rather than at the first request if credentials are missing
     this.clientId = config.getOrThrow<string>('PAYPAL_CLIENT_ID')
     this.clientSecret = config.getOrThrow<string>('PAYPAL_CLIENT_SECRET')
     this.baseUrl = config.get<string>('PAYPAL_ENV') === 'live' ? LIVE_URL : SANDBOX_URL
