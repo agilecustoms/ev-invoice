@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.2](https://github.com/agilecustoms/ev-invoice/compare/1.8.1...1.8.2) (2026-09-21)
+
+### Miscellaneous
+
+* optimize package ([35f05ff](https://github.com/agilecustoms/ev-invoice/commit/35f05ffa4ee94907a80b432f2f89a67bf592dd02))
+* reshuffle files according to nest best practices ([212e37b](https://github.com/agilecustoms/ev-invoice/commit/212e37bfb39bfb5d9b852ccdabdcda67ec507c35))
+
+
 ## [1.8.1](https://github.com/agilecustoms/ev-invoice/compare/1.8.0...1.8.1) (2026-09-21)
 
 ### Miscellaneous
