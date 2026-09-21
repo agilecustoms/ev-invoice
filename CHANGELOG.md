@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/agilecustoms/ev-invoice/compare/1.7.0...1.8.0) (2026-09-21)
+
+### Features
+
+* async wire creds from secrets manager ([8b8a763](https://github.com/agilecustoms/ev-invoice/commit/8b8a7632c0f9422e0c9ed7bdc7b6fbce1b6669d4))
+* provision an empty secret ([2fdb3ad](https://github.com/agilecustoms/ev-invoice/commit/2fdb3ad0f844b809bf6538760ca45ee6255db0cf))
+
+### Bug Fixes
+
+* checkov exclusions ([252700e](https://github.com/agilecustoms/ev-invoice/commit/252700e8c7349213fabd1d1b530fed233c7b75c3))
+* openapi generation ([3b9dd00](https://github.com/agilecustoms/ev-invoice/commit/3b9dd0074f553bfe3f3999d08165f0373409393b))
+
+
 ## [1.7.0](https://github.com/agilecustoms/ev-invoice/compare/1.6.2...1.7.0) (2026-09-20)
 
 ### Features
