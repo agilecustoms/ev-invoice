@@ -1,11 +1,33 @@
 import { writeFileSync } from 'node:fs'
+import { Global, Module } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { LambdaModule } from './lambda.module.js'
+import { LoggerModule } from 'nestjs-pino'
+import { AppModule } from './invoice/app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/config/paypal.credentials.js'
 
 const APP_NAME = 'ev-invoice'
 
-const app = await NestFactory.create(LambdaModule)
+/**
+ * The spec is generated from controllers, but the whole app has to start. Real credentials are not needed (and in CI
+ * there is no access to Secrets Manager), so use dummy ones. See lambda.module.ts and local.ts for real ones
+ */
+@Global()
+@Module({
+  providers: [{
+    provide: PAYPAL_CREDENTIALS,
+    useValue: { clientId: 'openapi', clientSecret: 'openapi' } satisfies PayPalCredentials
+  }],
+  exports: [PAYPAL_CREDENTIALS]
+})
+class CredentialsModule {}
+
+@Module({
+  imports: [LoggerModule.forRoot(), CredentialsModule, AppModule]
+})
+class NestModule {}
+
+const app = await NestFactory.create(NestModule)
 app.setGlobalPrefix(APP_NAME) // to allow multiple services under the same AGW / domain
 
 const config = new DocumentBuilder()

@@ -25,7 +25,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
   }],
   exports: [PAYPAL_CREDENTIALS]
 })
-class PaypalCredentialsModule {}
+class CredentialsModule {}
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ class PaypalCredentialsModule {}
       },
       renameContext: 'logger'
     }),
-    PaypalCredentialsModule,
+    CredentialsModule,
     AppModule
   ]
 })

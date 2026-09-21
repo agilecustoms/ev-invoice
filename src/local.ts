@@ -21,7 +21,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/config/pay
   }],
   exports: [PAYPAL_CREDENTIALS]
 })
-class PaypalCredentialsModule {}
+class CredentialsModule {}
 
 @Module({
   imports: [
@@ -39,17 +39,17 @@ class PaypalCredentialsModule {}
         }
       }
     }),
-    PaypalCredentialsModule,
+    CredentialsModule,
     AppModule
   ]
 })
-class LocalModule {}
+class NestModule {}
 
 /**
  * This entry point is for local development only. AWS uses lambda.ts
  */
 async function bootstrap() {
-  const app = await NestFactory.create(LocalModule, { bufferLogs: true })
+  const app = await NestFactory.create(NestModule, { bufferLogs: true })
   app.useLogger(app.get(Logger))
   app.enableCors() // use only for local development. In AWS, Api Gateway handles CORS
   await app.listen(3000)
