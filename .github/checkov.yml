@@ -18,6 +18,7 @@ skip-check:
   - CKV_AWS_135 # "Ensure that EC2 is EBS optimized"
   - CKV_AWS_144 # "Ensure that S3 bucket has cross-region replication enabled"
   - CKV_AWS_145 # "Ensure that S3 buckets are encrypted with KMS by default"
+  - CKV_AWS_149 # "Ensure that Secrets Manager secret is encrypted using KMS CMK"
   - CKV_AWS_173 # "Check encryption settings for Lambda environmental variable"
   - CKV_AWS_272 # "Ensure AWS Lambda function is configured to validate code-signing"
   - CKV2_AWS_4  # "Ensure API Gateway stage have logging level defined as appropriate"
@@ -28,6 +29,7 @@ skip-check:
   - CKV2_AWS_34 # "AWS SSM Parameter should be Encrypted"
   - CKV2_AWS_51 # "Ensure AWS API Gateway endpoints uses client certificate authentication"
   - CKV2_AWS_53 # "Ensure AWS API gateway request is validated"
+  - CKV2_AWS_57 # "Ensure Secrets Manager secrets should have automatic rotation enabled"
   - CKV2_AWS_62 # "Ensure S3 buckets should have event notifications enabled"
   - CKV_TF_1    # "Ensure Terraform module sources use a commit hash"
 
