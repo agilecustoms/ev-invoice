@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { InvoiceService } from '../../../src/./invoice/service/invoice.service.js'
+import { InvoiceService } from '../../src/service/invoice.service.js'
 
 describe('InvoiceService', () => {
   const invoiceService = new InvoiceService()

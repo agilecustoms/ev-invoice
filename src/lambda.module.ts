@@ -1,9 +1,9 @@
 import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
-import { AppModule } from './invoice/app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/client/paypal.client.js'
-import { loadSecret } from './invoice/util/secrets.js'
-import { LoggerContextMiddleware } from './LoggerContextMiddleware.js'
+import { AppModule } from './app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
+import { LoggerContextMiddleware } from './logger-context.middleware.js'
+import { loadSecret } from './util/secrets.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
   hour: '2-digit',

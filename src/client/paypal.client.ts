@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
+import type { Customer } from '../model/customer.js'
 
 // const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
 const LIVE_URL = 'https://api-m.paypal.com'
@@ -30,9 +31,11 @@ export class PaypalClient {
 
   /**
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
+   * @param customer invoice recipient
+   * @param amount total in USD, e.g. 10.5
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(): Promise<string> {
+  public async createInvoice(customer: Customer, amount: number): Promise<string> {
     const body = {
       detail: {
         currency_code: 'USD',
@@ -40,14 +43,14 @@ export class PaypalClient {
       },
       primary_recipients: [{
         billing_info: {
-          name: { given_name: 'John', surname: 'Doe' },
-          email_address: 'john.doe@example.com'
+          name: { alternate_full_name: customer.name }, // single 'name' string, can not be reliably split into given_name/surname
+          email_address: customer.email
         }
       }],
       items: [{
         name: 'Dummy item',
         quantity: '1',
-        unit_amount: { currency_code: 'USD', value: '10.00' }
+        unit_amount: { currency_code: 'USD', value: amount.toFixed(2) } // PayPal wants a string with 2 decimals
       }]
     }
 

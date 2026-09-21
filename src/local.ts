@@ -2,8 +2,8 @@ import { Global, Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { Logger, LoggerModule } from 'nestjs-pino'
-import { AppModule } from '././invoice/app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/client/paypal.client.js'
+import { AppModule } from './app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
 
 /**
  * Credentials come from .env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).

@@ -3,8 +3,8 @@ import { Global, Module } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { LoggerModule } from 'nestjs-pino'
-import { AppModule } from './invoice/app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './invoice/client/paypal.client.js'
+import { AppModule } from './app.module.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
 
 const APP_NAME = 'ev-invoice'
 
