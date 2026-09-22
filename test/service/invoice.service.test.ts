@@ -1,10 +1,17 @@
-import { describe, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { PaypalClient } from '../../src/client/paypal.client.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
 
 describe('InvoiceService', () => {
-  const invoiceService = new InvoiceService()
+  it('creates a PayPal invoice for the order', async () => {
+    const paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
+    const invoiceService = new InvoiceService(paypalClient)
 
-  it('should be defined', () => {
-    invoiceService.createInvoice(1)
+    await invoiceService.createInvoice(1)
+
+    expect(paypalClient.createInvoice).toHaveBeenCalledWith(
+      { name: 'John Doe', email: 'john.doe@example.com' },
+      10
+    )
   })
 })

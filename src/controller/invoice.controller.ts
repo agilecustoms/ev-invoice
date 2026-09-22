@@ -10,8 +10,8 @@ export class InvoiceController {
    */
   @Get('/create')
   @Header('Content-Type', 'text/plain')
-  createInvoice(@Query('orderId', ParseIntPipe) orderId: number): string {
-    this.invoiceService.createInvoice(orderId)
+  async createInvoice(@Query('orderId', ParseIntPipe) orderId: number): Promise<string> {
+    await this.invoiceService.createInvoice(orderId)
     return 'ok'
   }
 }
