@@ -2,3 +2,5 @@ name: local
 variables:
   - name: base-url
     value: http://localhost:3000
+  - name: pp-base-url
+    value: https://api-m.sandbox.paypal.com

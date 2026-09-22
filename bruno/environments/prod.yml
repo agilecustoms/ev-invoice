@@ -3,3 +3,6 @@ variables:
   - name: base-url
     value: https://ev.agilecustoms.com/ev-invoice
     description: ""
+  - name: pp-base-url
+    value: https://api-m.paypal.com
+    description: ""

@@ -42,13 +42,15 @@ export class PaypalClient {
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
    * @param customer invoice recipient
    * @param amount total in USD, e.g. 10.5
+   * @param memo internal memo shown in the PayPal UI under "Memo to self"
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(customer: Customer, amount: number): Promise<string> {
+  public async createInvoice(customer: Customer, amount: number, memo: string): Promise<string> {
     const body = {
       detail: {
         currency_code: 'USD',
-        note: 'Dummy invoice'
+        note: 'Dummy invoice',
+        memo
       },
       primary_recipients: [{
         billing_info: {
@@ -63,7 +65,8 @@ export class PaypalClient {
       }]
     }
 
-    const response = await this.request('/v2/invoicing/invoices', body)
+    const response = await this.post('/v2/invoicing/invoices', body)
+
     // PayPal responds with a link to the new invoice: { rel: 'self', href: '.../v2/invoicing/invoices/INV2-...' }
     const { href } = await response.json() as { href: string }
     const invoiceId = href.substring(href.lastIndexOf('/') + 1)
@@ -71,7 +74,7 @@ export class PaypalClient {
     return invoiceId
   }
 
-  private async request(path: string, body: unknown): Promise<Response> {
+  private async post(path: string, body: unknown): Promise<Response> {
     const response = await fetch(this.baseUrl + path, {
       method: 'POST',
       headers: {

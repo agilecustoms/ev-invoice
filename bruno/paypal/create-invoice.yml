@@ -1,0 +1,46 @@
+info:
+  name: create invoice
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{pp-base-url}}/v2/invoicing/invoices"
+  headers:
+    - name: Authorization
+      value: Bearer {{pp_access_token}}
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "detail": {
+          "currency_code": "USD",
+          "note": "Dummy invoice",
+          "memo": "Order 1"
+        },
+        "primary_recipients": [
+          {
+            "billing_info": {
+              "name": { "alternate_full_name": "John Doe" },
+              "email_address": "john.doe@example.com"
+            }
+          }
+        ],
+        "items": [
+          {
+            "name": "Dummy item",
+            "quantity": "1",
+            "unit_amount": { "currency_code": "USD", "value": "10.00" }
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

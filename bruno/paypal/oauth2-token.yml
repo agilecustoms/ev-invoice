@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: https://api-m.sandbox.paypal.com/v1/oauth2/token
+  url: "{{pp-base-url}}/v1/oauth2/token"
   headers:
     - name: Authorization
       value: Basic {{ppCredentials}}

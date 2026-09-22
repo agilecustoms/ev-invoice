@@ -15,7 +15,7 @@ export class InvoiceService {
     const customer: Customer = { name: 'John Doe', email: 'john.doe@example.com' }
     const amount = 10
 
-    const invoiceId = await this.paypalClient.createInvoice(customer, amount)
+    const invoiceId = await this.paypalClient.createInvoice(customer, amount, `Order ${orderId}`)
     this.logger.log(`Created invoice ${invoiceId} for order ${orderId}`)
   }
 }

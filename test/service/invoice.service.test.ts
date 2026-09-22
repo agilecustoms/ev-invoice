@@ -11,7 +11,8 @@ describe('InvoiceService', () => {
 
     expect(paypalClient.createInvoice).toHaveBeenCalledWith(
       { name: 'John Doe', email: 'john.doe@example.com' },
-      10
+      10,
+      'Order 1'
     )
   })
 })
