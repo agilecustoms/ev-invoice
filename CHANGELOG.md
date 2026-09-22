@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/agilecustoms/ev-invoice/compare/1.8.2...1.9.0) (2026-09-22)
+
+### Features
+
+* add live vs sandbox switch ([9518310](https://github.com/agilecustoms/ev-invoice/commit/95183102420d3b180466d67d20e1ac9736686656))
+
+
 ## [1.8.2](https://github.com/agilecustoms/ev-invoice/compare/1.8.1...1.8.2) (2026-09-21)
 
 ### Miscellaneous
