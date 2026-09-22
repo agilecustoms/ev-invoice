@@ -2,4 +2,3 @@ name: local
 variables:
   - name: base-url
     value: http://localhost:3000
-    description: ""

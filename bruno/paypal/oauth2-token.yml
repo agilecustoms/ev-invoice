@@ -1,0 +1,39 @@
+info:
+  name: /oauth2/token
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://api-m.sandbox.paypal.com/v1/oauth2/token
+  headers:
+    - name: Authorization
+      value: Basic {{ppCredentials}}
+    - name: Content-Type
+      value: application/x-www-form-urlencoded
+  body:
+    type: form-urlencoded
+    data:
+      - name: grant_type
+        value: client_credentials
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const clientId = bru.getProcessEnv('PAYPAL_CLIENT_ID')                         
+        const clientSecret = bru.getProcessEnv('PAYPAL_CLIENT_SECRET')
+        const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+        bru.setVar('ppCredentials', credentials)
+    - type: after-response
+      code: |-
+        const data = res.getBody()
+        bru.setVar('pp_access_token', data.access_token)
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
