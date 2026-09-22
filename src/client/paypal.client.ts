@@ -1,7 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import type { Customer } from '../model/customer.js'
 
-// const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
+const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
 const LIVE_URL = 'https://api-m.paypal.com'
 
 export interface PayPalCredentials {
@@ -22,12 +23,20 @@ interface AccessToken {
 @Injectable()
 export class PaypalClient {
   private readonly logger = new Logger(PaypalClient.name)
+  private readonly baseUrl: string
   private token?: AccessToken
 
   constructor(
     @Inject(PAYPAL_CREDENTIALS)
     private readonly credentials: PayPalCredentials,
-  ) {}
+    config: ConfigService,
+  ) {
+    const env = config.get<string>('PAYPAL_ENV', 'live')
+    if (env !== 'sandbox' && env !== 'live') {
+      throw new Error(`Invalid PAYPAL_ENV '${env}', expected 'sandbox' or 'live'`)
+    }
+    this.baseUrl = env === 'live' ? LIVE_URL : SANDBOX_URL
+  }
 
   /**
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
@@ -63,7 +72,7 @@ export class PaypalClient {
   }
 
   private async request(path: string, body: unknown): Promise<Response> {
-    const response = await fetch(LIVE_URL + path, {
+    const response = await fetch(this.baseUrl + path, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${await this.getAccessToken()}`,
@@ -87,7 +96,7 @@ export class PaypalClient {
     }
 
     const credentials = Buffer.from(`${this.credentials.clientId}:${this.credentials.clientSecret}`).toString('base64')
-    const response = await fetch(`${LIVE_URL}/v1/oauth2/token`, {
+    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${credentials}`,

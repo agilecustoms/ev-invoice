@@ -7,7 +7,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.clie
 
 /**
  * Credentials come from .env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).
- * Global, so PaypalClient in the shared AppModule can inject it
+ * @Global, so PaypalClient in the shared AppModule can inject it
  */
 @Global()
 @Module({
