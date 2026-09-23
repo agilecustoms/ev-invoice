@@ -11,3 +11,8 @@ Lambda function to create invoice for Evelin business
 - `npm install` install dependencies
 - create file `.env.local` (copy from `.env.example`)
 - `npm run start` start the server
+
+## PayPal integration
+
+- invoice data type definition https://developer.paypal.com/api/invoicing/v2/definitions/invoice
+- 

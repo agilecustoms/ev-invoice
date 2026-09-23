@@ -17,24 +17,67 @@ http:
       {
         "detail": {
           "currency_code": "USD",
-          "note": "Dummy invoice",
-          "memo": "Order 1"
+          "payment_term": {
+            "term_type": "DUE_ON_DATE_SPECIFIED",
+            "due_date": "2026-10-01"
+          },
+          "note": "$200 deposit due in 48 hours to reserve your date. Balance due on service date",
+          "reference": "ORDER-001",
+          "tip_presets": ["15", "20", "25"],
+          "payment_terms": "A minimum deposit of $200 must be paid within 48 hours to reserve your appointment. Until the deposit is paid, the requested date and time are not guaranteed and may be booked by another client. By paying the deposit, you agree to pay the remaining balance by the service date",
+          "cancellation_policy": "The deposit is non-refundable and reserves your appointment date and time. If you need to cancel or reschedule, please contact Makeup by Evelin as soon as possible"
+        },
+        "invoicer": {
+          "business_name": "Makeup by Evelin",
+          "name": {
+            "full_name": "Evelin Chekulaieva"
+          },
+          "_email_address": "makeupwith.evelin@gmail.com",
+          "phones": [{
+            "country_code": "1",
+            "national_number": "4754195725",
+            "phone_type": "MOBILE"
+          }],
+          "website": "evelinmakeup.com"
         },
         "primary_recipients": [
           {
             "billing_info": {
-              "name": { "alternate_full_name": "John Doe" },
-              "email_address": "john.doe@example.com"
+              "name": {
+                "full_name": "Alexey Chekulaev"
+              },
+              "email_address": "chekulaevalexey@gmail.com",
+              "phones": [{
+                "country_code": "1",
+                "national_number": "2035700477",
+                "phone_type": "MOBILE"
+              }]
             }
           }
         ],
+        "additional_recipients": ["chekulaevalexey@gmail.com", "evelin.novshadyan@gmail.com"],
         "items": [
           {
-            "name": "Dummy item",
+            "name": "Makeup Service",
+            "description": "Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226\nDate: Nov-11, 2026, Completion time: 2:00pm\nServices: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids",
             "quantity": "1",
-            "unit_amount": { "currency_code": "USD", "value": "10.00" }
+            "unit_amount": {
+              "currency_code": "USD",
+              "value": "1000.00"
+            },
+            "unit_of_measure": "AMOUNT"
           }
-        ]
+        ],
+        "configuration": {
+          "allow_tip": true,
+          "partial_payment": {
+            "allow_partial_payment": true,
+            "minimum_amount_due": {
+              "currency_code": "USD",
+              "value": "200.00"
+            }
+          }
+        }
       }
   auth: inherit
 
