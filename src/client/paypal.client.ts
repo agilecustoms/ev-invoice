@@ -2,9 +2,6 @@ import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
 
-const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
-const LIVE_URL = 'https://api-m.paypal.com'
-
 export interface PayPalCredentials {
   clientId: string
   clientSecret: string
@@ -31,11 +28,7 @@ export class PaypalClient {
     private readonly credentials: PayPalCredentials,
     config: ConfigService,
   ) {
-    const env = config.get<string>('PAYPAL_ENV', 'live')
-    if (env !== 'sandbox' && env !== 'live') {
-      throw new Error(`Invalid PAYPAL_ENV '${env}', expected 'sandbox' or 'live'`)
-    }
-    this.baseUrl = env === 'live' ? LIVE_URL : SANDBOX_URL
+    this.baseUrl = config.getOrThrow<string>('PAYPAL_URL')
   }
 
   /**

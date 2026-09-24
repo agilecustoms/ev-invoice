@@ -9,8 +9,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage",
     "build": "tsc",
-    "postbuild": "cp package.json dist/",
-    "openapi": "APP_PROFILE=example node dist/openapi",
+    "postbuild": "cp package.json .env.prod dist/",
+    "openapi": "node dist/openapi",
     "start": "tsc && APP_PROFILE=local node dist/local",
     "start:dev": "APP_PROFILE=local tsc-watch --onSuccess \"node dist/local\""
   },

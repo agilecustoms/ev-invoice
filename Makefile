@@ -31,6 +31,7 @@ app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
 	zip -rq dist/app.zip dist -x 'dist/local.*' 'dist/openapi.*'; \
+	zip -q dist/app.zip .env.prod; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
 	cd tmp; \
