@@ -8,7 +8,9 @@ describe('InvoiceService', () => {
     const paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
     const invoiceService = new InvoiceService(paypalClient)
 
-    await invoiceService.createInvoice(new CreateInvoiceDto())
+    const request = new CreateInvoiceDto()
+    request.orderId = 1
+    await invoiceService.createInvoice(request)
 
     expect(paypalClient.createInvoice).toHaveBeenCalled()
   })
