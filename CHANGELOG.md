@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/agilecustoms/ev-invoice/compare/1.10.0...1.10.1) (2026-09-24)
+
+### Miscellaneous
+
+* PayPal url configuration change ([638163d](https://github.com/agilecustoms/ev-invoice/commit/638163d44470686f1f4c4f3dcd252dfcced94f6b))
+
+
 ## [1.10.0](https://github.com/agilecustoms/ev-invoice/compare/1.9.0...1.10.0) (2026-09-24)
 
 ### Features
