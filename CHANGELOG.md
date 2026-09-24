@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.10.0](https://github.com/agilecustoms/ev-invoice/compare/1.9.0...1.10.0) (2026-09-24)
+
+### Features
+
+* add create invoice endpoint [skip ci] ([fef39f9](https://github.com/agilecustoms/ev-invoice/commit/fef39f9af989cadcbee3af0560b12fc18315fe12))
+* initial version that can create invoices ([223cecc](https://github.com/agilecustoms/ev-invoice/commit/223cecc2fca87a44c5b7f3f043e51b90720d217b))
+
+### Bug Fixes
+
+* tests with adding import 'reflect-metadata' ([380e702](https://github.com/agilecustoms/ev-invoice/commit/380e7023894e5a6faf7db5a8813cb3a6f25cb1e5))
+
+### Miscellaneous
+
+* bruno collection to work with paypal api ([e1d90a5](https://github.com/agilecustoms/ev-invoice/commit/e1d90a5b1a2e523e075838e690805ef382dcbd28))
+
+
 ## [1.9.0](https://github.com/agilecustoms/ev-invoice/compare/1.8.2...1.9.0) (2026-09-22)
 
 ### Features
