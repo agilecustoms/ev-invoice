@@ -1,4 +1,5 @@
-import { Controller, Get, Header, ParseIntPipe, Query } from '@nestjs/common'
+import { Controller, Get, Header, Query } from '@nestjs/common'
+import { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
 import { InvoiceService } from '../service/invoice.service.js'
 
 @Controller()
@@ -10,8 +11,8 @@ export class InvoiceController {
    */
   @Get('/create')
   @Header('Content-Type', 'text/plain')
-  async createInvoice(@Query('orderId', ParseIntPipe) orderId: number): Promise<string> {
-    await this.invoiceService.createInvoice(orderId)
+  async createInvoice(@Query() request: CreateInvoiceDto): Promise<string> {
+    await this.invoiceService.createInvoice(request)
     return 'ok'
   }
 }

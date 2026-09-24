@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { PaypalClient } from '../client/paypal.client.js'
-import type { Customer } from '../model/customer.js'
+import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
 
 @Injectable()
 export class InvoiceService {
@@ -8,14 +8,11 @@ export class InvoiceService {
 
   constructor(private readonly paypalClient: PaypalClient) {}
 
-  public async createInvoice(orderId: number): Promise<void> {
-    this.logger.log(`Creating invoice for order ${orderId}...`)
+  public async createInvoice(request: CreateInvoiceDto): Promise<void> {
+    this.logger.log(`Creating invoice for order ${request.orderId}...`)
 
-    // TODO: replace with the real customer/amount for this order (e.g. looked up from AirTable)
-    const customer: Customer = { name: 'John Doe', email: 'john.doe@example.com' }
-    const amount = 10
+    const invoiceId = await this.paypalClient.createInvoice(request)
 
-    const invoiceId = await this.paypalClient.createInvoice(customer, amount, `Order ${orderId}`)
-    this.logger.log(`Created invoice ${invoiceId} for order ${orderId}`)
+    this.logger.log(`Created invoice ${invoiceId} for order ${request.orderId}`)
   }
 }

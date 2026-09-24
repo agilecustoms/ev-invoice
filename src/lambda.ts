@@ -10,6 +10,7 @@ import type {
 } from 'aws-lambda'
 import express from 'express'
 import { LoggerErrorInterceptor } from 'nestjs-pino'
+import { init } from './app.module.js'
 import { LambdaModule } from './lambda.module.js'
 
 // REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
@@ -30,6 +31,7 @@ async function bootstrap(): Promise<ProxyHandler> {
   )
   // surprisingly, Nest does not produce any logs, so we do not need `app.useLogger(app.get(Logger))`
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
+  init(app)
   await app.init()
 
   // @ts-expect-error by design

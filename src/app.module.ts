@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { type INestApplication, Module, ValidationPipe } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { PaypalClient } from './client/paypal.client.js'
 import { HealthController } from './controller/health.controller.js'
@@ -21,3 +21,15 @@ const profile = process.env['APP_PROFILE']
   providers: [InvoiceService, PaypalClient]
 })
 export class AppModule {}
+
+/**
+ * Initialization code common for both Lambda and local development
+ */
+export function init(app: INestApplication): void {
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    })
+  )
+}

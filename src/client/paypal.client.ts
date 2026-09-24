@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import type { Customer } from '../model/customer.js'
-import type { Order } from '../model/order.js'
+import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
 
 const SANDBOX_URL = 'https://api-m.sandbox.paypal.com'
 const LIVE_URL = 'https://api-m.paypal.com'
@@ -41,18 +40,16 @@ export class PaypalClient {
 
   /**
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
-   * @param customer invoice recipient
-   * @param order order details (total, deposit, etc.)
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(customer: Customer, order: Order): Promise<string> {
+  public async createInvoice(request: CreateInvoiceDto): Promise<string> {
     const dueDateIso = '2026-10-01' // TODO:
     const serviceDate = 'Nov 1, 2026' // TODO:
     // 'Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226\nDate: Nov-11, 2026, Completion time: 2:00pm\nServices: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids'
     const description = [
-      `Venue address: ${order.address}`,
-      `Date: ${serviceDate}, Completion time: ${order.completionTime}`,
-      `Services: ${order.services}`
+      `Venue address: ${request.orderAddress}`,
+      `Date: ${serviceDate}, Completion time: ${request.orderCompletionTime}`,
+      `Services: ${request.orderServices}`
     ].join('\n')
 
     const phone = (phone: string) => ({ country_code: '1', national_number: phone, phone_type: 'MOBILE' })
@@ -62,8 +59,8 @@ export class PaypalClient {
     const body = {
       detail: {
         currency_code: 'USD',
-        reference: order.id,
-        note: `$${order.depositAmount} deposit due in 48 hours to reserve your date. Balance due on service date`,
+        reference: request.orderId,
+        note: `$${request.orderDeposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
         tip_presets: ['15', '20', '25'],
         payment_term: {
           term_type: 'DUE_ON_DATE_SPECIFIED',
@@ -81,9 +78,9 @@ export class PaypalClient {
       },
       primary_recipients: [{
         billing_info: {
-          name: name(customer.name),
-          email_address: customer.email,
-          phones: [phone(customer.phone)]
+          name: name(request.customerName),
+          email_address: request.customerEmail,
+          phones: [phone(request.customerPhone)]
         }
       }],
       additional_recipients: ['chekulaevalexey@gmail.com', 'evelin.novshadyan@gmail.com'],
@@ -91,14 +88,14 @@ export class PaypalClient {
         name: 'Makeup Service',
         description,
         quantity: '1',
-        unit_amount: amount(order.totalAmount),
+        unit_amount: amount(request.orderPrice),
         unit_of_measure: 'AMOUNT'
       }],
       configuration: {
         allow_tip: true,
         partial_payment: {
           allow_partial_payment: true,
-          minimum_amount_due: amount(order.depositAmount)
+          minimum_amount_due: amount(request.orderDeposit)
         }
       }
     }

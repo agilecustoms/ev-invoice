@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { Logger, LoggerModule } from 'nestjs-pino'
-import { AppModule } from './app.module.js'
+import { AppModule, init } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
 
 /**
@@ -50,6 +50,7 @@ class NestModule {}
  */
 async function bootstrap() {
   const app = await NestFactory.create(NestModule, { bufferLogs: true })
+  init(app)
   app.useLogger(app.get(Logger))
   app.enableCors() // use only for local development. In AWS, Api Gateway handles CORS
   await app.listen(3000)
