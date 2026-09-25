@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/agilecustoms/ev-invoice/compare/1.10.1...1.11.0) (2026-09-25)
+
+### Features
+
+* evolve CreateInvoice DTO ([a4a7732](https://github.com/agilecustoms/ev-invoice/commit/a4a773298b004005d6e86cb925d36386442d2a9f))
+
+
 ## [1.10.1](https://github.com/agilecustoms/ev-invoice/compare/1.10.0...1.10.1) (2026-09-24)
 
 ### Miscellaneous
