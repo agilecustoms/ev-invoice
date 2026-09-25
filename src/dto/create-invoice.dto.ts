@@ -58,7 +58,6 @@ export class CreateInvoiceDto {
   orderDeposit!: number
 
   @IsString()
-  @IsNotEmpty()
   orderAddress!: string
 
   @IsDateString({ strict: true }) // 2026-10-04T00:00:00.000Z - strict ISO 8601 format
