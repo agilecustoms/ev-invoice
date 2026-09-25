@@ -5,14 +5,44 @@ info:
 
 http:
   method: GET
-  url: "{{base-url}}/create?orderId=1"
+  url: "{{base-url}}/create?customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=2035700477&orderId=1&orderStatus=Requested&orderPrice=1000&orderDeposit=200&orderAddress=234 Black Rock Dr, Charlotte NC 29708&orderServiceDate=2026-02-02&orderCompletionTime=2pm&orderServices=makeup, trial"
   headers:
     - name: x-command-id
       value: test
       disabled: true
   params:
+    - name: customerName
+      value: Alexey Chekulaev
+      type: query
+    - name: customerEmail
+      value: chekulaevalexey@gmail.com
+      type: query
+    - name: customerPhone
+      value: "2035700477"
+      type: query
     - name: orderId
       value: "1"
+      type: query
+    - name: orderStatus
+      value: Requested
+      type: query
+    - name: orderPrice
+      value: "1000"
+      type: query
+    - name: orderDeposit
+      value: "200"
+      type: query
+    - name: orderAddress
+      value: 234 Black Rock Dr, Charlotte NC 29708
+      type: query
+    - name: orderServiceDate
+      value: 2026-02-02
+      type: query
+    - name: orderCompletionTime
+      value: 2pm
+      type: query
+    - name: orderServices
+      value: makeup, trial
       type: query
   auth: inherit
 
