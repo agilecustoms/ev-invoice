@@ -7,6 +7,7 @@ import { InvoiceService } from '../../src/service/invoice.service.js'
 
 function validRequest(): CreateInvoiceDto {
   const request = new CreateInvoiceDto()
+  request.recordId = 'recDkcV8BUDP5kfkX'
   request.orderId = 1
   request.orderType = OrderType.BRIDAL
   request.orderStatus = OrderStatus.CONFIRMED
@@ -83,6 +84,6 @@ describe('InvoiceService', () => {
 
     await invoiceService.createInvoice(request)
 
-    expect(airTableClient.saveInvoiceId).toHaveBeenCalledWith(request.orderId, 'INV2-XXXX')
+    expect(airTableClient.saveInvoiceId).toHaveBeenCalledWith(request.recordId, 'INV2-XXXX')
   })
 })

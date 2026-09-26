@@ -27,20 +27,17 @@ export class InvoiceService {
 
   public async createInvoice(request: CreateInvoiceDto): Promise<void> {
     this.validate(request)
-    const orderId = request.orderId
 
     if (request.orderDeposit === undefined) {
-      this.logger.log(`No deposit supplied for order ${orderId}, defaulting to 20% of the price`)
+      this.logger.log(`No deposit supplied, defaulting to 20% of the price`)
       request.orderDeposit = defaultDeposit(request.orderPrice)
     }
 
-    this.logger.log(`Creating invoice for order ${orderId}...`)
-
+    this.logger.log(`Creating invoice...`)
     const invoiceId = await this.paypalClient.createInvoice(request)
 
-    this.logger.log(`Created invoice ${invoiceId} for order ${orderId}`)
-
-    await this.airTableClient.saveInvoiceId(orderId, invoiceId)
+    this.logger.log(`Save invoice ID ${invoiceId} to airtable`)
+    await this.airTableClient.saveInvoiceId(request.recordId, invoiceId)
   }
 
   private validate(request: CreateInvoiceDto): void {

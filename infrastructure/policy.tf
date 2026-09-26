@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "logs" {
 
 data "aws_iam_policy_document" "secrets" {
   statement {
-    effect    = "Allow"
-    actions   = ["secretsmanager:GetSecretValue"]
+    effect  = "Allow"
+    actions = ["secretsmanager:GetSecretValue"]
     resources = [
       aws_secretsmanager_secret.paypal.arn,
       aws_secretsmanager_secret.airtable.arn

@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  Matches,
   Min,
   Validate,
   ValidatorConstraint,
@@ -42,6 +43,10 @@ export enum OrderStatus {
 }
 
 export class CreateInvoiceDto {
+  // AirTable record id of the order, used to write the invoice id back
+  @Matches(/^rec[A-Za-z0-9]{14}$/, { message: 'recordId must be an AirTable record id (recXXXXXXXXXXXXXX)' })
+  recordId!: string
+
   @IsString()
   @IsNotEmpty()
   customerName!: string

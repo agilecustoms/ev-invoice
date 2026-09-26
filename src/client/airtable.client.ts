@@ -9,59 +9,34 @@ export type AirTableCredentialsLoader = () => Promise<string>
 
 export const AIRTABLE_CREDENTIALS = Symbol('AIRTABLE_CREDENTIALS')
 
-// TODO: verify against the real base - these are guesses, not confirmed against the actual AirTable schema yet
-const ORDER_ID_FIELD = 'Order ID'
-const INVOICE_ID_FIELD = 'Invoice ID'
-
-interface AirTableRecord {
-  id: string
-  fields: Record<string, unknown>
-}
+const TABLE_NAME = 'Orders'
 
 /**
- * Thin wrapper around the AirTable REST API (https://airtable.com/developers/web/api/introduction).
- * AIRTABLE_BASE_ID and AIRTABLE_TABLE_NAME are read lazily (like the credentials), so bootstrap and endpoints that
- * do not need AirTable never require them either - only saveInvoiceId does
+ * Thin wrapper around the AirTable REST API (https://airtable.com/developers/web/api/introduction)
  */
 @Injectable()
 export class AirTableClient {
   private readonly logger = new Logger(AirTableClient.name)
+  private readonly tableUrl: string
   private apiToken?: string
 
   constructor(
     @Inject(AIRTABLE_CREDENTIALS)
     private readonly loadApiToken: AirTableCredentialsLoader,
-    private readonly config: ConfigService,
-  ) {}
+    config: ConfigService,
+  ) {
+    const baseId = config.getOrThrow<string>('AIRTABLE_BASE_ID')
+    this.tableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}`
+  }
 
   /**
-   * Records the PayPal invoice id against the order in AirTable. The update endpoint needs the record's own id
-   * (recXXXXXXXXXXXXXX), not our numeric orderId, so the matching record is looked up by its Order ID field first
+   * @param recordId AirTable record id (recXXXXXXXXXXXXXX), not the order's numeric ID
+   * @param invoiceId PayPal invoice id (INV2-XXXXXXXXXXXX)
    */
-  public async saveInvoiceId(orderId: number, invoiceId: string): Promise<void> {
-    this.logger.log(`Saving invoice id ${invoiceId} for order ${orderId} in AirTable...`)
-
-    const recordId = await this.findRecordId(orderId)
-    await this.patch(recordId, { [INVOICE_ID_FIELD]: invoiceId })
-
-    this.logger.log(`Saved invoice id ${invoiceId} for order ${orderId} in AirTable`)
-  }
-
-  private async findRecordId(orderId: number): Promise<string> {
-    const formula = encodeURIComponent(`{${ORDER_ID_FIELD}}=${orderId}`)
-    const response = await this.request(`?filterByFormula=${formula}&maxRecords=1`)
-    const { records } = await response.json() as { records: AirTableRecord[] }
-    const [record] = records
-    if (!record) {
-      throw new Error(`AirTable has no record with ${ORDER_ID_FIELD}=${orderId}`)
-    }
-    return record.id
-  }
-
-  private async patch(recordId: string, fields: Record<string, unknown>): Promise<void> {
+  public async saveInvoiceId(recordId: string, invoiceId: string): Promise<void> {
     await this.request(`/${recordId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ fields })
+      body: JSON.stringify({ fields: { invoiceId } })
     })
   }
 
@@ -70,11 +45,7 @@ export class AirTableClient {
       this.apiToken = await this.loadApiToken()
     }
 
-    const baseId = this.config.getOrThrow<string>('AIRTABLE_BASE_ID')
-    const table = this.config.getOrThrow<string>('AIRTABLE_TABLE_NAME')
-    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}${pathAndQuery}`
-
-    const response = await fetch(url, {
+    const response = await fetch(`${this.tableUrl}${pathAndQuery}`, {
       method: init?.method ?? 'GET',
       headers: {
         'Authorization': `Bearer ${this.apiToken}`,
