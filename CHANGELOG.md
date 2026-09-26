@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/agilecustoms/ev-invoice/compare/1.19.1...1.20.0) (2026-09-26)
+
+### Features
+
+* allow arbitrary phone numbers ([e707123](https://github.com/agilecustoms/ev-invoice/commit/e70712369629ca98d9781708f5eaeb651dac877e))
+
+
 ## [1.19.1](https://github.com/agilecustoms/ev-invoice/compare/1.19.0...1.19.1) (2026-09-26)
 
 ### Miscellaneous
