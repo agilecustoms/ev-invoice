@@ -10,7 +10,7 @@ import type {
 } from 'aws-lambda'
 import express from 'express'
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
-import { init } from './app.module.js'
+import { APP_NAME, init } from './app.module.js'
 import { LambdaModule, logger } from './lambda.module.js'
 
 // REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
@@ -54,7 +54,7 @@ function isV2(event: ApiGatewayEvent): event is APIGatewayProxyEventV2 {
  *   HTTP API (v2): rawPath = /{stage}/{app-name}/{our-endpoint}
  *   REST API (v1): path    = /{app-name}/{our-endpoint}, the stage lives in requestContext only
  * We use a multi-tenant AGW, so each microservice has prefix = app-name. Drop the stage when the
- * path happens to carry it, then drop the app-name
+ * path happens to carry it, then drop the app-name, which is always present as the next segment
  */
 function normalizePath(event: ApiGatewayEvent): void {
   const v2 = isV2(event)
@@ -62,8 +62,7 @@ function normalizePath(event: ApiGatewayEvent): void {
   const stage = event.requestContext.stage
   const path = v2 ? event.rawPath : event.path
   const withoutStage = path.startsWith(`/${stage}/`) ? path.substring(stage.length + 1) : path
-  const appNameEnd = withoutStage.indexOf('/', 1)
-  const normalizedPath = appNameEnd === -1 ? '/' : withoutStage.substring(appNameEnd) // no '/' left = the app-name was the whole path
+  const normalizedPath = withoutStage.substring(`/${APP_NAME}`.length)
 
   if (v2) {
     event.rawPath = normalizedPath
