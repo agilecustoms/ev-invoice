@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/agilecustoms/ev-invoice/compare/1.12.2...1.13.0) (2026-09-26)
+
+### Features
+
+* update nestjs and pino ([c753145](https://github.com/agilecustoms/ev-invoice/commit/c7531453f2077c6823586cafe79ae7237e806d8c))
+
+
 ## [1.12.2](https://github.com/agilecustoms/ev-invoice/compare/1.12.1...1.12.2) (2026-09-26)
 
 ### Miscellaneous
