@@ -7,6 +7,12 @@ export interface PayPalCredentials {
   clientSecret: string
 }
 
+/**
+ * Loads credentials on demand (Secrets Manager in AWS, .env.local locally). Called lazily on the first PayPal call,
+ * so bootstrap and endpoints that do not need PayPal (e.g. /health) never touch the secret
+ */
+export type PayPalCredentialsLoader = () => Promise<PayPalCredentials>
+
 export const PAYPAL_CREDENTIALS = Symbol('PAYPAL_CREDENTIALS')
 
 interface AccessToken {
@@ -21,11 +27,12 @@ interface AccessToken {
 export class PaypalClient {
   private readonly logger = new Logger(PaypalClient.name)
   private readonly baseUrl: string
+  private credentials?: PayPalCredentials
   private token?: AccessToken
 
   constructor(
     @Inject(PAYPAL_CREDENTIALS)
-    private readonly credentials: PayPalCredentials,
+    private readonly loadCredentials: PayPalCredentialsLoader,
     config: ConfigService,
   ) {
     this.baseUrl = config.getOrThrow<string>('PAYPAL_URL')
@@ -126,20 +133,35 @@ export class PaypalClient {
       return this.token.value
     }
 
-    const credentials = Buffer.from(`${this.credentials.clientId}:${this.credentials.clientSecret}`).toString('base64')
-    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'grant_type=client_credentials'
-    })
+    let response = await this.requestToken()
+    if (response.status === 401) { // cached credentials may be outdated (secret rotated), reload them once
+      this.credentials = undefined
+      response = await this.requestToken()
+    }
     if (!response.ok) {
       throw new Error(`PayPal authentication failed: ${response.status} ${await response.text()}`)
     }
     const { access_token, expires_in } = await response.json() as { access_token: string, expires_in: number }
     this.token = { value: access_token, expiresAt: now + expires_in * 1000 }
     return access_token
+  }
+
+  private async requestToken(): Promise<Response> {
+    const { clientId, clientSecret } = await this.getCredentials()
+    return fetch(`${this.baseUrl}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    })
+  }
+
+  private async getCredentials(): Promise<PayPalCredentials> {
+    if (!this.credentials) {
+      this.credentials = await this.loadCredentials() // a failed load throws before the assignment, so it is never cached
+    }
+    return this.credentials
   }
 }

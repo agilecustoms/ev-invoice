@@ -27,10 +27,12 @@ async function bootstrap(): Promise<ProxyHandler> {
   const app = await NestFactory.create(
     LambdaModule,
     new ExpressAdapter(expressApp),
-    { bufferLogs: true } // means: don't write logs just yet, to get a grace period to configure a logger
+    // bufferLogs: true - don't write logs just yet, to get a chance to configure a logger first
+    // abortOnError: false - on bootstrap failure Nest rethrows instead of process.exit(1), this allows to log the error
+    { bufferLogs: true, abortOnError: false }
   )
   app.useLogger(app.get(Logger))
-  app.flushLogs() // now, when logger configured -> do flush all logs to it and drop the buffer
+  app.flushLogs() // now, when logger configured -> do flush all logs to it and drop the Nest log buffer
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   init(app)
   await app.init()

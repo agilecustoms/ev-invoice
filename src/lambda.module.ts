@@ -2,7 +2,7 @@ import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestj
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
 import { AppModule } from './app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
 import { LoggerContextMiddleware } from './logger-context.middleware.js'
 import { loadSecret } from './util/secrets.js'
 
@@ -48,7 +48,7 @@ destination({ dest: 1, sync: true }))
 @Module({
   providers: [{
     provide: PAYPAL_CREDENTIALS,
-    useFactory: (): Promise<PayPalCredentials> => loadSecret<PayPalCredentials>(process.env['PAYPAL_SECRET_ID']!)
+    useValue: (() => loadSecret<PayPalCredentials>(process.env['PAYPAL_SECRET_ID']!)) satisfies PayPalCredentialsLoader
   }],
   exports: [PAYPAL_CREDENTIALS]
 })

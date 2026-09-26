@@ -4,19 +4,19 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { LoggerModule } from 'nestjs-pino'
 import { AppModule } from './app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 const APP_NAME = 'ev-invoice'
 
 /**
- * The spec is generated from controllers, but the whole app has to start. Real credentials are not needed (and in CI
- * there is no access to Secrets Manager), so use dummy ones. See lambda.module.ts and local.ts for real ones
+ * The spec is generated from controllers, but the whole app has to start. Credentials are loaded lazily, so they are
+ * never needed here (and in CI there is no access to Secrets Manager). See lambda.module.ts and local.ts for real ones
  */
 @Global()
 @Module({
   providers: [{
     provide: PAYPAL_CREDENTIALS,
-    useValue: { clientId: 'openapi', clientSecret: 'openapi' } satisfies PayPalCredentials
+    useValue: (() => Promise.reject(new Error('PayPal credentials are not available in OpenAPI generation'))) satisfies PayPalCredentialsLoader
   }],
   exports: [PAYPAL_CREDENTIALS]
 })

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { Logger, LoggerModule } from 'nestjs-pino'
 import { AppModule, init } from './app.module.js'
-import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
+import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 /**
  * Credentials come from .env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).
@@ -13,7 +13,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.clie
 @Module({
   providers: [{
     provide: PAYPAL_CREDENTIALS,
-    useFactory: (config: ConfigService): PayPalCredentials => ({
+    useFactory: (config: ConfigService): PayPalCredentialsLoader => () => Promise.resolve({
       clientId: config.getOrThrow<string>('PAYPAL_CLIENT_ID'),
       clientSecret: config.getOrThrow<string>('PAYPAL_CLIENT_SECRET')
     }),
