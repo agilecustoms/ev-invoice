@@ -1,6 +1,6 @@
 import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
-import { destination } from 'pino'
+import { destination, pino } from 'pino'
 import { AppModule } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
 import { LoggerContextMiddleware } from './logger-context.middleware.js'
@@ -13,6 +13,32 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
   fractionalSecondDigits: 3,
   hour12: false,
 })
+
+/**
+ * Single pino instance for both request-scoped and out-of-request logs (otherwise nestjs-pino creates two),
+ * so lambda.ts can change the level of all of them at once
+ */
+export const logger = pino({
+  level: 'warn', // Nest logs a line per module/route on every cold start, lambda.ts lowers it to 'info' after bootstrap
+  messageKey: 'message',
+  base: {
+    service: 'ev-invoice',
+    env: process.env['AWS_ENV']
+  },
+  redact: ['req'],
+  formatters: {
+    level: label => ({ level: label.toUpperCase() }),
+    log: (object: Record<string, unknown>) => {
+      return {
+        ...object,
+        ftime: formatter.format(object['time'] as number)
+      }
+    }
+  }
+},
+// pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
+// handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
+destination({ dest: 1, sync: true }))
 
 /**
  * AWS: PayPal credentials come from Secrets Manager (PAYPAL_SECRET_ID is set in infrastructure/lambda.tf).
@@ -31,27 +57,10 @@ class CredentialsModule {}
 @Module({
   imports: [
     LoggerModule.forRoot({
-      pinoHttp: [{ // 'pino-http' comes as dependency of 'nestjs-pino'
-        autoLogging: false, // do not log each request/response
-        messageKey: 'message',
-        base: {
-          service: 'ev-invoice',
-          env: process.env['AWS_ENV']
-        },
-        redact: ['req'],
-        formatters: {
-          level: label => ({ level: label.toUpperCase() }),
-          log: (object: Record<string, unknown>) => {
-            return {
-              ...object,
-              ftime: formatter.format(object['time'] as number)
-            }
-          }
-        }
+      pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
+        logger,
+        autoLogging: false // do not log each request/response
       },
-      // pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
-      // handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
-      destination({ dest: 1, sync: true })],
       renameContext: 'logger'
     }),
     CredentialsModule,

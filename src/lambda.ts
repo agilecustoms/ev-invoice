@@ -11,7 +11,7 @@ import type {
 import express from 'express'
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
 import { init } from './app.module.js'
-import { LambdaModule } from './lambda.module.js'
+import { LambdaModule, logger } from './lambda.module.js'
 
 // REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
 // serverless-express understands both, it picks the adapter per invocation,
@@ -27,14 +27,14 @@ async function bootstrap(): Promise<ProxyHandler> {
   const app = await NestFactory.create(
     LambdaModule,
     new ExpressAdapter(expressApp),
-    { bufferLogs: true }
+    { bufferLogs: true } // means: don't write logs just yet, to get a grace period to configure a logger
   )
-  // route Nest's Logger (used by services and ExceptionsHandler) to pino
   app.useLogger(app.get(Logger))
+  app.flushLogs() // now, when logger configured -> do flush all logs to it and drop the buffer
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   init(app)
   await app.init()
-  app.flushLogs() // enable auto-flush
+  logger.level = 'info' // bootstrap logs are flushed (and dropped by 'warn'), from now on log normally
 
   // @ts-expect-error by design
   return serverlessExpress({ app: expressApp }) as ProxyHandler
