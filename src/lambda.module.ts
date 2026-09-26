@@ -18,27 +18,29 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
  * Single pino instance for both request-scoped and out-of-request logs (otherwise nestjs-pino creates two),
  * so lambda.ts can change the level of all of them at once
  */
-export const logger = pino({
-  level: 'warn', // Nest logs a line per module/route on every cold start, lambda.ts lowers it to 'info' after bootstrap
-  messageKey: 'message',
-  base: {
-    service: APP_NAME,
-    env: process.env['AWS_ENV']
-  },
-  redact: ['req'],
-  formatters: {
-    level: label => ({ level: label.toUpperCase() }),
-    log: (object: Record<string, unknown>) => {
-      return {
-        ...object,
-        ftime: formatter.format(object['time'] as number)
+export const logger = pino(
+  {
+    level: 'warn', // Nest logs a line per module/route on every cold start, lambda.ts lowers it to 'info' after bootstrap
+    messageKey: 'message',
+    base: {
+      service: APP_NAME,
+      env: process.env['AWS_ENV']
+    },
+    redact: ['req'],
+    formatters: {
+      level: label => ({ level: label.toUpperCase() }),
+      log: (object: Record<string, unknown>) => {
+        return {
+          ...object,
+          ftime: formatter.format(object['time'] as number)
+        }
       }
     }
-  }
-},
-// pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
-// handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
-destination({ dest: 1, sync: true }))
+  },
+  // pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
+  // handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
+  destination({ dest: 1, sync: true })
+)
 
 /**
  * AWS: PayPal credentials come from Secrets Manager (PAYPAL_SECRET_ID is set in infrastructure/lambda.tf).
@@ -52,7 +54,8 @@ destination({ dest: 1, sync: true }))
   }],
   exports: [PAYPAL_CREDENTIALS]
 })
-class CredentialsModule {}
+class CredentialsModule {
+}
 
 @Module({
   imports: [
