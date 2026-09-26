@@ -1,14 +1,29 @@
-import { Type } from 'class-transformer'
+import { Temporal } from '@js-temporal/polyfill'
+import { Transform, Type } from 'class-transformer'
 
 import {
-  IsDateString,
   IsEmail, IsEnum,
   IsInt,
   IsNotEmpty,
   IsPhoneNumber,
   IsString,
   Min,
+  Validate,
+  ValidatorConstraint,
+  type ValidationArguments,
+  type ValidatorConstraintInterface,
 } from 'class-validator'
+
+@ValidatorConstraint({ name: 'isTemporalPlainDate' })
+class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
+  validate(value: unknown): boolean {
+    return value instanceof Temporal.PlainDate
+  }
+
+  defaultMessage(args: ValidationArguments): string {
+    return `${args.property} must be a valid ISO 8601 date-time string`
+  }
+}
 
 export enum OrderType {
   BRIDAL = 'Bridal',
@@ -60,8 +75,16 @@ export class CreateInvoiceDto {
   @IsString()
   orderAddress!: string
 
-  @IsDateString({ strict: true }) // 2026-10-04T00:00:00.000Z - strict ISO 8601 format
-  orderServiceDate!: string
+  // arrives as 2026-10-04T00:00:00.000Z; PlainDate.from rejects the time/offset part, so drop it first
+  @Transform(({ value }) => {
+    try {
+      return Temporal.PlainDate.from(value.slice(0, value.indexOf('T')))
+    } catch {
+      return value // let the validator below report it, instead of throwing out of the transform step
+    }
+  })
+  @Validate(IsTemporalPlainDateConstraint)
+  orderServiceDate!: Temporal.PlainDate
 
   @IsString()
   orderCompletionTime!: string
