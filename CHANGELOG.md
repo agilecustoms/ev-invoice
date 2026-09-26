@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.15.0](https://github.com/agilecustoms/ev-invoice/compare/1.14.0...1.15.0) (2026-09-26)
+
+### Features
+
+* default deposit calculation ([01b3747](https://github.com/agilecustoms/ev-invoice/commit/01b374779594c8e0b95e49a0518c240b1a8e23e4))
+* validate invoice request ([46c458b](https://github.com/agilecustoms/ev-invoice/commit/46c458be6b6faca50eadb4f91edddcbde645068c))
+
+### Miscellaneous
+
+* make two more fields optional ([17e80be](https://github.com/agilecustoms/ev-invoice/commit/17e80be688cdf1fb2e5b53f7a5f213e9d8dfa6a1))
+* optimize paypal client tests ([62ce690](https://github.com/agilecustoms/ev-invoice/commit/62ce690da258f7443472b343d387c19f984ebf0f))
+
+
 ## [1.14.0](https://github.com/agilecustoms/ev-invoice/compare/1.13.0...1.14.0) (2026-09-26)
 
 ### Features
