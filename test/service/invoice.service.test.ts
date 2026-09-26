@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { PaypalClient } from '../../src/client/paypal.client.js'
 import { CreateInvoiceDto, OrderStatus, OrderType } from '../../src/dto/create-invoice.dto.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
@@ -15,9 +15,15 @@ function validRequest(): CreateInvoiceDto {
 }
 
 describe('InvoiceService', () => {
+  let paypalClient: PaypalClient
+  let invoiceService: InvoiceService
+
+  beforeEach(() => {
+    paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
+    invoiceService = new InvoiceService(paypalClient)
+  })
+
   it('rejects an order status that is not invoiceable', async () => {
-    const paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
-    const invoiceService = new InvoiceService(paypalClient)
     const request = validRequest()
     request.orderStatus = OrderStatus.DONE
 
@@ -26,8 +32,6 @@ describe('InvoiceService', () => {
   })
 
   it('rejects a service date that is not in the future', async () => {
-    const paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
-    const invoiceService = new InvoiceService(paypalClient)
     const request = validRequest()
     request.orderServiceDate = Temporal.Now.plainDateISO('UTC')
 
@@ -36,8 +40,6 @@ describe('InvoiceService', () => {
   })
 
   it('rejects an empty orderServices for a Bridal order', async () => {
-    const paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
-    const invoiceService = new InvoiceService(paypalClient)
     const request = validRequest()
     request.orderServices = '  '
 
@@ -46,8 +48,7 @@ describe('InvoiceService', () => {
   })
 
   it('creates a PayPal invoice for the order', async () => {
-    const paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
-    const invoiceService = new InvoiceService(paypalClient)
+    vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
 
     await invoiceService.createInvoice(validRequest())
 
