@@ -20,7 +20,6 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
  */
 export const logger = pino(
   {
-    level: 'warn', // Nest logs a line per module/route on every cold start, lambda.ts lowers it to 'info' after bootstrap
     messageKey: 'message',
     base: {
       service: APP_NAME,

@@ -31,12 +31,13 @@ async function bootstrap(): Promise<ProxyHandler> {
     // abortOnError: false - on bootstrap failure Nest rethrows instead of process.exit(1), this allows to log the error
     { bufferLogs: true, abortOnError: false }
   )
+  logger.level = 'warn' // skip some Nest bootstrap logs
   app.useLogger(app.get(Logger))
   app.flushLogs() // now, when logger configured -> do flush all logs to it and drop the Nest log buffer
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   init(app)
   await app.init()
-  logger.level = 'info' // bootstrap logs are flushed (and dropped by 'warn'), from now on log normally
+  logger.level = 'info' // from now on log normally
 
   // @ts-expect-error by design
   return serverlessExpress({ app: expressApp }) as ProxyHandler
