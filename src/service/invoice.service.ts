@@ -43,7 +43,7 @@ export class InvoiceService {
     if (Temporal.PlainDate.compare(request.orderServiceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
       throw new BadRequestException('service date must be in the future')
     }
-    if (request.orderType === OrderType.BRIDAL && !request.orderServices.trim()) {
+    if (request.orderType === OrderType.BRIDAL && !request.orderServices?.trim()) {
       throw new BadRequestException('services must not be empty for orderType Bridal')
     }
     if (request.orderDeposit !== undefined && request.orderDeposit > request.orderPrice) {

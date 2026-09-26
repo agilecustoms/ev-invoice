@@ -66,4 +66,20 @@ describe('PaypalClient', () => {
     expect(body.configuration.partial_payment).toBeUndefined()
     expect(body.detail.note).toBe('Balance due on service date')
   })
+
+  it('omits venue address and services from the description when not supplied', async () => {
+    const loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
+    const client = new PaypalClient(loadCredentials, config)
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    const dto = request()
+    dto.orderAddress = undefined
+    dto.orderServices = undefined
+    await client.createInvoice(dto)
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall[1]?.body as string)
+    expect(body.items[0].description).not.toContain('Venue address')
+    expect(body.items[0].description).not.toContain('Services')
+  })
 })

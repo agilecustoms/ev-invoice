@@ -47,10 +47,10 @@ export class PaypalClient {
     const serviceDate = 'Nov 1, 2026' // TODO:
     // 'Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226\nDate: Nov-11, 2026, Completion time: 2:00pm\nServices: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids'
     const description = [
-      `Venue address: ${request.orderAddress}`,
+      request.orderAddress && `Venue address: ${request.orderAddress}`,
       `Date: ${serviceDate}, Completion time: ${request.orderCompletionTime}`,
-      `Services: ${request.orderServices}`
-    ].join('\n')
+      request.orderServices && `Services: ${request.orderServices}`
+    ].filter(line => !!line).join('\n')
 
     const phone = (phone: string) => ({ country_code: '1', national_number: phone, phone_type: 'MOBILE' })
     const amount = (value: number) => ({ currency_code: 'USD', value: value.toFixed(2) })

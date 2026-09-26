@@ -75,7 +75,8 @@ export class CreateInvoiceDto {
   orderDeposit?: number
 
   @IsString()
-  orderAddress!: string
+  @IsOptional()
+  orderAddress?: string
 
   // arrives as 2026-10-04T00:00:00.000Z; PlainDate.from rejects the time/offset part, so drop it first
   @Transform(({ value }) => {
@@ -92,5 +93,6 @@ export class CreateInvoiceDto {
   orderCompletionTime!: string
 
   @IsString()
-  orderServices!: string // not required when orderType is MAKEUP_LESSON
+  @IsOptional()
+  orderServices?: string // required for orderType Bridal, see InvoiceService
 }
