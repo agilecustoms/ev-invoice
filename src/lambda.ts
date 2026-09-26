@@ -27,9 +27,10 @@ async function bootstrap(): Promise<ProxyHandler> {
   const app = await NestFactory.create(
     LambdaModule,
     new ExpressAdapter(expressApp),
-    // bufferLogs: true - don't write logs just yet, to get a chance to configure a logger first
-    // abortOnError: false - on bootstrap failure Nest rethrows instead of process.exit(1), this allows to log the error
-    { bufferLogs: true, abortOnError: false }
+    {
+      bufferLogs: true, // don't write logs just yet, to get a chance to configure a logger first
+      abortOnError: false // on bootstrap failure Nest rethrows instead of process.exit(1), this allows to log the error
+    }
   )
   logger.level = 'warn' // skip some Nest bootstrap logs
   app.useLogger(app.get(Logger))

@@ -41,21 +41,6 @@ describe('PaypalClient', () => {
     expect(loadCredentials).toHaveBeenCalledTimes(1)
   })
 
-  it('reloads credentials once when PayPal rejects them (secret rotated)', async () => {
-    const loadCredentials = vi.fn<PayPalCredentialsLoader>()
-      .mockResolvedValueOnce({ clientId: 'id', clientSecret: 'old' })
-      .mockResolvedValueOnce({ clientId: 'id', clientSecret: 'new' })
-    const client = new PaypalClient(loadCredentials, config)
-
-    fetchMock
-      .mockResolvedValueOnce(new Response('unauthorized', { status: 401 }))
-      .mockResolvedValueOnce(tokenResponse())
-      .mockResolvedValueOnce(invoiceResponse())
-    expect(await client.createInvoice(request())).toBe('INV2-1')
-
-    expect(loadCredentials).toHaveBeenCalledTimes(2)
-  })
-
   it('does not cache a failed load', async () => {
     const loadCredentials = vi.fn<PayPalCredentialsLoader>()
       .mockRejectedValueOnce(new Error('Secrets Manager is down'))

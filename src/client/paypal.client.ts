@@ -133,22 +133,14 @@ export class PaypalClient {
       return this.token.value
     }
 
-    let response = await this.requestToken()
-    if (response.status === 401) { // cached credentials may be outdated (secret rotated), reload them once
-      this.credentials = undefined
-      response = await this.requestToken()
+    if (!this.token) {
+      this.logger.log('Fetching PayPal access token...')
+    } else {
+      this.logger.log('Refreshing PayPal access token...')
     }
-    if (!response.ok) {
-      throw new Error(`PayPal authentication failed: ${response.status} ${await response.text()}`)
-    }
-    const { access_token, expires_in } = await response.json() as { access_token: string, expires_in: number }
-    this.token = { value: access_token, expiresAt: now + expires_in * 1000 }
-    return access_token
-  }
 
-  private async requestToken(): Promise<Response> {
     const { clientId, clientSecret } = await this.getCredentials()
-    return fetch(`${this.baseUrl}/v1/oauth2/token`, {
+    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
@@ -156,6 +148,12 @@ export class PaypalClient {
       },
       body: 'grant_type=client_credentials'
     })
+    if (!response.ok) {
+      throw new Error(`PayPal authentication failed: ${response.status} ${await response.text()}`)
+    }
+    const { access_token, expires_in } = await response.json() as { access_token: string, expires_in: number }
+    this.token = { value: access_token, expiresAt: now + expires_in * 1000 }
+    return access_token
   }
 
   private async getCredentials(): Promise<PayPalCredentials> {

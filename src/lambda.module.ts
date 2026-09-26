@@ -21,6 +21,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
 export const logger = pino(
   {
     messageKey: 'message',
+    errorKey: 'error',
     base: {
       service: APP_NAME,
       env: process.env['AWS_ENV']
@@ -36,9 +37,10 @@ export const logger = pino(
       }
     }
   },
-  // pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
-  // handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
-  destination({ dest: 1, sync: true })
+  destination({
+    dest: 1, // stdout
+    sync: true // synchronous writes less performant, but guarantee that all logs delivered in CloudWatch
+  })
 )
 
 /**
