@@ -47,6 +47,25 @@ describe('InvoiceService', () => {
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
+  it('rejects a deposit that exceeds the price', async () => {
+    const request = validRequest()
+    request.orderPrice = 100
+    request.orderDeposit = 150
+
+    await expect(invoiceService.createInvoice(request)).rejects.toThrow(/deposit/)
+    expect(paypalClient.createInvoice).not.toHaveBeenCalled()
+  })
+
+  it('defaults the deposit to 20% of the price, rounded up to the nearest $10', async () => {
+    vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
+    const request = validRequest()
+    request.orderPrice = 155
+
+    await invoiceService.createInvoice(request)
+
+    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.objectContaining({ orderDeposit: 40 }))
+  })
+
   it('creates a PayPal invoice for the order', async () => {
     vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
 

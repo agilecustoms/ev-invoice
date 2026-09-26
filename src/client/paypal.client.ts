@@ -56,11 +56,15 @@ export class PaypalClient {
     const amount = (value: number) => ({ currency_code: 'USD', value: value.toFixed(2) })
     const name = (fullName: string) => ({ full_name: fullName })
 
+    const orderDeposit = request.orderDeposit
+
     const body = {
       detail: {
         currency_code: 'USD',
         reference: request.orderId,
-        note: `$${request.orderDeposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
+        note: orderDeposit === undefined
+          ? 'Balance due on service date'
+          : `$${orderDeposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
         tip_presets: ['15', '20', '25'],
         payment_term: {
           term_type: 'DUE_ON_DATE_SPECIFIED',
@@ -93,9 +97,11 @@ export class PaypalClient {
       }],
       configuration: {
         allow_tip: true,
-        partial_payment: {
-          allow_partial_payment: true,
-          minimum_amount_due: amount(request.orderDeposit)
+        ...orderDeposit !== undefined && {
+          partial_payment: {
+            allow_partial_payment: true,
+            minimum_amount_due: amount(orderDeposit)
+          }
         }
       }
     }

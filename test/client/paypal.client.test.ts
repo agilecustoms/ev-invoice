@@ -51,4 +51,19 @@ describe('PaypalClient', () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
     expect(await client.createInvoice(request())).toBe('INV2-1')
   })
+
+  it('omits partial payment terms when no deposit is required', async () => {
+    const loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
+    const client = new PaypalClient(loadCredentials, config)
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    const dto = request()
+    dto.orderDeposit = undefined
+    await client.createInvoice(dto)
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall[1]?.body as string)
+    expect(body.configuration.partial_payment).toBeUndefined()
+    expect(body.detail.note).toBe('Balance due on service date')
+  })
 })

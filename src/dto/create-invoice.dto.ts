@@ -5,6 +5,7 @@ import {
   IsEmail, IsEnum,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Min,
@@ -69,8 +70,9 @@ export class CreateInvoiceDto {
 
   @Min(0)
   @IsInt()
+  @IsOptional()
   @Type(() => Number)
-  orderDeposit!: number
+  orderDeposit?: number
 
   @IsString()
   orderAddress!: string

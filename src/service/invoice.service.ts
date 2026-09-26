@@ -10,6 +10,11 @@ const INVOICEABLE_STATUSES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.CONFIRMED,
 ])
 
+// no deposit supplied on the request: assume 20% of the price, rounded up to the nearest $10
+function defaultDeposit(price: number): number {
+  return Math.ceil(price * 0.2 / 10) * 10
+}
+
 @Injectable()
 export class InvoiceService {
   private readonly logger = new Logger(InvoiceService.name)
@@ -18,6 +23,11 @@ export class InvoiceService {
 
   public async createInvoice(request: CreateInvoiceDto): Promise<void> {
     this.validate(request)
+
+    if (request.orderDeposit === undefined) {
+      this.logger.log(`No deposit supplied for order ${request.orderId}, defaulting to 20% of the price`)
+      request.orderDeposit = defaultDeposit(request.orderPrice)
+    }
 
     this.logger.log(`Creating invoice for order ${request.orderId}...`)
 
@@ -35,6 +45,9 @@ export class InvoiceService {
     }
     if (request.orderType === OrderType.BRIDAL && !request.orderServices.trim()) {
       throw new BadRequestException('services must not be empty for orderType Bridal')
+    }
+    if (request.orderDeposit !== undefined && request.orderDeposit > request.orderPrice) {
+      throw new BadRequestException('deposit must not exceed price')
     }
   }
 }
