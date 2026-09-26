@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.19.0](https://github.com/agilecustoms/ev-invoice/compare/1.18.0...1.19.0) (2026-09-26)
+
+### Features
+
+* finalize saving invoice id in airtable ([fe1a47a](https://github.com/agilecustoms/ev-invoice/commit/fe1a47a331025a0690630dec0dff380b88b3e590))
+
+### Miscellaneous
+
+* update test coverage ([a6ef3f2](https://github.com/agilecustoms/ev-invoice/commit/a6ef3f25e326be60738b16c57a2ea3c5d2dc4a99))
+
+
 ## [1.18.0](https://github.com/agilecustoms/ev-invoice/compare/1.17.0...1.18.0) (2026-09-26)
 
 ### Features
