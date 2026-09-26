@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.12.0](https://github.com/agilecustoms/ev-invoice/compare/1.11.0...1.12.0) (2026-09-26)
+
+### Features
+
+* load paypal secret lazily ([a42eea7](https://github.com/agilecustoms/ev-invoice/commit/a42eea77fe864b7513262de0407b7714173e19b6))
+
+### Bug Fixes
+
+* logging ([e59bad5](https://github.com/agilecustoms/ev-invoice/commit/e59bad55ef21a8be98aebdad40a5926c75a1ef67))
+
+### Miscellaneous
+
+* change how nest bootstrap logs skipped ([95caa4f](https://github.com/agilecustoms/ev-invoice/commit/95caa4f39cd6e118ba73f0ef9f0ae2b6aa2e55f4))
+* fix pino settings format ([3556e76](https://github.com/agilecustoms/ev-invoice/commit/3556e766631647039126e7aa01b08a63823bbc23))
+* improve formatting, comments ([fcdfa7d](https://github.com/agilecustoms/ev-invoice/commit/fcdfa7dc333caec2c13a70cfb00d3b6e4e8b3abd))
+* move APP_NAME in one place ([2f218f7](https://github.com/agilecustoms/ev-invoice/commit/2f218f7d521f78a5a40eae407967e671ada4399a))
+
+
 ## [1.11.0](https://github.com/agilecustoms/ev-invoice/compare/1.10.1...1.11.0) (2026-09-25)
 
 ### Features
