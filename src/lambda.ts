@@ -15,7 +15,7 @@ import { LambdaModule, logger } from './lambda.module.js'
 
 // REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
 // serverless-express understands both, it picks the adapter per invocation,
-// so this handler only needs to normalize what it touches itself: headers and the request path
+// so this handler only needs to normalize what it touches itself: the request path
 type ApiGatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2
 type ApiGatewayResult = APIGatewayProxyResult | APIGatewayProxyStructuredResultV2
 type ProxyHandler = (event: ApiGatewayEvent, context: Context) => Promise<ApiGatewayResult>
@@ -47,20 +47,6 @@ async function bootstrap(): Promise<ProxyHandler> {
 // the same discriminator serverless-express uses to choose its event adapter
 function isV2(event: ApiGatewayEvent): event is APIGatewayProxyEventV2 {
   return (event as APIGatewayProxyEventV2).version === '2.0'
-}
-
-/**
- * v1 events carry the same header twice: `headers` and `multiValueHeaders`.
- * serverless-express reads `multiValueHeaders` whenever it is present, so write both
- */
-function setHeader(event: ApiGatewayEvent, name: string, value: string): void {
-  if (!event.headers) {
-    event.headers = {}
-  }
-  event.headers[name] = value
-  if (!isV2(event) && event.multiValueHeaders) {
-    event.multiValueHeaders[name] = [value]
-  }
 }
 
 /**
@@ -96,10 +82,6 @@ export const handler = async (event: ApiGatewayEvent, context: Context): Promise
     proxyHandler = await bootstrap()
   }
 
-  // need to enrich the logging context with requestId and agwRequestId,
-  // but unfortunately, PinoLogger is not available here, so pass via headers
-  setHeader(event, 'x-request-id', context.awsRequestId)
-  setHeader(event, 'x-agw-request-id', event.requestContext.requestId)
   normalizePath(event)
 
   return proxyHandler(event, context)

@@ -1,9 +1,10 @@
-import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
+import { getCurrentInvoke } from '@codegenie/serverless-express'
+import { Global, Module } from '@nestjs/common'
+import type { APIGatewayProxyEvent, APIGatewayProxyEventV2, Context } from 'aws-lambda'
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
 import { APP_NAME, AppModule } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
-import { LoggerContextMiddleware } from './logger-context.middleware.js'
 import { loadSecret } from './util/secrets.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
@@ -44,6 +45,20 @@ export const logger = pino(
 )
 
 /**
+ * Capture current AWS request id and API Gateway request id and put them in every log record (like MDC in Java) - once per request
+ */
+function getRequestIds(): object {
+  const { event, context } = getCurrentInvoke() as {
+    event: APIGatewayProxyEvent | APIGatewayProxyEventV2
+    context: Context
+  }
+  return {
+    requestId: context.awsRequestId,
+    agwRequestId: event.requestContext.requestId
+  }
+}
+
+/**
  * AWS: PayPal credentials come from Secrets Manager (PAYPAL_SECRET_ID is set in infrastructure/lambda.tf).
  * Global, so PaypalClient in the shared AppModule can inject it (see local.ts for the local counterpart)
  */
@@ -63,7 +78,8 @@ class CredentialsModule {
     LoggerModule.forRoot({
       pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
         logger,
-        autoLogging: false // do not log each request/response
+        autoLogging: false, // do not log each request/response
+        customProps: getRequestIds
       },
       renameContext: 'logger'
     }),
@@ -71,8 +87,5 @@ class CredentialsModule {
     AppModule
   ]
 })
-export class LambdaModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerContextMiddleware).forRoutes('*')
-  }
+export class LambdaModule {
 }
