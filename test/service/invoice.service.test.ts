@@ -1,5 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { AirTableClient } from '../../src/client/airtable.client.js'
 import { PaypalClient } from '../../src/client/paypal.client.js'
 import { CreateInvoiceDto, OrderStatus, OrderType } from '../../src/dto/create-invoice.dto.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
@@ -16,11 +17,13 @@ function validRequest(): CreateInvoiceDto {
 
 describe('InvoiceService', () => {
   let paypalClient: PaypalClient
+  let airTableClient: AirTableClient
   let invoiceService: InvoiceService
 
   beforeEach(() => {
     paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
-    invoiceService = new InvoiceService(paypalClient)
+    airTableClient = { saveInvoiceId: vi.fn() } as unknown as AirTableClient
+    invoiceService = new InvoiceService(paypalClient, airTableClient)
   })
 
   it('rejects an order status that is not invoiceable', async () => {
@@ -72,5 +75,14 @@ describe('InvoiceService', () => {
     await invoiceService.createInvoice(validRequest())
 
     expect(paypalClient.createInvoice).toHaveBeenCalled()
+  })
+
+  it('saves the PayPal invoice id in AirTable', async () => {
+    vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
+    const request = validRequest()
+
+    await invoiceService.createInvoice(request)
+
+    expect(airTableClient.saveInvoiceId).toHaveBeenCalledWith(request.orderId, 'INV2-XXXX')
   })
 })

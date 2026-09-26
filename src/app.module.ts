@@ -1,5 +1,6 @@
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { AirTableClient } from './client/airtable.client.js'
 import { PaypalClient } from './client/paypal.client.js'
 import { HealthController } from './controller/health.controller.js'
 import { InvoiceController } from './controller/invoice.controller.js'
@@ -20,7 +21,7 @@ const profile = process.env['APP_PROFILE'] ?? 'prod'
     HealthController,
     InvoiceController
   ],
-  providers: [InvoiceService, PaypalClient]
+  providers: [InvoiceService, PaypalClient, AirTableClient]
 })
 export class AppModule {}
 

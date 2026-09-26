@@ -22,7 +22,8 @@ resource "aws_lambda_function" "app" {
 
   environment {
     variables = {
-      PAYPAL_SECRET_ID = aws_secretsmanager_secret.paypal.name
+      PAYPAL_SECRET_ID   = aws_secretsmanager_secret.paypal.name
+      AIRTABLE_SECRET_ID = aws_secretsmanager_secret.airtable.name
     }
   }
 

@@ -4,6 +4,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyEventV2, Context } from 'aws-
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
 import { APP_NAME, AppModule } from './app.module.js'
+import { AIRTABLE_CREDENTIALS, type AirTableCredentials, type AirTableCredentialsLoader } from './client/airtable.client.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
 import { loadSecret } from './util/secrets.js'
 
@@ -59,16 +60,23 @@ function getRequestIds(): object {
 }
 
 /**
- * AWS: PayPal credentials come from Secrets Manager (PAYPAL_SECRET_ID is set in infrastructure/lambda.tf).
- * Global, so PaypalClient in the shared AppModule can inject it (see local.ts for the local counterpart)
+ * AWS: PayPal and AirTable credentials come from Secrets Manager (PAYPAL_SECRET_ID / AIRTABLE_SECRET_ID are set in
+ * infrastructure/lambda.tf). Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
+ * (see local.ts for the local counterpart)
  */
 @Global()
 @Module({
-  providers: [{
-    provide: PAYPAL_CREDENTIALS,
-    useValue: (() => loadSecret<PayPalCredentials>(process.env['PAYPAL_SECRET_ID']!)) satisfies PayPalCredentialsLoader
-  }],
-  exports: [PAYPAL_CREDENTIALS]
+  providers: [
+    {
+      provide: PAYPAL_CREDENTIALS,
+      useValue: (() => loadSecret<PayPalCredentials>(process.env['PAYPAL_SECRET_ID']!)) satisfies PayPalCredentialsLoader
+    },
+    {
+      provide: AIRTABLE_CREDENTIALS,
+      useValue: (() => loadSecret<AirTableCredentials>(process.env['AIRTABLE_SECRET_ID']!)) satisfies AirTableCredentialsLoader
+    }
+  ],
+  exports: [PAYPAL_CREDENTIALS, AIRTABLE_CREDENTIALS]
 })
 class CredentialsModule {
 }

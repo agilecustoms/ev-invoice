@@ -1,5 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { AirTableClient } from '../client/airtable.client.js'
 import { PaypalClient } from '../client/paypal.client.js'
 import { type CreateInvoiceDto, OrderStatus, OrderType } from '../dto/create-invoice.dto.js'
 
@@ -19,21 +20,27 @@ function defaultDeposit(price: number): number {
 export class InvoiceService {
   private readonly logger = new Logger(InvoiceService.name)
 
-  constructor(private readonly paypalClient: PaypalClient) {}
+  constructor(
+    private readonly paypalClient: PaypalClient,
+    private readonly airTableClient: AirTableClient,
+  ) {}
 
   public async createInvoice(request: CreateInvoiceDto): Promise<void> {
     this.validate(request)
+    const orderId = request.orderId
 
     if (request.orderDeposit === undefined) {
-      this.logger.log(`No deposit supplied for order ${request.orderId}, defaulting to 20% of the price`)
+      this.logger.log(`No deposit supplied for order ${orderId}, defaulting to 20% of the price`)
       request.orderDeposit = defaultDeposit(request.orderPrice)
     }
 
-    this.logger.log(`Creating invoice for order ${request.orderId}...`)
+    this.logger.log(`Creating invoice for order ${orderId}...`)
 
     const invoiceId = await this.paypalClient.createInvoice(request)
 
-    this.logger.log(`Created invoice ${invoiceId} for order ${request.orderId}`)
+    this.logger.log(`Created invoice ${invoiceId} for order ${orderId}`)
+
+    await this.airTableClient.saveInvoiceId(orderId, invoiceId)
   }
 
   private validate(request: CreateInvoiceDto): void {

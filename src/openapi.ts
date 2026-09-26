@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { LoggerModule } from 'nestjs-pino'
 import { APP_NAME, AppModule } from './app.module.js'
+import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/airtable.client.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 /**
@@ -12,11 +13,17 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypa
  */
 @Global()
 @Module({
-  providers: [{
-    provide: PAYPAL_CREDENTIALS,
-    useValue: (() => Promise.reject(new Error('PayPal credentials are not available in OpenAPI generation'))) satisfies PayPalCredentialsLoader
-  }],
-  exports: [PAYPAL_CREDENTIALS]
+  providers: [
+    {
+      provide: PAYPAL_CREDENTIALS,
+      useValue: (() => Promise.reject(new Error('PayPal credentials are not available in OpenAPI generation'))) satisfies PayPalCredentialsLoader
+    },
+    {
+      provide: AIRTABLE_CREDENTIALS,
+      useValue: (() => Promise.reject(new Error('AirTable credentials are not available in OpenAPI generation'))) satisfies AirTableCredentialsLoader
+    }
+  ],
+  exports: [PAYPAL_CREDENTIALS, AIRTABLE_CREDENTIALS]
 })
 class CredentialsModule {}
 
