@@ -15,22 +15,13 @@ function validRequest(): CreateInvoiceDto {
 }
 
 describe('InvoiceService', () => {
-  it('creates a PayPal invoice for the order', async () => {
-    const paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
-    const invoiceService = new InvoiceService(paypalClient)
-
-    await invoiceService.createInvoice(validRequest())
-
-    expect(paypalClient.createInvoice).toHaveBeenCalled()
-  })
-
   it('rejects an order status that is not invoiceable', async () => {
     const paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
     const invoiceService = new InvoiceService(paypalClient)
     const request = validRequest()
     request.orderStatus = OrderStatus.DONE
 
-    await expect(invoiceService.createInvoice(request)).rejects.toThrow(/orderStatus/)
+    await expect(invoiceService.createInvoice(request)).rejects.toThrow(/status/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
@@ -50,7 +41,16 @@ describe('InvoiceService', () => {
     const request = validRequest()
     request.orderServices = '  '
 
-    await expect(invoiceService.createInvoice(request)).rejects.toThrow(/orderServices/)
+    await expect(invoiceService.createInvoice(request)).rejects.toThrow(/services/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
+  })
+
+  it('creates a PayPal invoice for the order', async () => {
+    const paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
+    const invoiceService = new InvoiceService(paypalClient)
+
+    await invoiceService.createInvoice(validRequest())
+
+    expect(paypalClient.createInvoice).toHaveBeenCalled()
   })
 })

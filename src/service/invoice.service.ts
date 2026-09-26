@@ -28,13 +28,13 @@ export class InvoiceService {
 
   private validate(request: CreateInvoiceDto): void {
     if (!INVOICEABLE_STATUSES.has(request.orderStatus)) {
-      throw new BadRequestException(`orderStatus must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
+      throw new BadRequestException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
     }
     if (Temporal.PlainDate.compare(request.orderServiceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
-      throw new BadRequestException('orderServiceDate must be in the future')
+      throw new BadRequestException('service date must be in the future')
     }
     if (request.orderType === OrderType.BRIDAL && !request.orderServices.trim()) {
-      throw new BadRequestException('orderServices must not be empty for orderType Bridal')
+      throw new BadRequestException('services must not be empty for orderType Bridal')
     }
   }
 }
