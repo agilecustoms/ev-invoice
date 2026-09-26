@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.21.0](https://github.com/agilecustoms/ev-invoice/compare/1.20.0...1.21.0) (2026-09-26)
+
+### Features
+
+* save deposit back to airtable ([6807455](https://github.com/agilecustoms/ev-invoice/commit/6807455781475bd2b569734093d7d5c205f1ff0d))
+* save invoice status ([fcab0ec](https://github.com/agilecustoms/ev-invoice/commit/fcab0ec43164660dd7ac0e0b151918282304f031))
+
+
 ## [1.20.0](https://github.com/agilecustoms/ev-invoice/compare/1.19.1...1.20.0) (2026-09-26)
 
 ### Features
