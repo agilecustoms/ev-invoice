@@ -43,9 +43,12 @@ export class PaypalClient {
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
   public async createInvoice(request: CreateInvoiceDto): Promise<string> {
-    const dueDateIso = '2026-10-01' // TODO:
-    const serviceDate = 'Nov 1, 2026' // TODO:
-    // 'Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226\nDate: Nov-11, 2026, Completion time: 2:00pm\nServices: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids'
+    const dueDateIso = request.orderServiceDate.toString() // e.g. 2026-10-04
+    const serviceDate = request.orderServiceDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) // e.g. Oct 4, 2026
+
+    // Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226
+    // Date: Nov-11, 2026, Completion time: 2:00pm
+    // Services: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids
     const description = [
       request.orderAddress && `Venue address: ${request.orderAddress}`,
       `Date: ${serviceDate}, Completion time: ${request.orderCompletionTime}`,

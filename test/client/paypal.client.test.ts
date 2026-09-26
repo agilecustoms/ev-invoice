@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PaypalClient, type PayPalCredentialsLoader } from '../../src/client/paypal.client.js'
@@ -10,6 +11,7 @@ function request(): CreateInvoiceDto {
   dto.orderId = 1
   dto.orderPrice = 150
   dto.orderDeposit = 50
+  dto.orderServiceDate = Temporal.PlainDate.from('2026-10-04')
   return dto
 }
 
@@ -49,6 +51,17 @@ describe('PaypalClient', () => {
     await expect(client.createInvoice(request())).rejects.toThrow('Secrets Manager is down')
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
     expect(await client.createInvoice(request())).toBe('INV2-1')
+  })
+
+  it('formats the service date for the due date and description', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    await client.createInvoice(request())
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall![1]?.body as string)
+    expect(body.detail.payment_term.due_date).toBe('2026-10-04')
+    expect(body.items[0].description).toContain('Date: Oct 4, 2026')
   })
 
   it('omits partial payment terms when no deposit is required', async () => {
