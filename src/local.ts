@@ -23,9 +23,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypa
     },
     {
       provide: AIRTABLE_CREDENTIALS,
-      useFactory: (config: ConfigService): AirTableCredentialsLoader => () => Promise.resolve({
-        apiKey: config.getOrThrow<string>('AIRTABLE_API_KEY')
-      }),
+      useFactory: (config: ConfigService): AirTableCredentialsLoader => () => Promise.resolve(config.getOrThrow<string>('AIRTABLE_API_TOKEN')),
       inject: [ConfigService]
     }
   ],

@@ -4,9 +4,9 @@ import type { APIGatewayProxyEvent, APIGatewayProxyEventV2, Context } from 'aws-
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
 import { APP_NAME, AppModule } from './app.module.js'
-import { AIRTABLE_CREDENTIALS, type AirTableCredentials, type AirTableCredentialsLoader } from './client/airtable.client.js'
+import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/airtable.client.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
-import { loadSecret } from './util/secrets.js'
+import { loadPlainSecret, loadSecret } from './util/secrets.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
   hour: '2-digit',
@@ -73,7 +73,7 @@ function getRequestIds(): object {
     },
     {
       provide: AIRTABLE_CREDENTIALS,
-      useValue: (() => loadSecret<AirTableCredentials>(process.env['AIRTABLE_SECRET_ID']!)) satisfies AirTableCredentialsLoader
+      useValue: (() => loadPlainSecret(process.env['AIRTABLE_SECRET_ID']!)) satisfies AirTableCredentialsLoader
     }
   ],
   exports: [PAYPAL_CREDENTIALS, AIRTABLE_CREDENTIALS]
