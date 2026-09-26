@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/agilecustoms/ev-invoice/compare/1.12.0...1.12.1) (2026-09-26)
+
+### Miscellaneous
+
+* simplify work with aws request id and awg request id ([1360ab3](https://github.com/agilecustoms/ev-invoice/commit/1360ab3d5658a25eb10b7d0ff76ccec2b5e584b3))
+
+
 ## [1.12.0](https://github.com/agilecustoms/ev-invoice/compare/1.11.0...1.12.0) (2026-09-26)
 
 ### Features
