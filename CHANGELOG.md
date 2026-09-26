@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/agilecustoms/ev-invoice/compare/1.21.0...1.22.0) (2026-09-26)
+
+### Features
+
+* great refactoring: retrieve order from AirTable, not assemble from get parameters. Reason: field Deposit might be empty in AirTable and when it is empty, the button [Send] is disabled :( ([59cdf1e](https://github.com/agilecustoms/ev-invoice/commit/59cdf1e9351f6d76a5e7ddcf0798400b9467c29a))
+
+
 ## [1.21.0](https://github.com/agilecustoms/ev-invoice/compare/1.20.0...1.21.0) (2026-09-26)
 
 ### Features
