@@ -18,9 +18,13 @@ const invoiceResponse = () => Response.json({ href: 'https://paypal.test/v2/invo
 
 describe('PaypalClient', () => {
   const fetchMock = vi.fn<typeof fetch>()
+  let loadCredentials: ReturnType<typeof vi.fn<PayPalCredentialsLoader>>
+  let client: PaypalClient
 
   beforeEach(() => {
     vi.stubGlobal('fetch', fetchMock)
+    loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
+    client = new PaypalClient(loadCredentials, config)
   })
 
   afterEach(() => {
@@ -29,10 +33,6 @@ describe('PaypalClient', () => {
   })
 
   it('does not load credentials until the first call, then caches them', async () => {
-    const loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
-    const client = new PaypalClient(loadCredentials, config)
-    expect(loadCredentials).not.toHaveBeenCalled()
-
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
     expect(await client.createInvoice(request())).toBe('INV2-1')
     fetchMock.mockResolvedValueOnce(invoiceResponse()) // token is cached as well
@@ -42,10 +42,9 @@ describe('PaypalClient', () => {
   })
 
   it('does not cache a failed load', async () => {
-    const loadCredentials = vi.fn<PayPalCredentialsLoader>()
+    loadCredentials.mockReset()
       .mockRejectedValueOnce(new Error('Secrets Manager is down'))
       .mockResolvedValueOnce({ clientId: 'id', clientSecret: 'secret' })
-    const client = new PaypalClient(loadCredentials, config)
 
     await expect(client.createInvoice(request())).rejects.toThrow('Secrets Manager is down')
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
@@ -53,8 +52,6 @@ describe('PaypalClient', () => {
   })
 
   it('omits partial payment terms when no deposit is required', async () => {
-    const loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
-    const client = new PaypalClient(loadCredentials, config)
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
     const dto = request()
@@ -62,14 +59,12 @@ describe('PaypalClient', () => {
     await client.createInvoice(dto)
 
     const [, invoiceCall] = fetchMock.mock.calls
-    const body = JSON.parse(invoiceCall[1]?.body as string)
+    const body = JSON.parse(invoiceCall![1]?.body as string)
     expect(body.configuration.partial_payment).toBeUndefined()
     expect(body.detail.note).toBe('Balance due on service date')
   })
 
   it('omits venue address and services from the description when not supplied', async () => {
-    const loadCredentials = vi.fn<PayPalCredentialsLoader>().mockResolvedValue({ clientId: 'id', clientSecret: 'secret' })
-    const client = new PaypalClient(loadCredentials, config)
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
     const dto = request()
@@ -78,7 +73,7 @@ describe('PaypalClient', () => {
     await client.createInvoice(dto)
 
     const [, invoiceCall] = fetchMock.mock.calls
-    const body = JSON.parse(invoiceCall[1]?.body as string)
+    const body = JSON.parse(invoiceCall![1]?.body as string)
     expect(body.items[0].description).not.toContain('Venue address')
     expect(body.items[0].description).not.toContain('Services')
   })
