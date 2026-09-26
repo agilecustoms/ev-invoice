@@ -32,12 +32,13 @@ export class InvoiceService {
       this.logger.log(`No deposit supplied, defaulting to 20% of the price`)
       request.orderDeposit = defaultDeposit(request.orderPrice)
     }
+    const deposit = request.orderDeposit
 
     this.logger.log(`Creating invoice...`)
     const invoiceId = await this.paypalClient.createInvoice(request)
 
-    this.logger.log(`Save invoice ID ${invoiceId} to airtable`)
-    await this.airTableClient.saveInvoiceId(request.recordId, invoiceId)
+    this.logger.log(`Save invoice ID ${invoiceId} and deposit $${deposit} to airtable`)
+    await this.airTableClient.saveInvoice(request.recordId, invoiceId, deposit)
   }
 
   private validate(request: CreateInvoiceDto): void {

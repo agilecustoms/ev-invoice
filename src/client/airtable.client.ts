@@ -32,11 +32,12 @@ export class AirTableClient {
   /**
    * @param recordId AirTable record id (recXXXXXXXXXXXXXX), not the order's numeric ID
    * @param invoiceId PayPal invoice id (INV2-XXXXXXXXXXXX)
+   * @param deposit deposit amount in USD, saved back since it may have been defaulted rather than supplied
    */
-  public async saveInvoiceId(recordId: string, invoiceId: string): Promise<void> {
+  public async saveInvoice(recordId: string, invoiceId: string, deposit: number): Promise<void> {
     await this.request(`/${recordId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ fields: { invoiceId } })
+      body: JSON.stringify({ fields: { invoiceId, Deposit: deposit } })
     })
   }
 

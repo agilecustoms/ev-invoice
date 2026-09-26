@@ -23,7 +23,7 @@ describe('InvoiceService', () => {
 
   beforeEach(() => {
     paypalClient = { createInvoice: vi.fn() } as unknown as PaypalClient
-    airTableClient = { saveInvoiceId: vi.fn() } as unknown as AirTableClient
+    airTableClient = { saveInvoice: vi.fn() } as unknown as AirTableClient
     invoiceService = new InvoiceService(paypalClient, airTableClient)
   })
 
@@ -78,12 +78,23 @@ describe('InvoiceService', () => {
     expect(paypalClient.createInvoice).toHaveBeenCalled()
   })
 
-  it('saves the PayPal invoice id in AirTable', async () => {
+  it('saves the PayPal invoice id and supplied deposit in AirTable', async () => {
     vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
     const request = validRequest()
+    request.orderDeposit = 150
 
     await invoiceService.createInvoice(request)
 
-    expect(airTableClient.saveInvoiceId).toHaveBeenCalledWith(request.recordId, 'INV2-XXXX')
+    expect(airTableClient.saveInvoice).toHaveBeenCalledWith(request.recordId, 'INV2-XXXX', 150)
+  })
+
+  it('saves the defaulted deposit in AirTable', async () => {
+    vi.mocked(paypalClient.createInvoice).mockResolvedValue('INV2-XXXX')
+    const request = validRequest()
+    request.orderPrice = 155
+
+    await invoiceService.createInvoice(request)
+
+    expect(airTableClient.saveInvoice).toHaveBeenCalledWith(request.recordId, 'INV2-XXXX', 40)
   })
 })
