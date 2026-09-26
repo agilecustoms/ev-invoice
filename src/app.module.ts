@@ -5,6 +5,8 @@ import { HealthController } from './controller/health.controller.js'
 import { InvoiceController } from './controller/invoice.controller.js'
 import { InvoiceService } from './service/invoice.service.js'
 
+export const APP_NAME = 'ev-invoice'
+
 const profile = process.env['APP_PROFILE'] ?? 'prod'
 
 @Module({

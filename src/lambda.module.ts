@@ -1,7 +1,7 @@
 import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
-import { AppModule } from './app.module.js'
+import { APP_NAME, AppModule } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
 import { LoggerContextMiddleware } from './logger-context.middleware.js'
 import { loadSecret } from './util/secrets.js'
@@ -22,7 +22,7 @@ export const logger = pino({
   level: 'warn', // Nest logs a line per module/route on every cold start, lambda.ts lowers it to 'info' after bootstrap
   messageKey: 'message',
   base: {
-    service: 'ev-invoice',
+    service: APP_NAME,
     env: process.env['AWS_ENV']
   },
   redact: ['req'],

@@ -3,10 +3,8 @@ import { Global, Module } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { LoggerModule } from 'nestjs-pino'
-import { AppModule } from './app.module.js'
+import { APP_NAME, AppModule } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
-
-const APP_NAME = 'ev-invoice'
 
 /**
  * The spec is generated from controllers, but the whole app has to start. Credentials are loaded lazily, so they are
