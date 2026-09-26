@@ -37,7 +37,7 @@ export class AirTableClient {
   public async saveInvoice(recordId: string, invoiceId: string, deposit: number): Promise<void> {
     await this.request(`/${recordId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ fields: { invoiceId, Deposit: deposit } })
+      body: JSON.stringify({ fields: { invoiceId, 'Deposit': deposit, 'Invoice Status': 'Sent' } })
     })
   }
 
