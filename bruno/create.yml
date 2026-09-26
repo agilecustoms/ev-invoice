@@ -5,12 +5,15 @@ info:
 
 http:
   method: GET
-  url: "{{base-url}}/create?customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=+12035700477&orderId=102&orderType=Special Occasion&orderStatus=Requested&orderPrice=150&orderDeposit=50&orderAddress=&orderServiceDate=2026-10-04T00:00:00.000Z&orderCompletionTime=2pm&orderServices="
+  url: "{{base-url}}/create?recordId=rec8v75R3OCSfosGK&customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=+12035700477&orderId=102&orderType=Special Occasion&orderStatus=Requested&orderPrice=150&orderDeposit=50&orderAddress=&orderServiceDate=2026-10-04T00:00:00.000Z&orderCompletionTime=2pm&orderServices="
   headers:
     - name: x-command-id
       value: test
       disabled: true
   params:
+    - name: recordId
+      value: rec8v75R3OCSfosGK
+      type: query
     - name: customerName
       value: Alexey Chekulaev
       type: query

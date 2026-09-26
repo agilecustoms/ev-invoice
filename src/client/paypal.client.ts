@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { parsePhoneNumberWithError } from 'libphonenumber-js'
 import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
 
 export interface PayPalCredentials {
@@ -55,7 +56,11 @@ export class PaypalClient {
       request.orderServices && `Services: ${request.orderServices}`
     ].filter(line => !!line).join('\n')
 
-    const phone = (phone: string) => ({ country_code: '1', national_number: phone, phone_type: 'MOBILE' })
+    const phone = (text: string) => {
+      // PayPal wants the country code and digits-only national number separately: +1 (203) 570-0477 -> 1 / 2035700477
+      const { countryCallingCode, nationalNumber } = parsePhoneNumberWithError(text, 'US')
+      return { country_code: countryCallingCode, national_number: nationalNumber, phone_type: 'MOBILE' }
+    }
     const amount = (value: number) => ({ currency_code: 'USD', value: value.toFixed(2) })
     const name = (fullName: string) => ({ full_name: fullName })
 

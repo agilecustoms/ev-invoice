@@ -12,6 +12,7 @@ function request(): CreateInvoiceDto {
   dto.orderPrice = 150
   dto.orderDeposit = 50
   dto.orderServiceDate = Temporal.PlainDate.from('2026-10-04')
+  dto.customerPhone = '2035700477'
   return dto
 }
 
@@ -63,6 +64,20 @@ describe('PaypalClient', () => {
     expect(body.detail.payment_term.due_date).toBe('2026-10-04')
     expect(body.items[0].description).toContain('Date: Oct 4, 2026')
   })
+
+  it.each(['+12035700477', '2035700477', '(203) 570-0477', '+1 203-570-0477'])(
+    'sends phone %s as country code + digits-only national number', async (customerPhone) => {
+      fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+      const dto = request()
+      dto.customerPhone = customerPhone
+      await client.createInvoice(dto)
+
+      const [, invoiceCall] = fetchMock.mock.calls
+      const body = JSON.parse(invoiceCall![1]?.body as string)
+      expect(body.primary_recipients[0].billing_info.phones[0]).toEqual(
+        { country_code: '1', national_number: '2035700477', phone_type: 'MOBILE' })
+    })
 
   it('omits partial payment terms when no deposit is required', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
