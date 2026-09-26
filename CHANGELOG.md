@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/agilecustoms/ev-invoice/compare/1.19.0...1.19.1) (2026-09-26)
+
+### Miscellaneous
+
+* minor improvements ([760bf8b](https://github.com/agilecustoms/ev-invoice/commit/760bf8beeff4cb00926ab15a7405791734034022))
+
+
 ## [1.19.0](https://github.com/agilecustoms/ev-invoice/compare/1.18.0...1.19.0) (2026-09-26)
 
 ### Features
