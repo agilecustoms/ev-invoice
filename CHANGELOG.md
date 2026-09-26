@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/agilecustoms/ev-invoice/compare/1.16.0...1.17.0) (2026-09-26)
+
+### Features
+
+* bootstrap saving paypal id into a airtable ([c856ded](https://github.com/agilecustoms/ev-invoice/commit/c856dedd20ff964f2ef69cba83c674ff1c727695))
+
+
 ## [1.16.0](https://github.com/agilecustoms/ev-invoice/compare/1.15.0...1.16.0) (2026-09-26)
 
 ### Features
