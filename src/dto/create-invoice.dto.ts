@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { Transform, Type } from 'class-transformer'
+import { Transform, type TransformFnParams, Type } from 'class-transformer'
 
 import {
   IsEmail, IsEnum,
@@ -18,6 +18,18 @@ import {
 
 @ValidatorConstraint({ name: 'isTemporalPlainDate' })
 class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
+  /**
+   * Arrives as 2026-10-04T00:00:00.000Z (or just 2026-10-04); PlainDate.from rejects the time/offset part,
+   * so drop it first
+   */
+  static transform({ value }: TransformFnParams): unknown {
+    try {
+      return Temporal.PlainDate.from(value.split('T')[0])
+    } catch {
+      return value // let the validator report it, instead of throwing out of the transform step
+    }
+  }
+
   validate(value: unknown): boolean {
     return value instanceof Temporal.PlainDate
   }
@@ -83,14 +95,7 @@ export class CreateInvoiceDto {
   @IsOptional()
   orderAddress?: string
 
-  // arrives as 2026-10-04T00:00:00.000Z; PlainDate.from rejects the time/offset part, so drop it first
-  @Transform(({ value }) => {
-    try {
-      return Temporal.PlainDate.from(value.slice(0, value.indexOf('T')))
-    } catch {
-      return value // let the validator below report it, instead of throwing out of the transform step
-    }
-  })
+  @Transform(IsTemporalPlainDateConstraint.transform)
   @Validate(IsTemporalPlainDateConstraint)
   orderServiceDate!: Temporal.PlainDate
 
