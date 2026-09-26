@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{base-url}}/create?customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=2035700477&orderId=1&orderStatus=Requested&orderPrice=1000&orderDeposit=200&orderAddress=234 Black Rock Dr, Charlotte NC 29708&orderServiceDate=2026-02-02&orderCompletionTime=2pm&orderServices=makeup, trial"
+  url: "{{base-url}}/create?customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=+12035700477&orderId=102&orderType=Special Occasion&orderStatus=Requested&orderPrice=150&orderDeposit=50&orderAddress=&orderServiceDate=2026-10-04T00:00:00.000Z&orderCompletionTime=2pm&orderServices="
   headers:
     - name: x-command-id
       value: test
@@ -18,31 +18,34 @@ http:
       value: chekulaevalexey@gmail.com
       type: query
     - name: customerPhone
-      value: "2035700477"
+      value: "+12035700477"
       type: query
     - name: orderId
-      value: "1"
+      value: "102"
+      type: query
+    - name: orderType
+      value: Special Occasion
       type: query
     - name: orderStatus
       value: Requested
       type: query
     - name: orderPrice
-      value: "1000"
+      value: "150"
       type: query
     - name: orderDeposit
-      value: "200"
+      value: "50"
       type: query
     - name: orderAddress
-      value: 234 Black Rock Dr, Charlotte NC 29708
+      value: ""
       type: query
     - name: orderServiceDate
-      value: 2026-02-02
+      value: 2026-10-04T00:00:00.000Z
       type: query
     - name: orderCompletionTime
       value: 2pm
       type: query
     - name: orderServices
-      value: makeup, trial
+      value: ""
       type: query
   auth: inherit
 

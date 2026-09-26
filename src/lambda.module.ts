@@ -1,5 +1,6 @@
 import { Global, Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common'
 import { LoggerModule } from 'nestjs-pino'
+import { destination } from 'pino'
 import { AppModule } from './app.module.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials } from './client/paypal.client.js'
 import { LoggerContextMiddleware } from './logger-context.middleware.js'
@@ -30,7 +31,7 @@ class CredentialsModule {}
 @Module({
   imports: [
     LoggerModule.forRoot({
-      pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
+      pinoHttp: [{ // 'pino-http' comes as dependency of 'nestjs-pino'
         autoLogging: false, // do not log each request/response
         messageKey: 'message',
         base: {
@@ -48,6 +49,9 @@ class CredentialsModule {}
           }
         }
       },
+      // pino's default stdout stream is async (buffered). In Lambda, the container may freeze right after the
+      // handler returns, so buffered lines (e.g. ExceptionsHandler errors logged after the reply) get delayed or lost
+      destination({ dest: 1, sync: true })],
       renameContext: 'logger'
     }),
     CredentialsModule,

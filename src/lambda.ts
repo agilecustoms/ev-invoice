@@ -9,7 +9,7 @@ import type {
   Context
 } from 'aws-lambda'
 import express from 'express'
-import { LoggerErrorInterceptor } from 'nestjs-pino'
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
 import { init } from './app.module.js'
 import { LambdaModule } from './lambda.module.js'
 
@@ -29,10 +29,12 @@ async function bootstrap(): Promise<ProxyHandler> {
     new ExpressAdapter(expressApp),
     { bufferLogs: true }
   )
-  // surprisingly, Nest does not produce any logs, so we do not need `app.useLogger(app.get(Logger))`
+  // route Nest's Logger (used by services and ExceptionsHandler) to pino
+  app.useLogger(app.get(Logger))
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   init(app)
   await app.init()
+  app.flushLogs() // enable auto-flush
 
   // @ts-expect-error by design
   return serverlessExpress({ app: expressApp }) as ProxyHandler
