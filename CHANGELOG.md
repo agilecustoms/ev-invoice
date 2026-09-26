@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/agilecustoms/ev-invoice/compare/1.15.0...1.16.0) (2026-09-26)
+
+### Features
+
+* format date from request and use it in invoice ([d2d4b81](https://github.com/agilecustoms/ev-invoice/commit/d2d4b816c3995b3b0639c75a97307ec93fab216a))
+
+
 ## [1.15.0](https://github.com/agilecustoms/ev-invoice/compare/1.14.0...1.15.0) (2026-09-26)
 
 ### Features
