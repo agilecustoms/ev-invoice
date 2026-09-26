@@ -17,21 +17,19 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.1136.0",
     "@codegenie/serverless-express": "^5.0.0",
-    "@nestjs/common": "^11.2.5",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.2.5",
-    "@nestjs/platform-express": "^11.2.5",
-    "@nestjs/swagger": "^11.4.7",
+    "@nestjs/common": "^12.1.0",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.1.0",
+    "@nestjs/platform-express": "^12.1.0",
+    "@nestjs/swagger": "^12.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "nestjs-pino": "^4.6.1",
+    "nestjs-pino": "^5.2.1",
     "pino": "^10.3.1"
   },
   "updates-blocked": [
-    "@nestjs/* 11.x -> 12.x and @nestjs/config 4 -> 12: Nest 12 is ESM-only, nestjs-pino (CJS) loads it via require(esm), which AWS Lambda disables (ERR_REQUIRE_ESM). Wait until nestjs-pino ships an ESM-compatible build, then upgrade all @nestjs/* together",
-    "nestjs-pino 4.6.1 -> 5.x: v5 relies on require(esm), same Lambda problem as above",
     "typescript 6.0.3 -> 7.x: TS 7 has no JS compiler API and typescript-eslint peer range is <6.1.0. Wait until typescript-eslint supports TS 7, then upgrade",
-    "@types/node 24.x -> 26.x: Node must stay <= 24 (Lambda runtime nodejs24.x)"
+    "@types/node 24.x -> 26.x: Node must stay <= 24 (Lambda runtime nodejs24.x is the latest GA runtime; nodejs26.x is public-preview only as of 2026-09)"
   ],
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.6.1",
