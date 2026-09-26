@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/agilecustoms/ev-invoice/compare/1.13.0...1.14.0) (2026-09-26)
+
+### Features
+
+* parse AirTable date into local date ([c45bd3f](https://github.com/agilecustoms/ev-invoice/commit/c45bd3f2c00e5a7973ad11ddabdb761db40576c3))
+
+
 ## [1.13.0](https://github.com/agilecustoms/ev-invoice/compare/1.12.2...1.13.0) (2026-09-26)
 
 ### Features
