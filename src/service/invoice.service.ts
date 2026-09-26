@@ -1,8 +1,9 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { validate } from 'class-validator'
 import { AirTableClient } from '../client/airtable.client.js'
 import { PaypalClient } from '../client/paypal.client.js'
-import { type CreateInvoiceDto, OrderStatus, OrderType } from '../dto/create-invoice.dto.js'
+import { type OrderDto, OrderStatus, OrderType } from '../dto/order.dto.js'
 
 // statuses under which the order is still expected to happen; Done/Cancelled/Unavailable have no invoice to raise
 const INVOICEABLE_STATUSES: ReadonlySet<OrderStatus> = new Set([
@@ -11,7 +12,7 @@ const INVOICEABLE_STATUSES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.CONFIRMED,
 ])
 
-// no deposit supplied on the request: assume 20% of the price, rounded up to the nearest $10
+// no deposit in the order: assume 20% of the price, rounded up to the nearest $10
 function defaultDeposit(price: number): number {
   return Math.ceil(price * 0.2 / 10) * 10
 }
@@ -25,23 +26,31 @@ export class InvoiceService {
     private readonly airTableClient: AirTableClient,
   ) {}
 
-  public async createInvoice(request: CreateInvoiceDto): Promise<void> {
-    this.validate(request)
+  public async createInvoice(recordId: string): Promise<void> {
+    const order = await this.airTableClient.getOrder(recordId)
+    this.logger.log(`Loaded order ${order.orderId} from airtable`)
+    await this.validate(order)
 
-    if (request.orderDeposit === undefined) {
+    if (order.orderDeposit === undefined) {
       this.logger.log(`No deposit supplied, defaulting to 20% of the price`)
-      request.orderDeposit = defaultDeposit(request.orderPrice)
+      order.orderDeposit = defaultDeposit(order.orderPrice)
     }
-    const deposit = request.orderDeposit
+    const deposit = order.orderDeposit
 
     this.logger.log(`Creating invoice...`)
-    const invoiceId = await this.paypalClient.createInvoice(request)
+    const invoiceId = await this.paypalClient.createInvoice(order)
 
     this.logger.log(`Save invoice ID ${invoiceId} and deposit $${deposit} to airtable`)
-    await this.airTableClient.saveInvoice(request.recordId, invoiceId, deposit)
+    await this.airTableClient.saveInvoice(recordId, invoiceId, deposit)
   }
 
-  private validate(request: CreateInvoiceDto): void {
+  private async validate(request: OrderDto): Promise<void> {
+    // the order comes from AirTable, not from the HTTP request, so the ValidationPipe never sees it
+    const errors = await validate(request)
+    if (errors.length > 0) {
+      const messages = errors.flatMap(error => Object.values(error.constraints ?? {}))
+      throw new BadRequestException(messages)
+    }
     if (!INVOICEABLE_STATUSES.has(request.orderStatus)) {
       throw new BadRequestException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
     }

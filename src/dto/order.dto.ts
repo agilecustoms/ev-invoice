@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { Transform, type TransformFnParams, Type } from 'class-transformer'
+import { Transform, type TransformFnParams } from 'class-transformer'
 
 import {
   IsEmail, IsEnum,
@@ -8,7 +8,6 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  Matches,
   Min,
   Validate,
   ValidatorConstraint,
@@ -19,8 +18,8 @@ import {
 @ValidatorConstraint({ name: 'isTemporalPlainDate' })
 class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
   /**
-   * Arrives as 2026-10-04T00:00:00.000Z (or just 2026-10-04); PlainDate.from rejects the time/offset part,
-   * so drop it first
+   * AirTable date field arrives as 2026-10-04 (a date-time as 2026-10-04T00:00:00.000Z); PlainDate.from rejects
+   * the time/offset part, so drop it first
    */
   static transform({ value }: TransformFnParams): unknown {
     try {
@@ -54,11 +53,10 @@ export enum OrderStatus {
   UNAVAILABLE = 'Unavailable',
 }
 
-export class CreateInvoiceDto {
-  // AirTable record id of the order, used to write the invoice id back
-  @Matches(/^rec[A-Za-z0-9]{14}$/, { message: 'recordId must be an AirTable record id (recXXXXXXXXXXXXXX)' })
-  recordId!: string
-
+/**
+ * Order as loaded from AirTable (see AirTableClient.getOrder for the field mapping)
+ */
+export class OrderDto {
   @IsString()
   @IsNotEmpty()
   customerName!: string
@@ -71,7 +69,6 @@ export class CreateInvoiceDto {
 
   @Min(1)
   @IsInt()
-  @Type(() => Number)
   orderId!: number
 
   @IsEnum(OrderType)
@@ -82,13 +79,11 @@ export class CreateInvoiceDto {
 
   @Min(0)
   @IsInt()
-  @Type(() => Number)
   orderPrice!: number
 
   @Min(0)
   @IsInt()
   @IsOptional()
-  @Type(() => Number)
   orderDeposit?: number
 
   @IsString()

@@ -2,12 +2,12 @@ import { Temporal } from '@js-temporal/polyfill'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PaypalClient, type PayPalCredentialsLoader } from '../../src/client/paypal.client.js'
-import { CreateInvoiceDto } from '../../src/dto/create-invoice.dto.js'
+import { OrderDto } from '../../src/dto/order.dto.js'
 
 const config = { getOrThrow: () => 'https://paypal.test' } as unknown as ConfigService
 
-function request(): CreateInvoiceDto {
-  const dto = new CreateInvoiceDto()
+function request(): OrderDto {
+  const dto = new OrderDto()
   dto.orderId = 1
   dto.orderPrice = 150
   dto.orderDeposit = 50

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { parsePhoneNumberWithError } from 'libphonenumber-js'
-import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js'
+import type { OrderDto } from '../dto/order.dto.js'
 
 export interface PayPalCredentials {
   clientId: string
@@ -43,7 +43,7 @@ export class PaypalClient {
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(request: CreateInvoiceDto): Promise<string> {
+  public async createInvoice(request: OrderDto): Promise<string> {
     const dueDateIso = request.orderServiceDate.toString() // e.g. 2026-10-04
     const serviceDate = request.orderServiceDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) // e.g. Oct 4, 2026
 

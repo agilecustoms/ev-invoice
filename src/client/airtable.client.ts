@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { plainToInstance } from 'class-transformer'
+import { OrderDto } from '../dto/order.dto.js'
 
 /**
  * Loads the API token on demand (Secrets Manager in AWS, .env.local locally). Called lazily on the first AirTable
@@ -27,6 +29,30 @@ export class AirTableClient {
   ) {
     const baseId = config.getOrThrow<string>('AIRTABLE_BASE_ID')
     this.tableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}`
+  }
+
+  /**
+   * Loads the order and maps AirTable field names to OrderDto. Not validated here, see InvoiceService.
+   * AirTable omits empty fields from the response, so they come as undefined
+   * @param recordId AirTable record id (recXXXXXXXXXXXXXX), not the order's numeric ID
+   */
+  public async getOrder(recordId: string): Promise<OrderDto> {
+    const response = await this.request(`/${recordId}`)
+    const { fields } = await response.json() as { fields: Record<string, unknown> }
+    return plainToInstance(OrderDto, {
+      orderId: fields['ID'],
+      orderType: fields['Type'],
+      orderStatus: fields['Status'],
+      customerName: fields['Name'],
+      customerEmail: fields['email'],
+      customerPhone: fields['Phone'],
+      orderPrice: fields['Price'],
+      orderDeposit: fields['Deposit'],
+      orderAddress: fields['Address'],
+      orderServiceDate: fields['Date'],
+      orderCompletionTime: fields['Time'],
+      orderServices: fields['Services'],
+    })
   }
 
   /**
