@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/agilecustoms/ev-invoice/compare/1.12.1...1.12.2) (2026-09-26)
+
+### Miscellaneous
+
+* simplify how path normalized ([db9f9d0](https://github.com/agilecustoms/ev-invoice/commit/db9f9d012d6cf13ec7eb26a5308ef5fc6750416a))
+
+
 ## [1.12.1](https://github.com/agilecustoms/ev-invoice/compare/1.12.0...1.12.1) (2026-09-26)
 
 ### Miscellaneous
