@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.0](https://github.com/agilecustoms/ev-invoice/compare/1.29.1...1.30.0) (2026-09-27)
+
+### Features
+
+* add debug role to assume from local computer ([7389182](https://github.com/agilecustoms/ev-invoice/commit/7389182650007fc7ebe6bbd087a44affd7544fcb))
+
+
 ## [1.29.1](https://github.com/agilecustoms/ev-invoice/compare/1.29.0...1.29.1) (2026-09-27)
 
 ### Miscellaneous
