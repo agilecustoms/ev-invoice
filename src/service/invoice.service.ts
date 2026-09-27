@@ -32,12 +32,8 @@ export class InvoiceService {
     const order = await this.airTableClient.getOrder(recordId)
     this.logger.log(`Loaded order ${order.id} from AirTable`)
     await this.validate(order)
+    this.enrich(order)
     await this.reconcileExistingInvoice(recordId)
-
-    if (order.deposit === undefined) {
-      order.deposit = defaultDeposit(order.price)
-      this.logger.log(`No deposit supplied, defaulting to 20% of the price ($${order.deposit})`)
-    }
 
     this.logger.log(`Create draft invoice`)
     const invoiceId = await this.paypalClient.createInvoice(order)
@@ -53,6 +49,16 @@ export class InvoiceService {
 
     this.logger.log('Update AirTable invoice status to SENT')
     await this.airTableClient.patch(recordId, { 'Invoice Status': 'SENT' })
+  }
+
+  /**
+   * Fills in what AirTable may leave empty
+   */
+  private enrich(order: OrderDto): void {
+    if (order.deposit === undefined) {
+      order.deposit = defaultDeposit(order.price)
+      this.logger.log(`No deposit supplied, defaulting to 20% of the price ($${order.deposit})`)
+    }
   }
 
   /**
