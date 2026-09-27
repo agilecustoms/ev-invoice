@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { plainToInstance } from 'class-transformer'
 import { OrderDto } from '../dto/order.dto.js'
+import type { InvoiceStatus } from './paypal.client.js'
 
 /**
  * Loads the API token on demand (Secrets Manager in AWS, .env.local locally). Called lazily on the first AirTable
@@ -10,6 +11,15 @@ import { OrderDto } from '../dto/order.dto.js'
 export type AirTableCredentialsLoader = () => Promise<string>
 
 export const AIRTABLE_CREDENTIALS = Symbol('AIRTABLE_CREDENTIALS')
+
+/**
+ * Orders fields this service is allowed to write, keyed by their AirTable field names
+ */
+export interface OrderPatch {
+  'Deposit'?: number
+  'Invoice Status'?: InvoiceStatus
+  'invoiceId'?: string
+}
 
 const TABLE_NAME = 'Orders'
 
@@ -57,14 +67,14 @@ export class AirTableClient {
   }
 
   /**
+   * Updates only the given fields, the rest of the record stays as is
    * @param recordId AirTable record id (recXXXXXXXXXXXXXX), not the order's numeric ID
-   * @param invoiceId PayPal invoice id (INV2-XXXXXXXXXXXX)
-   * @param deposit deposit amount in USD, saved back since it may have been defaulted rather than supplied
+   * @param fields to patch
    */
-  public async saveInvoice(recordId: string, invoiceId: string, deposit: number): Promise<void> {
+  public async patch(recordId: string, fields: OrderPatch): Promise<void> {
     await this.request(`/${recordId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ fields: { invoiceId, 'Deposit': deposit, 'Invoice Status': 'DRAFT' } })
+      body: JSON.stringify({ fields })
     })
   }
 

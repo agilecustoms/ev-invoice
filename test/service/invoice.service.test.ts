@@ -37,7 +37,7 @@ describe('InvoiceService', () => {
     } as unknown as PaypalClient
     airTableClient = {
       getOrder: vi.fn().mockImplementation(() => Promise.resolve(order)),
-      saveInvoice: vi.fn()
+      patch: vi.fn()
     } as unknown as AirTableClient
     invoiceService = new InvoiceService(paypalClient, airTableClient)
   })
@@ -97,15 +97,29 @@ describe('InvoiceService', () => {
 
     await invoiceService.createInvoice(RECORD_ID)
 
-    expect(airTableClient.saveInvoice).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX', 150)
+    expect(airTableClient.patch).toHaveBeenNthCalledWith(1, RECORD_ID, { 'invoiceId': 'INV2-XXXX', 'Deposit': 150, 'Invoice Status': 'DRAFT' })
   })
 
-  it('sends the invoice after saving it in AirTable', async () => {
+  it('saves the draft in AirTable, sends the invoice, then marks it SENT in AirTable', async () => {
     await invoiceService.createInvoice(RECORD_ID)
 
     expect(paypalClient.sendInvoice).toHaveBeenCalledWith('INV2-XXXX')
-    expect(vi.mocked(airTableClient.saveInvoice).mock.invocationCallOrder[0])
-      .toBeLessThan(vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder[0]!)
+    expect(airTableClient.patch).toHaveBeenCalledTimes(2)
+    expect(airTableClient.patch).toHaveBeenNthCalledWith(2, RECORD_ID, { 'Invoice Status': 'SENT' })
+
+    const [draftPatch, sentPatch] = vi.mocked(airTableClient.patch).mock.invocationCallOrder
+    const [send] = vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder
+    expect(draftPatch).toBeLessThan(send!)
+    expect(send).toBeLessThan(sentPatch!)
+  })
+
+  it('does not mark the invoice SENT in AirTable when sending fails', async () => {
+    vi.mocked(paypalClient.sendInvoice).mockRejectedValueOnce(new Error('PayPal is down'))
+
+    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow('PayPal is down')
+
+    expect(airTableClient.patch).toHaveBeenCalledTimes(1)
+    expect(airTableClient.patch).toHaveBeenCalledWith(RECORD_ID, expect.objectContaining({ 'Invoice Status': 'DRAFT' }))
   })
 
   it('saves the defaulted deposit in AirTable', async () => {
@@ -113,6 +127,6 @@ describe('InvoiceService', () => {
 
     await invoiceService.createInvoice(RECORD_ID)
 
-    expect(airTableClient.saveInvoice).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX', 40)
+    expect(airTableClient.patch).toHaveBeenNthCalledWith(1, RECORD_ID, expect.objectContaining({ Deposit: 40 }))
   })
 })

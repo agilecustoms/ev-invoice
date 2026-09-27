@@ -63,10 +63,10 @@ describe('AirTableClient', () => {
     expect(order.serviceDate).toEqual(Temporal.PlainDate.from('2026-10-04'))
   })
 
-  it('saves invoice id, deposit and invoice status', async () => {
+  it('patches the given fields', async () => {
     fetchMock.mockResolvedValueOnce(Response.json({}))
 
-    await client.saveInvoice(RECORD_ID, 'INV2-XXXX', 40)
+    await client.patch(RECORD_ID, { 'invoiceId': 'INV2-XXXX', 'Deposit': 40, 'Invoice Status': 'DRAFT' })
 
     const [url, init] = fetchMock.mock.calls[0]!
     expect(url).toBe(RECORD_URL)
