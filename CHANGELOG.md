@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/agilecustoms/ev-invoice/compare/1.24.0...1.25.0) (2026-09-27)
+
+### Features
+
+* invoiceId, invoiceStatus ([dfc709c](https://github.com/agilecustoms/ev-invoice/commit/dfc709cb7c35ba27ba2db786e1504ded70eae400))
+
+
 ## [1.24.0](https://github.com/agilecustoms/ev-invoice/compare/1.23.0...1.24.0) (2026-09-27)
 
 ### Features
