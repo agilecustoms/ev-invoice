@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.27.0](https://github.com/agilecustoms/ev-invoice/compare/1.26.0...1.27.0) (2026-09-27)
+
+### Documentation
+
+* document possible invoicing issues ([0cd5a0a](https://github.com/agilecustoms/ev-invoice/commit/0cd5a0abc723cf9ec906c0a31e74ceb0f2888866))
+
+### Features
+
+* add scheduler ([32b5b13](https://github.com/agilecustoms/ev-invoice/commit/32b5b135d111abc57674a27245b2a430ab5b56ed))
+
+
 ## [1.26.0](https://github.com/agilecustoms/ev-invoice/compare/1.25.0...1.26.0) (2026-09-27)
 
 ### Features
