@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/agilecustoms/ev-invoice/compare/1.22.0...1.23.0) (2026-09-27)
+
+### Features
+
+* follow up after great refactoring ([46f3975](https://github.com/agilecustoms/ev-invoice/commit/46f39753ceb18e29b65ae662fea311db061bcd42))
+
+
 ## [1.22.0](https://github.com/agilecustoms/ev-invoice/compare/1.21.0...1.22.0) (2026-09-26)
 
 ### Features
