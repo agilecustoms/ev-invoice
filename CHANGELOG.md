@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.1](https://github.com/agilecustoms/ev-invoice/compare/1.29.0...1.29.1) (2026-09-27)
+
+### Miscellaneous
+
+* enrich order after validation ([4b8360c](https://github.com/agilecustoms/ev-invoice/commit/4b8360c65fdf8512c04eca31f040509f89bd5429))
+
+
 ## [1.29.0](https://github.com/agilecustoms/ev-invoice/compare/1.28.0...1.29.0) (2026-09-27)
 
 ### Features
