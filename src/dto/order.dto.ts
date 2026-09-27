@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  Matches,
   Min,
   Validate,
   ValidatorConstraint,
@@ -102,4 +103,9 @@ export class OrderDto {
   @IsString()
   @IsOptional()
   services?: string // required for type Bridal, see InvoiceService
+
+  // PayPal invoice id, set once an invoice was created for the order. Goes into PayPal URL paths, hence the pattern
+  @Matches(/^INV2-[A-Z0-9-]+$/, { message: 'invoiceId must be a PayPal invoice id (INV2-XXXX-XXXX-XXXX-XXXX)' })
+  @IsOptional()
+  invoiceId?: string
 }

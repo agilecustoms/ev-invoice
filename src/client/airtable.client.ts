@@ -52,6 +52,7 @@ export class AirTableClient {
       serviceDate: fields['Date'],
       completionTime: fields['Time'],
       services: fields['Services'],
+      invoiceId: fields['invoiceId'],
     })
   }
 
@@ -63,7 +64,7 @@ export class AirTableClient {
   public async saveInvoice(recordId: string, invoiceId: string, deposit: number): Promise<void> {
     await this.request(`/${recordId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ fields: { invoiceId, 'Deposit': deposit, 'Invoice Status': 'Sent' } })
+      body: JSON.stringify({ fields: { invoiceId, 'Deposit': deposit, 'Invoice Status': 'DRAFT' } })
     })
   }
 

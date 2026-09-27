@@ -123,4 +123,15 @@ describe('PaypalClient', () => {
 
     await expect(client.sendInvoice('INV2-1')).rejects.toThrow(/send failed: 422/)
   })
+
+  it('gets the invoice status', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(Response.json({ id: 'INV2-1', status: 'PAID' }))
+
+    expect(await client.getInvoiceStatus('INV2-1')).toBe('PAID')
+
+    const [, getCall] = fetchMock.mock.calls
+    expect(getCall![0]).toBe('https://paypal.test/v2/invoicing/invoices/INV2-1')
+    expect(getCall![1]?.method).toBe('GET')
+    expect(getCall![1]?.body).toBeUndefined()
+  })
 })

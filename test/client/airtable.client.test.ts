@@ -37,6 +37,7 @@ describe('AirTableClient', () => {
         Date: '2026-10-04',
         Time: '2:00pm',
         Services: 'Bridal Makeup',
+        invoiceId: 'INV2-Z56S-5LLA-Q52L-CPZ5',
       }
     }))
 
@@ -57,6 +58,7 @@ describe('AirTableClient', () => {
       address: '1 Main St',
       completionTime: '2:00pm',
       services: 'Bridal Makeup',
+      invoiceId: 'INV2-Z56S-5LLA-Q52L-CPZ5',
     })
     expect(order.serviceDate).toEqual(Temporal.PlainDate.from('2026-10-04'))
   })
@@ -70,7 +72,7 @@ describe('AirTableClient', () => {
     expect(url).toBe(RECORD_URL)
     expect(init?.method).toBe('PATCH')
     expect(JSON.parse(init?.body as string)).toEqual({
-      fields: { 'invoiceId': 'INV2-XXXX', 'Deposit': 40, 'Invoice Status': 'Sent' }
+      fields: { 'invoiceId': 'INV2-XXXX', 'Deposit': 40, 'Invoice Status': 'DRAFT' }
     })
   })
 

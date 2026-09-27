@@ -3,6 +3,10 @@ import { ConfigService } from '@nestjs/config'
 import { parsePhoneNumberWithError } from 'libphonenumber-js'
 import type { OrderDto } from '../dto/order.dto.js'
 
+// https://developer.paypal.com/docs/api/invoicing/v2/#definition-invoice_status
+export type InvoiceStatus = 'DRAFT' | 'SENT' | 'SCHEDULED' | 'PAYMENT_PENDING' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID'
+  | 'MARKED_AS_PAID' | 'CANCELLED' | 'REFUNDED' | 'PARTIALLY_REFUNDED' | 'MARKED_AS_REFUNDED'
+
 export interface PayPalCredentials {
   clientId: string
   clientSecret: string
@@ -114,7 +118,7 @@ export class PaypalClient {
       }
     }
 
-    const response = await this.post('/v2/invoicing/invoices', body)
+    const response = await this.request('POST', '/v2/invoicing/invoices', body)
 
     // PayPal responds with a link to the new invoice: { rel: 'self', href: '.../v2/invoicing/invoices/INV2-...' }
     const { href } = await response.json() as { href: string }
@@ -126,17 +130,26 @@ export class PaypalClient {
    * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
   public async sendInvoice(invoiceId: string): Promise<void> {
-    await this.post(`/v2/invoicing/invoices/${invoiceId}/send`, {})
+    await this.request('POST', `/v2/invoicing/invoices/${invoiceId}/send`, {})
   }
 
-  private async post(path: string, body: unknown): Promise<Response> {
+  /**
+   * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   */
+  public async getInvoiceStatus(invoiceId: string): Promise<InvoiceStatus> {
+    const response = await this.request('GET', `/v2/invoicing/invoices/${invoiceId}`)
+    const { status } = await response.json() as { status: InvoiceStatus }
+    return status
+  }
+
+  private async request(method: 'GET' | 'POST', path: string, body?: unknown): Promise<Response> {
     const response = await fetch(this.baseUrl + path, {
-      method: 'POST',
+      method,
       headers: {
         'Authorization': `Bearer ${await this.getAccessToken()}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body)
+      body: body === undefined ? undefined : JSON.stringify(body)
     })
     if (!response.ok) {
       throw new Error(`PayPal ${path} failed: ${response.status} ${await response.text()}`)
