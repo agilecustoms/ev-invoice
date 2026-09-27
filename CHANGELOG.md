@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.27.1](https://github.com/agilecustoms/ev-invoice/compare/1.27.0...1.27.1) (2026-09-27)
+
+### Miscellaneous
+
+* commit test [skip ci] ([4775a3c](https://github.com/agilecustoms/ev-invoice/commit/4775a3cdec610162bdac906f3caf1ec7e12d040c))
+* minor logging improvements ([891724d](https://github.com/agilecustoms/ev-invoice/commit/891724dbbd21337e2e78b9e27346cc7fe3bf4f9d))
+
+
 ## [1.27.0](https://github.com/agilecustoms/ev-invoice/compare/1.26.0...1.27.0) (2026-09-27)
 
 ### Documentation
