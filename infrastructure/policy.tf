@@ -2,7 +2,23 @@
 # TODO: often you need to modify permission boundary policy (/infrastructure-core/aws/common_dev_prod/boundary-app.tf)
 # TODO: ----------------------------------------------------------------------------------------------------------------
 
-data "aws_iam_policy_document" "logs" {
+data "aws_iam_policy_document" "app_iam" {
+  # a schedule runs on behalf of the scheduler role, so creating a schedule requires passing that role
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [aws_iam_role.scheduler.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["scheduler.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "app_logs" {
   statement {
     effect = "Allow"
     actions = [
@@ -16,7 +32,7 @@ data "aws_iam_policy_document" "logs" {
   }
 }
 
-data "aws_iam_policy_document" "secrets" {
+data "aws_iam_policy_document" "app_secrets" {
   statement {
     effect  = "Allow"
     actions = ["secretsmanager:GetSecretValue"]
@@ -27,10 +43,24 @@ data "aws_iam_policy_document" "secrets" {
   }
 }
 
+data "aws_iam_policy_document" "app_scheduler" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "scheduler:CreateSchedule",
+    ]
+    resources = [
+      "arn:aws:scheduler:${local.region}:${local.account_id}:schedule/${aws_scheduler_schedule_group.app.id}/*",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "app" {
   source_policy_documents = [
-    data.aws_iam_policy_document.logs.json,
-    data.aws_iam_policy_document.secrets.json,
+    data.aws_iam_policy_document.app_iam.json,
+    data.aws_iam_policy_document.app_logs.json,
+    data.aws_iam_policy_document.app_scheduler.json,
+    data.aws_iam_policy_document.app_secrets.json,
   ]
 }
 

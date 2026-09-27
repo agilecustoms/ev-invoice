@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { validate } from 'class-validator'
 import { AirTableClient } from '../client/airtable.client.js'
 import { PaypalClient } from '../client/paypal.client.js'
+import { ScheduleClient } from '../client/schedule.client.js'
 import { type OrderDto, OrderStatus, OrderType } from '../dto/order.dto.js'
 
 // statuses under which the order is still expected to happen; Done/Cancelled/Unavailable have no invoice to raise
@@ -24,6 +25,7 @@ export class InvoiceService {
   constructor(
     private readonly paypalClient: PaypalClient,
     private readonly airTableClient: AirTableClient,
+    private readonly scheduleClient: ScheduleClient,
   ) {}
 
   public async createInvoice(recordId: string): Promise<void> {
@@ -42,6 +44,9 @@ export class InvoiceService {
 
     this.logger.log(`Save invoice ${invoiceId} details in airtable`)
     await this.airTableClient.patch(recordId, { 'invoiceId': invoiceId, 'Deposit': deposit, 'Invoice Status': 'DRAFT' })
+
+    this.logger.log('Schedule expiry check')
+    await this.scheduleClient.scheduleExpiryCheck(recordId, invoiceId)
 
     this.logger.log('Send invoice')
     await this.paypalClient.sendInvoice(invoiceId)

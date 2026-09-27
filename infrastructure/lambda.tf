@@ -22,8 +22,11 @@ resource "aws_lambda_function" "app" {
 
   environment {
     variables = {
-      PAYPAL_SECRET_ID   = aws_secretsmanager_secret.paypal.name
       AIRTABLE_SECRET_ID = aws_secretsmanager_secret.airtable.name
+      EVENT_BUS_ARN      = var.event_bus_arn
+      PAYPAL_SECRET_ID   = aws_secretsmanager_secret.paypal.name
+      SCHEDULE_GROUP     = aws_scheduler_schedule_group.app.id
+      SCHEDULE_ROLE_ARN  = aws_iam_role.scheduler.arn
     }
   }
 

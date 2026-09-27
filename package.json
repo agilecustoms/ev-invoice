@@ -15,6 +15,7 @@
     "start:dev": "APP_PROFILE=local tsc-watch --onSuccess \"node dist/local\""
   },
   "dependencies": {
+    "@aws-sdk/client-scheduler": "^3.1141.0",
     "@aws-sdk/client-secrets-manager": "^3.1136.0",
     "@codegenie/serverless-express": "^5.0.0",
     "@js-temporal/polyfill": "^0.5.1",

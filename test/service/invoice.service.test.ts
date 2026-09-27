@@ -2,6 +2,7 @@ import { Temporal } from '@js-temporal/polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AirTableClient } from '../../src/client/airtable.client.js'
 import { PaypalClient } from '../../src/client/paypal.client.js'
+import { ScheduleClient } from '../../src/client/schedule.client.js'
 import { OrderDto, OrderStatus, OrderType } from '../../src/dto/order.dto.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
 
@@ -26,6 +27,7 @@ function validOrder(): OrderDto {
 describe('InvoiceService', () => {
   let paypalClient: PaypalClient
   let airTableClient: AirTableClient
+  let scheduleClient: ScheduleClient
   let invoiceService: InvoiceService
   let order: OrderDto
 
@@ -39,7 +41,8 @@ describe('InvoiceService', () => {
       getOrder: vi.fn().mockImplementation(() => Promise.resolve(order)),
       patch: vi.fn()
     } as unknown as AirTableClient
-    invoiceService = new InvoiceService(paypalClient, airTableClient)
+    scheduleClient = { scheduleExpiryCheck: vi.fn() } as unknown as ScheduleClient
+    invoiceService = new InvoiceService(paypalClient, airTableClient, scheduleClient)
   })
 
   it('loads the order by record id', async () => {
@@ -111,6 +114,25 @@ describe('InvoiceService', () => {
     const [send] = vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder
     expect(draftPatch).toBeLessThan(send!)
     expect(send).toBeLessThan(sentPatch!)
+  })
+
+  it('schedules the expiry check after saving the draft and before sending', async () => {
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(scheduleClient.scheduleExpiryCheck).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX')
+    const [draftPatch] = vi.mocked(airTableClient.patch).mock.invocationCallOrder
+    const [schedule] = vi.mocked(scheduleClient.scheduleExpiryCheck).mock.invocationCallOrder
+    const [send] = vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder
+    expect(draftPatch).toBeLessThan(schedule!)
+    expect(schedule).toBeLessThan(send!)
+  })
+
+  it('does not send the invoice when scheduling the expiry check fails', async () => {
+    vi.mocked(scheduleClient.scheduleExpiryCheck).mockRejectedValueOnce(new Error('Scheduler is down'))
+
+    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow('Scheduler is down')
+
+    expect(paypalClient.sendInvoice).not.toHaveBeenCalled()
   })
 
   it('does not mark the invoice SENT in AirTable when sending fails', async () => {
