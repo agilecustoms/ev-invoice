@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/agilecustoms/ev-invoice/compare/1.28.0...1.29.0) (2026-09-27)
+
+### Features
+
+* reconcile existing invoice ([0b35210](https://github.com/agilecustoms/ev-invoice/commit/0b352108daca082b0d94e0fe6080dc515fb9874d))
+
+
 ## [1.28.0](https://github.com/agilecustoms/ev-invoice/compare/1.27.1...1.28.0) (2026-09-27)
 
 ### Features
