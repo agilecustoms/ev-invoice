@@ -74,5 +74,8 @@ export class InvoiceService {
     if (request.deposit !== undefined && request.deposit > request.price) {
       throw new BadRequestException('deposit must not exceed price')
     }
+    if (request.invoiceStatus !== undefined && request.invoiceStatus !== 'DRAFT') {
+      throw new BadRequestException('invoice status must be empty or DRAFT')
+    }
   }
 }

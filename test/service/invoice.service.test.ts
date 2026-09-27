@@ -87,6 +87,21 @@ describe('InvoiceService', () => {
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
+  it('rejects an invoice status that is not empty or DRAFT', async () => {
+    order.invoiceStatus = 'SENT'
+
+    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/invoice status/)
+    expect(paypalClient.createInvoice).not.toHaveBeenCalled()
+  })
+
+  it('accepts an order whose invoice status is DRAFT', async () => {
+    order.invoiceStatus = 'DRAFT'
+
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(paypalClient.createInvoice).toHaveBeenCalled()
+  })
+
   it('defaults the deposit to 20% of the price, rounded up to the nearest $10', async () => {
     order.price = 155
 

@@ -63,6 +63,7 @@ export class AirTableClient {
       completionTime: fields['Time'],
       services: fields['Services'],
       invoiceId: fields['invoiceId'],
+      invoiceStatus: fields['Invoice Status'],
     })
   }
 

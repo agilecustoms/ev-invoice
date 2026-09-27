@@ -4,8 +4,11 @@ import { parsePhoneNumberWithError } from 'libphonenumber-js'
 import type { OrderDto } from '../dto/order.dto.js'
 
 // https://developer.paypal.com/docs/api/invoicing/v2/#definition-invoice_status
-export type InvoiceStatus = 'DRAFT' | 'SENT' | 'SCHEDULED' | 'PAYMENT_PENDING' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID'
-  | 'MARKED_AS_PAID' | 'CANCELLED' | 'REFUNDED' | 'PARTIALLY_REFUNDED' | 'MARKED_AS_REFUNDED'
+export const INVOICE_STATUSES = [
+  'DRAFT', 'SENT', 'SCHEDULED', 'PAYMENT_PENDING', 'UNPAID', 'PARTIALLY_PAID', 'PAID',
+  'MARKED_AS_PAID', 'CANCELLED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'MARKED_AS_REFUNDED'
+] as const
+export type InvoiceStatus = typeof INVOICE_STATUSES[number]
 
 export interface PayPalCredentials {
   clientId: string

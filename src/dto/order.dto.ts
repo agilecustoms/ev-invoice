@@ -3,6 +3,7 @@ import { Transform, type TransformFnParams } from 'class-transformer'
 
 import {
   IsEmail, IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -15,6 +16,7 @@ import {
   type ValidationArguments,
   type ValidatorConstraintInterface,
 } from 'class-validator'
+import { INVOICE_STATUSES, type InvoiceStatus } from '../client/paypal.client.js'
 
 @ValidatorConstraint({ name: 'isTemporalPlainDate' })
 class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
@@ -108,4 +110,9 @@ export class OrderDto {
   @Matches(/^INV2-[A-Z0-9-]+$/, { message: 'invoiceId must be a PayPal invoice id (INV2-XXXX-XXXX-XXXX-XXXX)' })
   @IsOptional()
   invoiceId?: string
+
+  // mirrors the PayPal invoice status back onto the order, undefined until the first invoice is created
+  @IsOptional()
+  @IsIn(INVOICE_STATUSES)
+  invoiceStatus?: InvoiceStatus
 }
