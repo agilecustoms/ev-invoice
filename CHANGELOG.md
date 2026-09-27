@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/agilecustoms/ev-invoice/compare/1.23.0...1.24.0) (2026-09-27)
+
+### Features
+
+* sendInvoice ([b51d049](https://github.com/agilecustoms/ev-invoice/commit/b51d049547fcb7187849ff88303861d3849da5b7))
+
+
 ## [1.23.0](https://github.com/agilecustoms/ev-invoice/compare/1.22.0...1.23.0) (2026-09-27)
 
 ### Features
