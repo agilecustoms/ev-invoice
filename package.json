@@ -11,8 +11,8 @@
     "build": "tsc",
     "postbuild": "cp package.json .env.prod dist/",
     "openapi": "node dist/openapi",
-    "start": "tsc && APP_PROFILE=local node dist/local",
-    "start:dev": "APP_PROFILE=local tsc-watch --onSuccess \"node dist/local\""
+    "start": "tsc && APP_PROFILE=local AWS_PROFILE=ac-ev-prod-invoice node dist/local",
+    "start:dev": "   APP_PROFILE=local AWS_PROFILE=ac-ev-prod-invoice tsc-watch --onSuccess \"node dist/local\""
   },
   "dependencies": {
     "@aws-sdk/client-scheduler": "^3.1141.0",
