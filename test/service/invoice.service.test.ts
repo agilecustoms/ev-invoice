@@ -31,7 +31,10 @@ describe('InvoiceService', () => {
 
   beforeEach(() => {
     order = validOrder()
-    paypalClient = { createInvoice: vi.fn().mockResolvedValue('INV2-XXXX') } as unknown as PaypalClient
+    paypalClient = {
+      createInvoice: vi.fn().mockResolvedValue('INV2-XXXX'),
+      sendInvoice: vi.fn()
+    } as unknown as PaypalClient
     airTableClient = {
       getOrder: vi.fn().mockImplementation(() => Promise.resolve(order)),
       saveInvoice: vi.fn()
@@ -95,6 +98,14 @@ describe('InvoiceService', () => {
     await invoiceService.createInvoice(RECORD_ID)
 
     expect(airTableClient.saveInvoice).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX', 150)
+  })
+
+  it('sends the invoice after saving it in AirTable', async () => {
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(paypalClient.sendInvoice).toHaveBeenCalledWith('INV2-XXXX')
+    expect(vi.mocked(airTableClient.saveInvoice).mock.invocationCallOrder[0])
+      .toBeLessThan(vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder[0]!)
   })
 
   it('saves the defaulted deposit in AirTable', async () => {

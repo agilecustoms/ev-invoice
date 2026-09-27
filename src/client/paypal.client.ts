@@ -118,9 +118,15 @@ export class PaypalClient {
 
     // PayPal responds with a link to the new invoice: { rel: 'self', href: '.../v2/invoicing/invoices/INV2-...' }
     const { href } = await response.json() as { href: string }
-    const invoiceId = href.substring(href.lastIndexOf('/') + 1)
-    this.logger.log(`Created PayPal invoice ${invoiceId}`)
-    return invoiceId
+    return href.substring(href.lastIndexOf('/') + 1)
+  }
+
+  /**
+   * Sends a DRAFT invoice to the recipient (and additional recipients), which also moves it to status SENT
+   * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   */
+  public async sendInvoice(invoiceId: string): Promise<void> {
+    await this.post(`/v2/invoicing/invoices/${invoiceId}/send`, {})
   }
 
   private async post(path: string, body: unknown): Promise<Response> {

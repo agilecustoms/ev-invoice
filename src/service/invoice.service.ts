@@ -37,11 +37,16 @@ export class InvoiceService {
     }
     const deposit = order.deposit
 
-    this.logger.log(`Creating invoice...`)
+    this.logger.log(`Create draft invoice`)
     const invoiceId = await this.paypalClient.createInvoice(order)
 
-    this.logger.log(`Save invoice ID ${invoiceId} and deposit $${deposit} to airtable`)
+    this.logger.log(`Save invoice ${invoiceId} details in airtable`)
     await this.airTableClient.saveInvoice(recordId, invoiceId, deposit)
+
+    this.logger.log('Send invoice')
+    await this.paypalClient.sendInvoice(invoiceId)
+
+    this.logger.log('Invoice sent')
   }
 
   private async validate(request: OrderDto): Promise<void> {

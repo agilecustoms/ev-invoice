@@ -107,4 +107,20 @@ describe('PaypalClient', () => {
     expect(body.items[0].description).not.toContain('Venue address')
     expect(body.items[0].description).not.toContain('Services')
   })
+
+  it('sends the invoice', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(Response.json({}))
+
+    await client.sendInvoice('INV2-1')
+
+    const [, sendCall] = fetchMock.mock.calls
+    expect(sendCall![0]).toBe('https://paypal.test/v2/invoicing/invoices/INV2-1/send')
+    expect(sendCall![1]?.method).toBe('POST')
+  })
+
+  it('throws when sending fails', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(new Response('{}', { status: 422 }))
+
+    await expect(client.sendInvoice('INV2-1')).rejects.toThrow(/send failed: 422/)
+  })
 })
