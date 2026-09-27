@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { plainToInstance } from 'class-transformer'
 import { OrderDto } from '../dto/order.dto.js'
@@ -18,7 +18,6 @@ const TABLE_NAME = 'Orders'
  */
 @Injectable()
 export class AirTableClient {
-  private readonly logger = new Logger(AirTableClient.name)
   private readonly tableUrl: string
   private apiToken?: string
 
@@ -38,20 +37,21 @@ export class AirTableClient {
    */
   public async getOrder(recordId: string): Promise<OrderDto> {
     const response = await this.request(`/${recordId}`)
-    const { fields } = await response.json() as { fields: Record<string, unknown> }
+    const { id, fields } = await response.json() as { id: string, fields: Record<string, unknown> }
     return plainToInstance(OrderDto, {
-      orderId: fields['ID'],
-      orderType: fields['Type'],
-      orderStatus: fields['Status'],
+      recordId: id,
       customerName: fields['Name'],
       customerEmail: fields['email'],
       customerPhone: fields['Phone'],
-      orderPrice: fields['Price'],
-      orderDeposit: fields['Deposit'],
-      orderAddress: fields['Address'],
-      orderServiceDate: fields['Date'],
-      orderCompletionTime: fields['Time'],
-      orderServices: fields['Services'],
+      id: fields['ID'],
+      status: fields['Status'],
+      type: fields['Type'],
+      price: fields['Price'],
+      deposit: fields['Deposit'],
+      address: fields['Address'],
+      serviceDate: fields['Date'],
+      completionTime: fields['Time'],
+      services: fields['Services'],
     })
   }
 

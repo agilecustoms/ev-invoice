@@ -28,14 +28,14 @@ export class InvoiceService {
 
   public async createInvoice(recordId: string): Promise<void> {
     const order = await this.airTableClient.getOrder(recordId)
-    this.logger.log(`Loaded order ${order.orderId} from airtable`)
+    this.logger.log(`Loaded order ${order.id} from airtable`)
     await this.validate(order)
 
-    if (order.orderDeposit === undefined) {
+    if (order.deposit === undefined) {
       this.logger.log(`No deposit supplied, defaulting to 20% of the price`)
-      order.orderDeposit = defaultDeposit(order.orderPrice)
+      order.deposit = defaultDeposit(order.price)
     }
-    const deposit = order.orderDeposit
+    const deposit = order.deposit
 
     this.logger.log(`Creating invoice...`)
     const invoiceId = await this.paypalClient.createInvoice(order)
@@ -51,16 +51,16 @@ export class InvoiceService {
       const messages = errors.flatMap(error => Object.values(error.constraints ?? {}))
       throw new BadRequestException(messages)
     }
-    if (!INVOICEABLE_STATUSES.has(request.orderStatus)) {
+    if (!INVOICEABLE_STATUSES.has(request.status)) {
       throw new BadRequestException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
     }
-    if (Temporal.PlainDate.compare(request.orderServiceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
+    if (Temporal.PlainDate.compare(request.serviceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
       throw new BadRequestException('service date must be in the future')
     }
-    if (request.orderType === OrderType.BRIDAL && !request.orderServices?.trim()) {
-      throw new BadRequestException('services must not be empty for orderType Bridal')
+    if (request.type === OrderType.BRIDAL && !request.services?.trim()) {
+      throw new BadRequestException('services must not be empty for type Bridal')
     }
-    if (request.orderDeposit !== undefined && request.orderDeposit > request.orderPrice) {
+    if (request.deposit !== undefined && request.deposit > request.price) {
       throw new BadRequestException('deposit must not exceed price')
     }
   }

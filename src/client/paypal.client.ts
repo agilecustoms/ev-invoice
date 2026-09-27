@@ -43,17 +43,17 @@ export class PaypalClient {
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(request: OrderDto): Promise<string> {
-    const dueDateIso = request.orderServiceDate.toString() // e.g. 2026-10-04
-    const serviceDate = request.orderServiceDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) // e.g. Oct 4, 2026
+  public async createInvoice(order: OrderDto): Promise<string> {
+    const dueDateIso = order.serviceDate.toString() // e.g. 2026-10-04
+    const serviceDate = order.serviceDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) // e.g. Oct 4, 2026
 
     // Venue address: 7643 Pineville-Matthews Rd, Charlotte, NC 28226
     // Date: Nov-11, 2026, Completion time: 2:00pm
-    // Services: Trial makup at studio, Bridal Makeup at the venue, Makeup for 4 bride maids
+    // Services: Trial makeup at Studio, Bridal Makeup at the venue, Makeup for 4 bride maids
     const description = [
-      request.orderAddress && `Venue address: ${request.orderAddress}`,
-      `Date: ${serviceDate}, Completion time: ${request.orderCompletionTime}`,
-      request.orderServices && `Services: ${request.orderServices}`
+      order.address && `Venue address: ${order.address}`,
+      `Date: ${serviceDate}, Completion time: ${order.completionTime}`,
+      order.services && `Services: ${order.services}`
     ].filter(line => !!line).join('\n')
 
     const phone = (text: string) => {
@@ -64,15 +64,15 @@ export class PaypalClient {
     const amount = (value: number) => ({ currency_code: 'USD', value: value.toFixed(2) })
     const name = (fullName: string) => ({ full_name: fullName })
 
-    const orderDeposit = request.orderDeposit
+    const deposit = order.deposit
 
     const body = {
       detail: {
         currency_code: 'USD',
-        reference: request.orderId,
-        note: orderDeposit === undefined
+        reference: order.recordId,
+        note: deposit === undefined
           ? 'Balance due on service date'
-          : `$${orderDeposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
+          : `$${deposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
         tip_presets: ['15', '20', '25'],
         payment_term: {
           term_type: 'DUE_ON_DATE_SPECIFIED',
@@ -90,9 +90,9 @@ export class PaypalClient {
       },
       primary_recipients: [{
         billing_info: {
-          name: name(request.customerName),
-          email_address: request.customerEmail,
-          phones: [phone(request.customerPhone)]
+          name: name(order.customerName),
+          email_address: order.customerEmail,
+          phones: [phone(order.customerPhone)]
         }
       }],
       additional_recipients: ['chekulaevalexey@gmail.com', 'evelin.novshadyan@gmail.com'],
@@ -100,15 +100,15 @@ export class PaypalClient {
         name: 'Makeup Service',
         description,
         quantity: '1',
-        unit_amount: amount(request.orderPrice),
+        unit_amount: amount(order.price),
         unit_of_measure: 'AMOUNT'
       }],
       configuration: {
         allow_tip: true,
-        ...orderDeposit !== undefined && {
+        ...deposit !== undefined && {
           partial_payment: {
             allow_partial_payment: true,
-            minimum_amount_due: amount(orderDeposit)
+            minimum_amount_due: amount(deposit)
           }
         }
       }

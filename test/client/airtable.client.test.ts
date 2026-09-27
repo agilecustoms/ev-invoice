@@ -45,19 +45,20 @@ describe('AirTableClient', () => {
     expect(fetchMock).toHaveBeenCalledWith(RECORD_URL, expect.objectContaining({ method: 'GET' }))
     expect(order).toBeInstanceOf(OrderDto)
     expect(order).toMatchObject({
-      orderId: 110,
-      orderType: 'Bridal',
-      orderStatus: 'Confirmed',
+      recordId: RECORD_ID,
+      id: 110,
+      type: 'Bridal',
+      status: 'Confirmed',
       customerName: 'Jane Doe',
       customerEmail: 'jane@example.com',
       customerPhone: '(203) 570-0477',
-      orderPrice: 500,
-      orderDeposit: undefined, // empty fields are omitted by AirTable
-      orderAddress: '1 Main St',
-      orderCompletionTime: '2:00pm',
-      orderServices: 'Bridal Makeup',
+      price: 500,
+      deposit: undefined, // empty fields are omitted by AirTable
+      address: '1 Main St',
+      completionTime: '2:00pm',
+      services: 'Bridal Makeup',
     })
-    expect(order.orderServiceDate).toEqual(Temporal.PlainDate.from('2026-10-04'))
+    expect(order.serviceDate).toEqual(Temporal.PlainDate.from('2026-10-04'))
   })
 
   it('saves invoice id, deposit and invoice status', async () => {

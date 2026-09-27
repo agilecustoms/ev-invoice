@@ -9,16 +9,17 @@ const RECORD_ID = 'recDkcV8BUDP5kfkX'
 
 function validOrder(): OrderDto {
   const order = new OrderDto()
-  order.orderId = 1
+  order.recordId = RECORD_ID
+  order.id = 1
   order.customerName = 'Jane Doe'
   order.customerEmail = 'jane@example.com'
   order.customerPhone = '2035700477'
-  order.orderType = OrderType.BRIDAL
-  order.orderStatus = OrderStatus.CONFIRMED
-  order.orderPrice = 500
-  order.orderServiceDate = Temporal.Now.plainDateISO('UTC').add({ days: 1 })
-  order.orderCompletionTime = '2:00pm'
-  order.orderServices = 'Bridal Makeup'
+  order.type = OrderType.BRIDAL
+  order.status = OrderStatus.CONFIRMED
+  order.price = 500
+  order.serviceDate = Temporal.Now.plainDateISO('UTC').add({ days: 1 })
+  order.completionTime = '2:00pm'
+  order.services = 'Bridal Makeup'
   return order
 }
 
@@ -52,44 +53,44 @@ describe('InvoiceService', () => {
   })
 
   it('rejects an order status that is not invoiceable', async () => {
-    order.orderStatus = OrderStatus.DONE
+    order.status = OrderStatus.DONE
 
     await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/status/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects a service date that is not in the future', async () => {
-    order.orderServiceDate = Temporal.Now.plainDateISO('UTC')
+    order.serviceDate = Temporal.Now.plainDateISO('UTC')
 
     await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/future/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
-  it('rejects an empty orderServices for a Bridal order', async () => {
-    order.orderServices = '  '
+  it('rejects an empty services for a Bridal order', async () => {
+    order.services = '  '
 
     await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/services/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects a deposit that exceeds the price', async () => {
-    order.orderPrice = 100
-    order.orderDeposit = 150
+    order.price = 100
+    order.deposit = 150
 
     await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/deposit/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('defaults the deposit to 20% of the price, rounded up to the nearest $10', async () => {
-    order.orderPrice = 155
+    order.price = 155
 
     await invoiceService.createInvoice(RECORD_ID)
 
-    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.objectContaining({ orderDeposit: 40 }))
+    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.objectContaining({ deposit: 40 }))
   })
 
   it('saves the PayPal invoice id and supplied deposit in AirTable', async () => {
-    order.orderDeposit = 150
+    order.deposit = 150
 
     await invoiceService.createInvoice(RECORD_ID)
 
@@ -97,7 +98,7 @@ describe('InvoiceService', () => {
   })
 
   it('saves the defaulted deposit in AirTable', async () => {
-    order.orderPrice = 155
+    order.price = 155
 
     await invoiceService.createInvoice(RECORD_ID)
 

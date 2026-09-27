@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{base-url}}/create?recordId=rec8v75R3OCSfosGK&customerName=Alexey Chekulaev&customerEmail=chekulaevalexey@gmail.com&customerPhone=+12035700477&orderId=102&orderType=Special Occasion&orderStatus=Requested&orderPrice=150&orderDeposit=50&orderAddress=&orderServiceDate=2026-10-04T00:00:00.000Z&orderCompletionTime=2pm&orderServices="
+  url: "{{base-url}}/create?recordId=rec8v75R3OCSfosGK"
   headers:
     - name: x-command-id
       value: test
@@ -13,42 +13,6 @@ http:
   params:
     - name: recordId
       value: rec8v75R3OCSfosGK
-      type: query
-    - name: customerName
-      value: Alexey Chekulaev
-      type: query
-    - name: customerEmail
-      value: chekulaevalexey@gmail.com
-      type: query
-    - name: customerPhone
-      value: "+12035700477"
-      type: query
-    - name: orderId
-      value: "102"
-      type: query
-    - name: orderType
-      value: Special Occasion
-      type: query
-    - name: orderStatus
-      value: Requested
-      type: query
-    - name: orderPrice
-      value: "150"
-      type: query
-    - name: orderDeposit
-      value: "50"
-      type: query
-    - name: orderAddress
-      value: ""
-      type: query
-    - name: orderServiceDate
-      value: 2026-10-04T00:00:00.000Z
-      type: query
-    - name: orderCompletionTime
-      value: 2pm
-      type: query
-    - name: orderServices
-      value: ""
       type: query
   auth: inherit
 

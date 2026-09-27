@@ -18,12 +18,11 @@ import {
 @ValidatorConstraint({ name: 'isTemporalPlainDate' })
 class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
   /**
-   * AirTable date field arrives as 2026-10-04 (a date-time as 2026-10-04T00:00:00.000Z); PlainDate.from rejects
-   * the time/offset part, so drop it first
+   * AirTable date field arrives as 2026-10-04
    */
   static transform({ value }: TransformFnParams): unknown {
     try {
-      return Temporal.PlainDate.from(value.split('T')[0])
+      return Temporal.PlainDate.from(value)
     } catch {
       return value // let the validator report it, instead of throwing out of the transform step
     }
@@ -34,7 +33,7 @@ class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-    return `${args.property} must be a valid ISO 8601 date-time string`
+    return `${args.property} must be a valid ISO 8601 date (YYYY-MM-DD)`
   }
 }
 
@@ -57,6 +56,9 @@ export enum OrderStatus {
  * Order as loaded from AirTable (see AirTableClient.getOrder for the field mapping)
  */
 export class OrderDto {
+  // AirTable record id (recXXXXXXXXXXXXXX), set from the record itself, not from its fields
+  recordId!: string
+
   @IsString()
   @IsNotEmpty()
   customerName!: string
@@ -69,35 +71,35 @@ export class OrderDto {
 
   @Min(1)
   @IsInt()
-  orderId!: number
+  id!: number // AirTable ID field (autonumber)
 
   @IsEnum(OrderType)
-  orderType!: OrderType
+  type!: OrderType
 
   @IsEnum(OrderStatus)
-  orderStatus!: OrderStatus
+  status!: OrderStatus
 
   @Min(0)
   @IsInt()
-  orderPrice!: number
+  price!: number
 
   @Min(0)
   @IsInt()
   @IsOptional()
-  orderDeposit?: number
+  deposit?: number
 
   @IsString()
   @IsOptional()
-  orderAddress?: string
+  address?: string
 
   @Transform(IsTemporalPlainDateConstraint.transform)
   @Validate(IsTemporalPlainDateConstraint)
-  orderServiceDate!: Temporal.PlainDate
+  serviceDate!: Temporal.PlainDate
 
   @IsString()
-  orderCompletionTime!: string
+  completionTime!: string
 
   @IsString()
   @IsOptional()
-  orderServices?: string // required for orderType Bridal, see InvoiceService
+  services?: string // required for type Bridal, see InvoiceService
 }

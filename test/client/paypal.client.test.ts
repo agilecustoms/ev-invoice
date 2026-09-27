@@ -8,10 +8,11 @@ const config = { getOrThrow: () => 'https://paypal.test' } as unknown as ConfigS
 
 function request(): OrderDto {
   const dto = new OrderDto()
-  dto.orderId = 1
-  dto.orderPrice = 150
-  dto.orderDeposit = 50
-  dto.orderServiceDate = Temporal.PlainDate.from('2026-10-04')
+  dto.recordId = 'recDkcV8BUDP5kfkX'
+  dto.id = 1
+  dto.price = 150
+  dto.deposit = 50
+  dto.serviceDate = Temporal.PlainDate.from('2026-10-04')
   dto.customerPhone = '2035700477'
   return dto
 }
@@ -62,6 +63,7 @@ describe('PaypalClient', () => {
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)
     expect(body.detail.payment_term.due_date).toBe('2026-10-04')
+    expect(body.detail.reference).toBe('recDkcV8BUDP5kfkX')
     expect(body.items[0].description).toContain('Date: Oct 4, 2026')
   })
 
@@ -83,7 +85,7 @@ describe('PaypalClient', () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
     const dto = request()
-    dto.orderDeposit = undefined
+    dto.deposit = undefined
     await client.createInvoice(dto)
 
     const [, invoiceCall] = fetchMock.mock.calls
@@ -96,8 +98,8 @@ describe('PaypalClient', () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
     const dto = request()
-    dto.orderAddress = undefined
-    dto.orderServices = undefined
+    dto.address = undefined
+    dto.services = undefined
     await client.createInvoice(dto)
 
     const [, invoiceCall] = fetchMock.mock.calls
