@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/agilecustoms/ev-invoice/compare/1.25.0...1.26.0) (2026-09-27)
+
+### Features
+
+* update airtable after invoice sent ([5f90ceb](https://github.com/agilecustoms/ev-invoice/commit/5f90cebf94625b3d5e286f09fb3f7208b9086dfe))
+
+
 ## [1.25.0](https://github.com/agilecustoms/ev-invoice/compare/1.24.0...1.25.0) (2026-09-27)
 
 ### Features
