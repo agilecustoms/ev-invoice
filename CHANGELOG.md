@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/agilecustoms/ev-invoice/compare/1.27.1...1.28.0) (2026-09-27)
+
+### Features
+
+* check invoice status ([84c66c8](https://github.com/agilecustoms/ev-invoice/commit/84c66c8af9d25f9bd695380fed80ca1988af67b9))
+
+
 ## [1.27.1](https://github.com/agilecustoms/ev-invoice/compare/1.27.0...1.27.1) (2026-09-27)
 
 ### Miscellaneous
