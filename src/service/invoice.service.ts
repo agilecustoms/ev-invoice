@@ -34,15 +34,15 @@ export class InvoiceService {
     await this.validate(order)
 
     if (order.deposit === undefined) {
-      this.logger.log(`No deposit supplied, defaulting to 20% of the price`)
       order.deposit = defaultDeposit(order.price)
+      this.logger.log(`No deposit supplied, defaulting to 20% of the price ($${order.deposit})`)
     }
     const deposit = order.deposit
 
     this.logger.log(`Create draft invoice`)
     const invoiceId = await this.paypalClient.createInvoice(order)
 
-    this.logger.log(`Save invoice ${invoiceId} details in airtable`)
+    this.logger.log(`Save invoice ${invoiceId} details in AirTable`)
     await this.airTableClient.patch(recordId, { 'invoiceId': invoiceId, 'Deposit': deposit, 'Invoice Status': 'DRAFT' })
 
     this.logger.log('Schedule expiry check')
@@ -51,7 +51,7 @@ export class InvoiceService {
     this.logger.log('Send invoice')
     await this.paypalClient.sendInvoice(invoiceId)
 
-    this.logger.log('Invoice sent, update airtable status')
+    this.logger.log('Update AirTable invoice status to SENT')
     await this.airTableClient.patch(recordId, { 'Invoice Status': 'SENT' })
   }
 
