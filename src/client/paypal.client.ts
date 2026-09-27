@@ -28,6 +28,11 @@ interface AccessToken {
   expiresAt: number // epoch millis
 }
 
+export interface InvoiceSummary {
+  id: string
+  status: InvoiceStatus
+}
+
 /**
  * Thin wrapper around PayPal REST API (https://developer.paypal.com/docs/api/invoicing/v2/)
  */
@@ -44,6 +49,25 @@ export class PaypalClient {
     config: ConfigService,
   ) {
     this.baseUrl = config.getOrThrow<string>('PAYPAL_URL')
+  }
+
+  /**
+   * Looks up an invoice by its reference (we set it to the AirTable record id on creation), so a retry after
+   * a partial failure can find whatever PayPal already has for this order instead of creating a duplicate
+   * @returns the matching invoice, or undefined if none exists. Assumes at most one invoice per reference
+   */
+  public async findInvoiceByReference(reference: string): Promise<InvoiceSummary | undefined> {
+    const response = await this.request('POST', '/v2/invoicing/search-invoices', { reference })
+    const { items } = await response.json() as { items?: InvoiceSummary[] }
+    return items?.[0]
+  }
+
+  /**
+   * Deletes a draft invoice permanently. PayPal only allows deleting invoices still in DRAFT/SCHEDULED status
+   * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   */
+  public async deleteInvoice(invoiceId: string): Promise<void> {
+    await this.request('DELETE', `/v2/invoicing/invoices/${invoiceId}`)
   }
 
   /**
@@ -145,7 +169,7 @@ export class PaypalClient {
     return status
   }
 
-  private async request(method: 'GET' | 'POST', path: string, body?: unknown): Promise<Response> {
+  private async request(method: 'GET' | 'POST' | 'DELETE', path: string, body?: unknown): Promise<Response> {
     const response = await fetch(this.baseUrl + path, {
       method,
       headers: {

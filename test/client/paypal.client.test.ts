@@ -134,4 +134,33 @@ describe('PaypalClient', () => {
     expect(getCall![1]?.method).toBe('GET')
     expect(getCall![1]?.body).toBeUndefined()
   })
+
+  it('finds an invoice by reference', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(Response.json({
+      items: [{ id: 'INV2-1', status: 'DRAFT' }]
+    }))
+
+    expect(await client.findInvoiceByReference('recDkcV8BUDP5kfkX')).toEqual({ id: 'INV2-1', status: 'DRAFT' })
+
+    const [, searchCall] = fetchMock.mock.calls
+    expect(searchCall![0]).toBe('https://paypal.test/v2/invoicing/search-invoices')
+    expect(searchCall![1]?.method).toBe('POST')
+    expect(JSON.parse(searchCall![1]?.body as string)).toEqual({ reference: 'recDkcV8BUDP5kfkX' })
+  })
+
+  it('returns undefined when no invoice matches the reference', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(Response.json({ items: [] }))
+
+    expect(await client.findInvoiceByReference('recDkcV8BUDP5kfkX')).toBeUndefined()
+  })
+
+  it('deletes an invoice', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(new Response(null, { status: 204 }))
+
+    await client.deleteInvoice('INV2-1')
+
+    const [, deleteCall] = fetchMock.mock.calls
+    expect(deleteCall![0]).toBe('https://paypal.test/v2/invoicing/invoices/INV2-1')
+    expect(deleteCall![1]?.method).toBe('DELETE')
+  })
 })

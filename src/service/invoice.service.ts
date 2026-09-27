@@ -30,20 +30,20 @@ export class InvoiceService {
 
   public async createInvoice(recordId: string): Promise<void> {
     const order = await this.airTableClient.getOrder(recordId)
-    this.logger.log(`Loaded order ${order.id} from airtable`)
+    this.logger.log(`Loaded order ${order.id} from AirTable`)
     await this.validate(order)
+    await this.reconcileExistingInvoice(recordId)
 
     if (order.deposit === undefined) {
       order.deposit = defaultDeposit(order.price)
       this.logger.log(`No deposit supplied, defaulting to 20% of the price ($${order.deposit})`)
     }
-    const deposit = order.deposit
 
     this.logger.log(`Create draft invoice`)
     const invoiceId = await this.paypalClient.createInvoice(order)
 
     this.logger.log(`Save invoice ${invoiceId} details in AirTable`)
-    await this.airTableClient.patch(recordId, { 'invoiceId': invoiceId, 'Deposit': deposit, 'Invoice Status': 'DRAFT' })
+    await this.airTableClient.patch(recordId, { 'invoiceId': invoiceId, 'Deposit': order.deposit, 'Invoice Status': 'DRAFT' })
 
     this.logger.log('Schedule expiry check')
     await this.scheduleClient.scheduleExpiryCheck(recordId, invoiceId)
@@ -53,6 +53,23 @@ export class InvoiceService {
 
     this.logger.log('Update AirTable invoice status to SENT')
     await this.airTableClient.patch(recordId, { 'Invoice Status': 'SENT' })
+  }
+
+  /**
+   * A retry after a partial failure could find PayPal already has an invoice for this order (created on an earlier,
+   * interrupted attempt). A DRAFT one is safe to discard and recreate; anything past DRAFT means the invoice is
+   * already out in the world, so we must not silently create a second one for the same order
+   */
+  private async reconcileExistingInvoice(recordId: string): Promise<void> {
+    const existing = await this.paypalClient.findInvoiceByReference(recordId)
+    if (!existing) {
+      return
+    }
+    if (existing.status !== 'DRAFT') {
+      throw new BadRequestException(`can't send invoice, it is already ${existing.status}`)
+    }
+    this.logger.warn(`Found an existing draft invoice ${existing.id}, deleting it before creating a new one`)
+    await this.paypalClient.deleteInvoice(existing.id)
   }
 
   private async validate(request: OrderDto): Promise<void> {

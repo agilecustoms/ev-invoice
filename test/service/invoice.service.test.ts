@@ -35,7 +35,9 @@ describe('InvoiceService', () => {
     order = validOrder()
     paypalClient = {
       createInvoice: vi.fn().mockResolvedValue('INV2-XXXX'),
-      sendInvoice: vi.fn()
+      sendInvoice: vi.fn(),
+      findInvoiceByReference: vi.fn().mockResolvedValue(undefined),
+      deleteInvoice: vi.fn()
     } as unknown as PaypalClient
     airTableClient = {
       getOrder: vi.fn().mockImplementation(() => Promise.resolve(order)),
@@ -100,6 +102,33 @@ describe('InvoiceService', () => {
     await invoiceService.createInvoice(RECORD_ID)
 
     expect(paypalClient.createInvoice).toHaveBeenCalled()
+  })
+
+  it('rejects when PayPal already has a non-draft invoice for this order', async () => {
+    vi.mocked(paypalClient.findInvoiceByReference).mockResolvedValue({ id: 'INV2-OLD', status: 'SENT' })
+
+    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/already SENT/)
+    expect(paypalClient.deleteInvoice).not.toHaveBeenCalled()
+    expect(paypalClient.createInvoice).not.toHaveBeenCalled()
+  })
+
+  it('deletes an existing draft invoice for this order before creating a new one', async () => {
+    vi.mocked(paypalClient.findInvoiceByReference).mockResolvedValue({ id: 'INV2-OLD', status: 'DRAFT' })
+
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(paypalClient.findInvoiceByReference).toHaveBeenCalledWith(RECORD_ID)
+    expect(paypalClient.deleteInvoice).toHaveBeenCalledWith('INV2-OLD')
+    const [deletion] = vi.mocked(paypalClient.deleteInvoice).mock.invocationCallOrder
+    const [creation] = vi.mocked(paypalClient.createInvoice).mock.invocationCallOrder
+    expect(deletion).toBeLessThan(creation!)
+  })
+
+  it('does not look up an existing invoice when the order itself is invalid', async () => {
+    order.customerEmail = 'not-an-email'
+
+    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow()
+    expect(paypalClient.findInvoiceByReference).not.toHaveBeenCalled()
   })
 
   it('defaults the deposit to 20% of the price, rounded up to the nearest $10', async () => {
