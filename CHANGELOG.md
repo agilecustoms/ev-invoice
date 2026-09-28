@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.33.0](https://github.com/agilecustoms/ev-invoice/compare/1.32.0...1.33.0) (2026-09-28)
+
+### Features
+
+* add deposit term ([79ab591](https://github.com/agilecustoms/ev-invoice/commit/79ab59168b48a79534c48f17afaa24d977a7ad85))
+* duration utility ([31ea2d0](https://github.com/agilecustoms/ev-invoice/commit/31ea2d026edaf6a879c17bc80517c4b61bd23ba3))
+
+### Bug Fixes
+
+* deposit amount ([912f3b2](https://github.com/agilecustoms/ev-invoice/commit/912f3b2db1febd7a225d9797f680cae0805319dd))
+
+
 ## [1.32.0](https://github.com/agilecustoms/ev-invoice/compare/1.31.0...1.32.0) (2026-09-28)
 
 ### Features
