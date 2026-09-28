@@ -1,4 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
+import type { ConfigService } from '@nestjs/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AirTableClient } from '../../src/client/airtable.client.js'
 import { PaypalClient } from '../../src/client/paypal.client.js'
@@ -7,6 +8,8 @@ import { OrderDto, OrderStatus, OrderType } from '../../src/dto/order.dto.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
 
 const RECORD_ID = 'recDkcV8BUDP5kfkX'
+const config = { getOrThrow: () => 'PT24H' } as unknown as ConfigService
+const TERM = Temporal.Duration.from('PT24H')
 
 function validOrder(): OrderDto {
   const order = new OrderDto()
@@ -44,7 +47,7 @@ describe('InvoiceService', () => {
       patch: vi.fn()
     } as unknown as AirTableClient
     scheduleClient = { scheduleExpiryCheck: vi.fn(), deleteExpiryCheck: vi.fn() } as unknown as ScheduleClient
-    invoiceService = new InvoiceService(paypalClient, airTableClient, scheduleClient)
+    invoiceService = new InvoiceService(paypalClient, airTableClient, scheduleClient, config)
   })
 
   it('loads the order by record id', async () => {
@@ -149,12 +152,24 @@ describe('InvoiceService', () => {
     expect(paypalClient.findInvoiceByReference).not.toHaveBeenCalled()
   })
 
+  it('gives the invoice and the expiry check the same deposit term', async () => {
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.anything(), TERM)
+    expect(scheduleClient.scheduleExpiryCheck).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX', TERM)
+  })
+
+  it.each(['24 hours', 'PT0M', '-PT1H'])('rejects DEPOSIT_TERM %s at startup', (value) => {
+    const badConfig = { getOrThrow: () => value } as unknown as ConfigService
+    expect(() => new InvoiceService(paypalClient, airTableClient, scheduleClient, badConfig)).toThrow(RangeError)
+  })
+
   it('defaults the deposit to 20% of the price, rounded up to the nearest $10', async () => {
     order.price = 155
 
     await invoiceService.createInvoice(RECORD_ID)
 
-    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.objectContaining({ deposit: 40 }))
+    expect(paypalClient.createInvoice).toHaveBeenCalledWith(expect.objectContaining({ deposit: 40 }), TERM)
   })
 
   it('saves the PayPal invoice id and supplied deposit in AirTable', async () => {
@@ -181,7 +196,7 @@ describe('InvoiceService', () => {
   it('schedules the expiry check after saving the draft and before sending', async () => {
     await invoiceService.createInvoice(RECORD_ID)
 
-    expect(scheduleClient.scheduleExpiryCheck).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX')
+    expect(scheduleClient.scheduleExpiryCheck).toHaveBeenCalledWith(RECORD_ID, 'INV2-XXXX', TERM)
     const [draftPatch] = vi.mocked(airTableClient.patch).mock.invocationCallOrder
     const [schedule] = vi.mocked(scheduleClient.scheduleExpiryCheck).mock.invocationCallOrder
     const [send] = vi.mocked(paypalClient.sendInvoice).mock.invocationCallOrder

@@ -1,10 +1,12 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { validate } from 'class-validator'
 import { AirTableClient } from '../client/airtable.client.js'
 import { PaypalClient } from '../client/paypal.client.js'
 import { ScheduleClient } from '../client/schedule.client.js'
 import { type OrderDto, OrderStatus, OrderType } from '../dto/order.dto.js'
+import { parsePositiveDuration } from '../util/duration.js'
 
 // statuses under which the order is still expected to happen; Done/Cancelled/Unavailable have no invoice to raise
 const INVOICEABLE_STATUSES: ReadonlySet<OrderStatus> = new Set([
@@ -21,12 +23,16 @@ function defaultDeposit(price: number): number {
 @Injectable()
 export class InvoiceService {
   private readonly logger = new Logger(InvoiceService.name)
+  private readonly depositTerm: Temporal.Duration // how long the customer has to pay the deposit
 
   constructor(
     private readonly paypalClient: PaypalClient,
     private readonly airTableClient: AirTableClient,
     private readonly scheduleClient: ScheduleClient,
-  ) {}
+    config: ConfigService,
+  ) {
+    this.depositTerm = parsePositiveDuration('DEPOSIT_TERM', config.getOrThrow<string>('DEPOSIT_TERM'))
+  }
 
   public async createInvoice(recordId: string): Promise<void> {
     const order = await this.airTableClient.getOrder(recordId)
@@ -36,13 +42,13 @@ export class InvoiceService {
     await this.reconcileExistingInvoice(recordId)
 
     this.logger.log(`Create draft invoice`)
-    const invoiceId = await this.paypalClient.createInvoice(order)
+    const invoiceId = await this.paypalClient.createInvoice(order, this.depositTerm)
 
     this.logger.log(`Save invoice ${invoiceId} details in AirTable`)
     await this.airTableClient.patch(recordId, { 'invoiceId': invoiceId, 'Deposit': order.deposit, 'Invoice Status': 'DRAFT' })
 
     this.logger.log('Schedule expiry check')
-    await this.scheduleClient.scheduleExpiryCheck(recordId, invoiceId)
+    await this.scheduleClient.scheduleExpiryCheck(recordId, invoiceId, this.depositTerm)
 
     this.logger.log('Send invoice')
     await this.paypalClient.sendInvoice(invoiceId)

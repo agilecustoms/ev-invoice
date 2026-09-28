@@ -8,8 +8,6 @@ import { Temporal } from '@js-temporal/polyfill'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-const EXPIRY_CHECK_DELAY = Temporal.Duration.from({ hours: 48 })
-
 function expiryCheckName(invoiceId: string): string {
   return `expiry-check-${invoiceId}`
 }
@@ -25,18 +23,19 @@ export class ScheduleClient {
   constructor(private readonly config: ConfigService) {}
 
   /**
-   * In 48 hours emits event 'invoice.expiry-check' (source 'ev-invoice.scheduler') to check if the deposit is paid.
+   * After the deposit term emits event 'invoice.expiry-check' (source 'ev-invoice.scheduler') to check if the deposit is paid.
    * The handler must check the invoice status, since the invoice may be paid (or not even sent) by then
    * @param recordId AirTable record id (recXXXXXXXXXXXXXX)
    * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   * @param depositTerm how long the customer has to pay the deposit, from now
    */
-  public async scheduleExpiryCheck(recordId: string, invoiceId: string): Promise<void> {
+  public async scheduleExpiryCheck(recordId: string, invoiceId: string, depositTerm: Temporal.Duration): Promise<void> {
     // read lazily: set by Terraform in AWS only, so bootstrap (local, OpenAPI generation) never requires them
     const groupName = this.config.getOrThrow<string>('SCHEDULE_GROUP')
     const roleArn = this.config.getOrThrow<string>('SCHEDULE_ROLE_ARN')
     const eventBusArn = this.config.getOrThrow<string>('EVENT_BUS_ARN')
 
-    const at = Temporal.Now.plainDateTimeISO('UTC').add(EXPIRY_CHECK_DELAY).toString({ smallestUnit: 'second' })
+    const at = Temporal.Now.plainDateTimeISO('UTC').add(depositTerm).toString({ smallestUnit: 'second' })
 
     await this.scheduler.send(new CreateScheduleCommand({
       GroupName: groupName,

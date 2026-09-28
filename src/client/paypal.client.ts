@@ -1,7 +1,9 @@
+import type { Temporal } from '@js-temporal/polyfill'
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { parsePhoneNumberWithError } from 'libphonenumber-js'
 import type { OrderDto } from '../dto/order.dto.js'
+import { formatDuration } from '../util/duration.js'
 
 // https://developer.paypal.com/docs/api/invoicing/v2/#definition-invoice_status
 export const INVOICE_STATUSES = [
@@ -77,7 +79,7 @@ export class PaypalClient {
    * Creates a DRAFT invoice (it is not sent to the recipient yet)
    * @returns PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
    */
-  public async createInvoice(order: OrderDto): Promise<string> {
+  public async createInvoice(order: OrderDto, depositTerm: Temporal.Duration): Promise<string> {
     const dueDateIso = order.serviceDate.toString() // e.g. 2026-10-04
     const serviceDate = order.serviceDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) // e.g. Oct 4, 2026
 
@@ -99,6 +101,7 @@ export class PaypalClient {
     const name = (fullName: string) => ({ full_name: fullName })
 
     const deposit = order.deposit
+    const term = formatDuration(depositTerm) // e.g. 24 hours
 
     const body = {
       detail: {
@@ -106,13 +109,13 @@ export class PaypalClient {
         reference: order.recordId,
         note: deposit === undefined
           ? 'Balance due on service date'
-          : `$${deposit} deposit due in 48 hours to reserve your date. Balance due on service date`,
+          : `$${deposit} deposit due in ${term} to reserve your date. Balance due on service date`,
         tip_presets: ['15', '20', '25'],
         payment_term: {
           term_type: 'DUE_ON_DATE_SPECIFIED',
           due_date: dueDateIso
         },
-        payment_terms: 'A minimum deposit of $200 must be paid within 48 hours to reserve your appointment. Until the deposit is paid, the requested date and time are not guaranteed and may be booked by another client. By paying the deposit, you agree to pay the remaining balance by the service date',
+        payment_terms: `A minimum deposit of $200 must be paid within ${term} to reserve your appointment. Until the deposit is paid, the requested date and time are not guaranteed and may be booked by another client. By paying the deposit, you agree to pay the remaining balance by the service date`,
         cancellation_policy: 'The deposit is non-refundable and reserves your appointment date and time. If you need to cancel or reschedule, please contact Makeup by Evelin as soon as possible'
       },
       invoicer: {

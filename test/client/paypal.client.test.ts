@@ -8,6 +8,7 @@ const CONFIG: Record<string, string> = {
   PAYPAL_URL: 'https://paypal.test',
   PAYPAL_INVOICER_EMAIL: 'invoicer@example.com',
 }
+const TERM = Temporal.Duration.from('PT24H')
 const config = { getOrThrow: (key: string) => CONFIG[key] } as unknown as ConfigService
 
 function request(): OrderDto {
@@ -42,9 +43,9 @@ describe('PaypalClient', () => {
 
   it('does not load credentials until the first call, then caches them', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
-    expect(await client.createInvoice(request())).toBe('INV2-1')
+    expect(await client.createInvoice(request(), TERM)).toBe('INV2-1')
     fetchMock.mockResolvedValueOnce(invoiceResponse()) // token is cached as well
-    await client.createInvoice(request())
+    await client.createInvoice(request(), TERM)
 
     expect(loadCredentials).toHaveBeenCalledTimes(1)
   })
@@ -54,15 +55,15 @@ describe('PaypalClient', () => {
       .mockRejectedValueOnce(new Error('Secrets Manager is down'))
       .mockResolvedValueOnce({ clientId: 'id', clientSecret: 'secret' })
 
-    await expect(client.createInvoice(request())).rejects.toThrow('Secrets Manager is down')
+    await expect(client.createInvoice(request(), TERM)).rejects.toThrow('Secrets Manager is down')
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
-    expect(await client.createInvoice(request())).toBe('INV2-1')
+    expect(await client.createInvoice(request(), TERM)).toBe('INV2-1')
   })
 
   it('formats the service date for the due date and description', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
-    await client.createInvoice(request())
+    await client.createInvoice(request(), TERM)
 
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)
@@ -77,7 +78,7 @@ describe('PaypalClient', () => {
 
       const dto = request()
       dto.customerPhone = customerPhone
-      await client.createInvoice(dto)
+      await client.createInvoice(dto, TERM)
 
       const [, invoiceCall] = fetchMock.mock.calls
       const body = JSON.parse(invoiceCall![1]?.body as string)
@@ -88,11 +89,22 @@ describe('PaypalClient', () => {
   it('sends the configured invoicer email', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
-    await client.createInvoice(request())
+    await client.createInvoice(request(), TERM)
 
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)
     expect(body.invoicer.email_address).toBe('invoicer@example.com')
+  })
+
+  it('states the deposit term in the note and payment terms', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    await client.createInvoice(request(), Temporal.Duration.from('PT10M'))
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall![1]?.body as string)
+    expect(body.detail.note).toContain('deposit due in 10 minutes')
+    expect(body.detail.payment_terms).toContain('within 10 minutes')
   })
 
   it('omits partial payment terms when no deposit is required', async () => {
@@ -100,7 +112,7 @@ describe('PaypalClient', () => {
 
     const dto = request()
     dto.deposit = undefined
-    await client.createInvoice(dto)
+    await client.createInvoice(dto, TERM)
 
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)
@@ -114,7 +126,7 @@ describe('PaypalClient', () => {
     const dto = request()
     dto.address = undefined
     dto.services = undefined
-    await client.createInvoice(dto)
+    await client.createInvoice(dto, TERM)
 
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)

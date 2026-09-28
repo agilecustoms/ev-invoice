@@ -1,4 +1,5 @@
 import { CreateScheduleCommand, DeleteScheduleCommand, ResourceNotFoundException, SchedulerClient } from '@aws-sdk/client-scheduler'
+import { Temporal } from '@js-temporal/polyfill'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ScheduleClient } from '../../src/client/schedule.client.js'
@@ -24,15 +25,16 @@ describe('ScheduleClient', () => {
     send.mockRestore()
   })
 
-  it('schedules an expiry check event in 48 hours', async () => {
-    await new ScheduleClient(config).scheduleExpiryCheck('recDkcV8BUDP5kfkX', 'INV2-Z56S-5LLA-Q52L-CPZ5')
+  it('schedules an expiry check event after the deposit term', async () => {
+    await new ScheduleClient(config)
+      .scheduleExpiryCheck('recDkcV8BUDP5kfkX', 'INV2-Z56S-5LLA-Q52L-CPZ5', Temporal.Duration.from('PT24H'))
 
     const command = send.mock.calls[0]![0] as CreateScheduleCommand
     expect(command).toBeInstanceOf(CreateScheduleCommand)
     expect(command.input).toEqual({
       GroupName: 'dev-ev-invoice',
       Name: 'expiry-check-INV2-Z56S-5LLA-Q52L-CPZ5',
-      ScheduleExpression: 'at(2026-09-28T21:47:08)',
+      ScheduleExpression: 'at(2026-09-27T21:47:08)',
       ScheduleExpressionTimezone: 'UTC',
       FlexibleTimeWindow: { Mode: 'OFF' },
       ActionAfterCompletion: 'DELETE',
