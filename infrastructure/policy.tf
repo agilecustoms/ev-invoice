@@ -48,6 +48,7 @@ data "aws_iam_policy_document" "app_scheduler" {
     effect = "Allow"
     actions = [
       "scheduler:CreateSchedule",
+      "scheduler:DeleteSchedule", # expiry check of a discarded draft invoice
     ]
     resources = [
       "arn:aws:scheduler:${local.region}:${local.account_id}:schedule/${aws_scheduler_schedule_group.app.id}/*",

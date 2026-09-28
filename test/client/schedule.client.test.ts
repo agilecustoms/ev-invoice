@@ -1,4 +1,4 @@
-import { CreateScheduleCommand, SchedulerClient } from '@aws-sdk/client-scheduler'
+import { CreateScheduleCommand, DeleteScheduleCommand, ResourceNotFoundException, SchedulerClient } from '@aws-sdk/client-scheduler'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ScheduleClient } from '../../src/client/schedule.client.js'
@@ -46,5 +46,25 @@ describe('ScheduleClient', () => {
         }
       }
     })
+  })
+
+  it('deletes the expiry check of an invoice', async () => {
+    await new ScheduleClient(config).deleteExpiryCheck('INV2-Z56S-5LLA-Q52L-CPZ5')
+
+    const command = send.mock.calls[0]![0] as DeleteScheduleCommand
+    expect(command).toBeInstanceOf(DeleteScheduleCommand)
+    expect(command.input).toEqual({ GroupName: 'dev-ev-invoice', Name: 'expiry-check-INV2-Z56S-5LLA-Q52L-CPZ5' })
+  })
+
+  it('ignores a missing expiry check on delete', async () => {
+    send.mockRejectedValueOnce(new ResourceNotFoundException({ message: 'Schedule not found', $metadata: {} }))
+
+    await expect(new ScheduleClient(config).deleteExpiryCheck('INV2-1')).resolves.toBeUndefined()
+  })
+
+  it('rethrows other errors on delete', async () => {
+    send.mockRejectedValueOnce(new Error('AccessDenied'))
+
+    await expect(new ScheduleClient(config).deleteExpiryCheck('INV2-1')).rejects.toThrow('AccessDenied')
   })
 })

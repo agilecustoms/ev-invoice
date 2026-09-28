@@ -75,6 +75,9 @@ export class InvoiceService {
       throw new BadRequestException(`can't send invoice, it is already ${existing.status}`)
     }
     this.logger.warn(`Found an existing draft invoice ${existing.id}, deleting it before creating a new one`)
+    // schedule first: if deleting the invoice then fails, a retry finds the draft again and repeats both,
+    // the other way around a failure would leave the schedule with nothing pointing to it
+    await this.scheduleClient.deleteExpiryCheck(existing.id)
     await this.paypalClient.deleteInvoice(existing.id)
   }
 

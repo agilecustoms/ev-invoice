@@ -1,9 +1,18 @@
-import { CreateScheduleCommand, SchedulerClient } from '@aws-sdk/client-scheduler'
+import {
+  CreateScheduleCommand,
+  DeleteScheduleCommand,
+  ResourceNotFoundException,
+  SchedulerClient
+} from '@aws-sdk/client-scheduler'
 import { Temporal } from '@js-temporal/polyfill'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 const EXPIRY_CHECK_DELAY = Temporal.Duration.from({ hours: 48 })
+
+function expiryCheckName(invoiceId: string): string {
+  return `expiry-check-${invoiceId}`
+}
 
 /**
  * Schedules one-time events in EventBridge Scheduler. On time, the schedule puts an event to the event bus,
@@ -31,7 +40,7 @@ export class ScheduleClient {
 
     await this.scheduler.send(new CreateScheduleCommand({
       GroupName: groupName,
-      Name: `expiry-check-${invoiceId}`, // unique per invoice: creating it twice fails instead of scheduling two checks
+      Name: expiryCheckName(invoiceId), // unique per invoice: creating it twice fails instead of scheduling two checks
       ScheduleExpression: `at(${at})`, // e.g. at(2026-09-28T21:47:00)
       ScheduleExpressionTimezone: 'UTC',
       FlexibleTimeWindow: { Mode: 'OFF' },
@@ -41,10 +50,29 @@ export class ScheduleClient {
         RoleArn: roleArn,
         Input: JSON.stringify({ recordId, invoiceId }),
         EventBridgeParameters: {
-          Source: 'ev-invoice.scheduler',
-          DetailType: 'invoice.expiry-check'
+          Source: 'ev-invoice.scheduler', // who produced this event
+          DetailType: 'invoice.expiry-check' // What kind of event is this?
         }
       }
     }))
+  }
+
+  /**
+   * Deletes the expiry check of an invoice that is being discarded. No-op if there is none: a failed attempt could
+   * have created the draft invoice but not yet its schedule, and the schedule deletes itself once fired
+   * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   */
+  public async deleteExpiryCheck(invoiceId: string): Promise<void> {
+    const command = new DeleteScheduleCommand({
+      GroupName: this.config.getOrThrow<string>('SCHEDULE_GROUP'),
+      Name: expiryCheckName(invoiceId)
+    })
+    try {
+      await this.scheduler.send(command)
+    } catch (error) {
+      if (!(error instanceof ResourceNotFoundException)) {
+        throw error
+      }
+    }
   }
 }

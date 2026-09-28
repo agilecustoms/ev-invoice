@@ -43,7 +43,7 @@ describe('InvoiceService', () => {
       getOrder: vi.fn().mockImplementation(() => Promise.resolve(order)),
       patch: vi.fn()
     } as unknown as AirTableClient
-    scheduleClient = { scheduleExpiryCheck: vi.fn() } as unknown as ScheduleClient
+    scheduleClient = { scheduleExpiryCheck: vi.fn(), deleteExpiryCheck: vi.fn() } as unknown as ScheduleClient
     invoiceService = new InvoiceService(paypalClient, airTableClient, scheduleClient)
   })
 
@@ -109,6 +109,7 @@ describe('InvoiceService', () => {
 
     await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/already SENT/)
     expect(paypalClient.deleteInvoice).not.toHaveBeenCalled()
+    expect(scheduleClient.deleteExpiryCheck).not.toHaveBeenCalled()
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
@@ -122,6 +123,23 @@ describe('InvoiceService', () => {
     const [deletion] = vi.mocked(paypalClient.deleteInvoice).mock.invocationCallOrder
     const [creation] = vi.mocked(paypalClient.createInvoice).mock.invocationCallOrder
     expect(deletion).toBeLessThan(creation!)
+  })
+
+  it('deletes the expiry check of the existing draft invoice before the invoice itself', async () => {
+    vi.mocked(paypalClient.findInvoiceByReference).mockResolvedValue({ id: 'INV2-OLD', status: 'DRAFT' })
+
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(scheduleClient.deleteExpiryCheck).toHaveBeenCalledWith('INV2-OLD')
+    const [scheduleDeletion] = vi.mocked(scheduleClient.deleteExpiryCheck).mock.invocationCallOrder
+    const [invoiceDeletion] = vi.mocked(paypalClient.deleteInvoice).mock.invocationCallOrder
+    expect(scheduleDeletion).toBeLessThan(invoiceDeletion!)
+  })
+
+  it('does not delete any expiry check when there is no existing invoice', async () => {
+    await invoiceService.createInvoice(RECORD_ID)
+
+    expect(scheduleClient.deleteExpiryCheck).not.toHaveBeenCalled()
   })
 
   it('does not look up an existing invoice when the order itself is invalid', async () => {
