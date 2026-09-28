@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.0](https://github.com/agilecustoms/ev-invoice/compare/1.33.1...1.34.0) (2026-09-28)
+
+### Features
+
+* handle SQS events ([ab2e943](https://github.com/agilecustoms/ev-invoice/commit/ab2e943e71e23da873a3e18221ec6bd05614dfa1))
+
+
 ## [1.33.1](https://github.com/agilecustoms/ev-invoice/compare/1.33.0...1.33.1) (2026-09-28)
 
 ### Miscellaneous
