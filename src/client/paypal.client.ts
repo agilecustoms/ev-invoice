@@ -115,7 +115,9 @@ export class PaypalClient {
           term_type: 'DUE_ON_DATE_SPECIFIED',
           due_date: dueDateIso
         },
-        payment_terms: `A minimum deposit of $200 must be paid within ${term} to reserve your appointment. Until the deposit is paid, the requested date and time are not guaranteed and may be booked by another client. By paying the deposit, you agree to pay the remaining balance by the service date`,
+        ...deposit !== undefined && {
+          payment_terms: `A minimum deposit of $${deposit} must be paid within ${term} to reserve your appointment. Until the deposit is paid, the requested date and time are not guaranteed and may be booked by another client. By paying the deposit, you agree to pay the remaining balance by the service date`
+        },
         cancellation_policy: 'The deposit is non-refundable and reserves your appointment date and time. If you need to cancel or reschedule, please contact Makeup by Evelin as soon as possible'
       },
       invoicer: {

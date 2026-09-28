@@ -107,6 +107,16 @@ describe('PaypalClient', () => {
     expect(body.detail.payment_terms).toContain('within 10 minutes')
   })
 
+  it('states the actual deposit amount in the payment terms', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    await client.createInvoice(request(), TERM) // deposit 50
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall![1]?.body as string)
+    expect(body.detail.payment_terms).toMatch(/^A minimum deposit of \$50 must be paid within 24 hours/)
+  })
+
   it('omits partial payment terms when no deposit is required', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
 
@@ -117,6 +127,7 @@ describe('PaypalClient', () => {
     const [, invoiceCall] = fetchMock.mock.calls
     const body = JSON.parse(invoiceCall![1]?.body as string)
     expect(body.configuration.partial_payment).toBeUndefined()
+    expect(body.detail.payment_terms).toBeUndefined()
     expect(body.detail.note).toBe('Balance due on service date')
   })
 
