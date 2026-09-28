@@ -37,6 +37,7 @@ export class InvoiceService {
   public async createInvoice(recordId: string): Promise<void> {
     const order = await this.airTableClient.getOrder(recordId)
     this.logger.log(`Loaded order ${order.id} from AirTable`)
+
     await this.validate(order)
     this.enrich(order)
     await this.reconcileExistingInvoice(recordId)
@@ -73,6 +74,7 @@ export class InvoiceService {
    * already out in the world, so we must not silently create a second one for the same order
    */
   private async reconcileExistingInvoice(recordId: string): Promise<void> {
+    this.logger.log(`Try to find existing invoice for order ${recordId}`)
     const existing = await this.paypalClient.findInvoiceByReference(recordId)
     if (!existing) {
       return
