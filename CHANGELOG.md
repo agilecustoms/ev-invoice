@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.0](https://github.com/agilecustoms/ev-invoice/compare/1.30.0...1.31.0) (2026-09-28)
+
+### Features
+
+* invoice reconciliation deletes expiry check ([862a3fd](https://github.com/agilecustoms/ev-invoice/commit/862a3fd37f27025dd12778f2d74d0397472c0688))
+
+
 ## [1.30.0](https://github.com/agilecustoms/ev-invoice/compare/1.29.1...1.30.0) (2026-09-27)
 
 ### Features
