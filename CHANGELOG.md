@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.33.1](https://github.com/agilecustoms/ev-invoice/compare/1.33.0...1.33.1) (2026-09-28)
+
+### Miscellaneous
+
+* add logging ([aec3b65](https://github.com/agilecustoms/ev-invoice/commit/aec3b650be014b583a11587c43f0899ba379a7ec))
+
+
 ## [1.33.0](https://github.com/agilecustoms/ev-invoice/compare/1.32.0...1.33.0) (2026-09-28)
 
 ### Features
