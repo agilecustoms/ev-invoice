@@ -56,12 +56,25 @@ data "aws_iam_policy_document" "app_scheduler" {
   }
 }
 
+data "aws_iam_policy_document" "app_sqs" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage",
+    ]
+    resources = [aws_sqs_queue.app.arn]
+  }
+}
+
 data "aws_iam_policy_document" "app" {
   source_policy_documents = [
     data.aws_iam_policy_document.app_iam.json,
     data.aws_iam_policy_document.app_logs.json,
     data.aws_iam_policy_document.app_scheduler.json,
     data.aws_iam_policy_document.app_secrets.json,
+    data.aws_iam_policy_document.app_sqs.json,
   ]
 }
 

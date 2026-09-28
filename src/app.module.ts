@@ -5,6 +5,7 @@ import { PaypalClient } from './client/paypal.client.js'
 import { ScheduleClient } from './client/schedule.client.js'
 import { HealthController } from './controller/health.controller.js'
 import { InvoiceController } from './controller/invoice.controller.js'
+import { SqsController } from './controller/sqs.controller.js'
 import { InvoiceService } from './service/invoice.service.js'
 
 export const APP_NAME = 'ev-invoice'
@@ -22,7 +23,7 @@ const profile = process.env['APP_PROFILE'] ?? 'prod'
     HealthController,
     InvoiceController
   ],
-  providers: [InvoiceService, PaypalClient, AirTableClient, ScheduleClient]
+  providers: [InvoiceService, PaypalClient, AirTableClient, ScheduleClient, SqsController]
 })
 export class AppModule {}
 

@@ -59,6 +59,16 @@ export class InvoiceService {
   }
 
   /**
+   * Fired by the expiry check schedule once the deposit term is over
+   * @param recordId AirTable record id (recXXXXXXXXXXXXXX)
+   * @param invoiceId PayPal invoice id, e.g. INV2-XXXX-XXXX-XXXX-XXXX
+   */
+  public checkExpiry(recordId: string, invoiceId: string): Promise<void> {
+    this.logger.log(`Hello world! check expiry of invoice ${invoiceId} for order ${recordId}`)
+    return Promise.resolve()
+  }
+
+  /**
    * Fills in what AirTable may leave empty
    */
   private enrich(order: OrderDto): void {

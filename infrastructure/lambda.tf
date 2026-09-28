@@ -35,3 +35,12 @@ resource "aws_lambda_function" "app" {
     log_group  = local.log_group_name
   }
 }
+
+resource "aws_lambda_event_source_mapping" "sqs" {
+  function_name    = aws_lambda_function.app.arn
+  event_source_arn = aws_sqs_queue.app.arn
+  batch_size       = 1
+
+  # the mapping polls the queue with the lambda role, so it needs sqs permissions attached first
+  depends_on = [aws_iam_role_policy_attachment.app]
+}

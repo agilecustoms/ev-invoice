@@ -6,11 +6,13 @@ import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyResult,
   APIGatewayProxyStructuredResultV2,
-  Context
+  Context,
+  SQSEvent
 } from 'aws-lambda'
 import express from 'express'
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
 import { APP_NAME, init } from './app.module.js'
+import { SqsController } from './controller/sqs.controller.js'
 import { LambdaModule, logger } from './lambda.module.js'
 
 // REST API sends payload format 1.0, HTTP API (and Lambda Function URL) sends 2.0.
@@ -20,9 +22,11 @@ type ApiGatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2
 type ApiGatewayResult = APIGatewayProxyResult | APIGatewayProxyStructuredResultV2
 type ProxyHandler = (event: ApiGatewayEvent, context: Context) => Promise<ApiGatewayResult>
 
+// one Nest app serves both API Gateway (through express) and SQS events, created on first invocation
 let proxyHandler: ProxyHandler
+let sqsController: SqsController
 
-async function bootstrap(): Promise<ProxyHandler> {
+async function bootstrap(): Promise<void> {
   const expressApp = express()
   const app = await NestFactory.create(
     LambdaModule,
@@ -41,7 +45,8 @@ async function bootstrap(): Promise<ProxyHandler> {
   logger.level = 'info' // from now on log normally
 
   // @ts-expect-error by design
-  return serverlessExpress({ app: expressApp }) as ProxyHandler
+  proxyHandler = serverlessExpress({ app: expressApp }) as ProxyHandler
+  sqsController = app.get(SqsController)
 }
 
 // the same discriminator serverless-express uses to choose its event adapter
@@ -75,10 +80,18 @@ function normalizePath(event: ApiGatewayEvent): void {
   }
 }
 
+function isSqs(event: ApiGatewayEvent | SQSEvent): event is SQSEvent {
+  return (event as SQSEvent).Records?.[0]?.eventSource === 'aws:sqs'
+}
+
 // noinspection JSUnusedGlobalSymbols
-export const handler = async (event: ApiGatewayEvent, context: Context): Promise<ApiGatewayResult> => {
+export const handler = async (event: ApiGatewayEvent | SQSEvent, context: Context): Promise<ApiGatewayResult | void> => {
   if (!proxyHandler) {
-    proxyHandler = await bootstrap()
+    await bootstrap()
+  }
+
+  if (isSqs(event)) {
+    return sqsController.handle(event, context)
   }
 
   normalizePath(event)

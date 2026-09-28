@@ -35,6 +35,7 @@ class CredentialsModule {}
   imports: [
     LoggerModule.forRoot({
       pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
+        level: 'debug',
         autoLogging: false, // do not log each request/response
         redact: ['req'],
         transport: {
