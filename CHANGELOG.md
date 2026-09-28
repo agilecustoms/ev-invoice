@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.1](https://github.com/agilecustoms/ev-invoice/compare/1.34.0...1.34.1) (2026-09-28)
+
+### Miscellaneous
+
+* refine sqs routing ([61ecb42](https://github.com/agilecustoms/ev-invoice/commit/61ecb424bf4452b93650cc41be6df0d64b364cca))
+
+
 ## [1.34.0](https://github.com/agilecustoms/ev-invoice/compare/1.33.1...1.34.0) (2026-09-28)
 
 ### Features
