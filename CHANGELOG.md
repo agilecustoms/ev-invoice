@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.0](https://github.com/agilecustoms/ev-invoice/compare/1.31.0...1.32.0) (2026-09-28)
+
+### Features
+
+* configure invoicer email ([07fa2e8](https://github.com/agilecustoms/ev-invoice/commit/07fa2e8ef41491b8495c2bcd3390235d3218fbcd))
+
+
 ## [1.31.0](https://github.com/agilecustoms/ev-invoice/compare/1.30.0...1.31.0) (2026-09-28)
 
 ### Features
