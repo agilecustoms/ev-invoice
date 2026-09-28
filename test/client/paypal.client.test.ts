@@ -4,7 +4,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PaypalClient, type PayPalCredentialsLoader } from '../../src/client/paypal.client.js'
 import { OrderDto } from '../../src/dto/order.dto.js'
 
-const config = { getOrThrow: () => 'https://paypal.test' } as unknown as ConfigService
+const CONFIG: Record<string, string> = {
+  PAYPAL_URL: 'https://paypal.test',
+  PAYPAL_INVOICER_EMAIL: 'invoicer@example.com',
+}
+const config = { getOrThrow: (key: string) => CONFIG[key] } as unknown as ConfigService
 
 function request(): OrderDto {
   const dto = new OrderDto()
@@ -80,6 +84,16 @@ describe('PaypalClient', () => {
       expect(body.primary_recipients[0].billing_info.phones[0]).toEqual(
         { country_code: '1', national_number: '2035700477', phone_type: 'MOBILE' })
     })
+
+  it('sends the configured invoicer email', async () => {
+    fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())
+
+    await client.createInvoice(request())
+
+    const [, invoiceCall] = fetchMock.mock.calls
+    const body = JSON.parse(invoiceCall![1]?.body as string)
+    expect(body.invoicer.email_address).toBe('invoicer@example.com')
+  })
 
   it('omits partial payment terms when no deposit is required', async () => {
     fetchMock.mockResolvedValueOnce(tokenResponse()).mockResolvedValueOnce(invoiceResponse())

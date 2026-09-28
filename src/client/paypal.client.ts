@@ -40,6 +40,7 @@ export interface InvoiceSummary {
 export class PaypalClient {
   private readonly logger = new Logger(PaypalClient.name)
   private readonly baseUrl: string
+  private readonly invoicerEmail: string
   private credentials?: PayPalCredentials
   private token?: AccessToken
 
@@ -49,6 +50,8 @@ export class PaypalClient {
     config: ConfigService,
   ) {
     this.baseUrl = config.getOrThrow<string>('PAYPAL_URL')
+    // must be an email of the PayPal account the credentials belong to (sandbox has its own), otherwise send fails
+    this.invoicerEmail = config.getOrThrow<string>('PAYPAL_INVOICER_EMAIL')
   }
 
   /**
@@ -115,7 +118,7 @@ export class PaypalClient {
       invoicer: {
         business_name: 'Makeup by Evelin',
         name: name('Evelin Chekulaieva'),
-        email_address: 'makeupwith.evelin@gmail.com',
+        email_address: this.invoicerEmail,
         phones: [phone('4754195725')],
         website: 'evelinmakeup.com'
       },
