@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.34.2](https://github.com/agilecustoms/ev-invoice/compare/1.34.1...1.34.2) (2026-10-09)
+
+### Miscellaneous
+
+* update deps ([3e8a714](https://github.com/agilecustoms/ev-invoice/commit/3e8a7140626c2bd094780f41eccdaaa169ce76ec))
+* update GitHub actions to latest versions ([750a5f3](https://github.com/agilecustoms/ev-invoice/commit/750a5f30e88925cfbdf427f906ca87bdd5287833))
+
+
 ## [1.34.1](https://github.com/agilecustoms/ev-invoice/compare/1.34.0...1.34.1) (2026-09-28)
 
 ### Miscellaneous
