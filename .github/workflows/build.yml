@@ -5,7 +5,7 @@ on:
 
 jobs:
   Validate-infra:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: read # required for actions/checkout
     steps:
@@ -60,7 +60,7 @@ jobs:
     needs:
       - Validate-infra
       - Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     environment: release
     permissions:
       id-token: write
