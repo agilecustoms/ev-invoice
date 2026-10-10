@@ -7,36 +7,12 @@ jobs:
   Validate-infra:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
-      contents: read
+      contents: read # required for actions/checkout
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          sparse-checkout: |
-            .github
-            infrastructure
-
-      - name: Setup Terraform
-        uses: agilecustoms/gha-prepare-terraform@main
+      - name: Validate infrastructure
+        uses: agilecustoms/gha-validate-terraform@main
         with:
           git-token: ${{ secrets.GIT_TF_TOKEN }}
-
-      - name: Terraform init
-        run: terraform init
-        working-directory: infrastructure
-
-      - name: Terraform validate
-        run: terraform validate
-        working-directory: infrastructure
-
-      - name: Run Checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: infrastructure
-          output_format: cli
-          config_file: .github/checkov.yml
-
 
   Build:
     runs-on: ubuntu-latest # slim has no 'zip' command
