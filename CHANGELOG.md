@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.34.4](https://github.com/agilecustoms/ev-invoice/compare/1.34.3...1.34.4) (2026-10-10)
+
+### Miscellaneous
+
+* run on ubuntu-slim runner ([c6b960c](https://github.com/agilecustoms/ev-invoice/commit/c6b960c9f0f599869a1240611df257305ee8aaf8))
+* unify .gitignore sections [skip ci] ([e0652ba](https://github.com/agilecustoms/ev-invoice/commit/e0652ba90aea4d0414bff6d9632344c4aa281ef1))
+
+
 ## [1.34.3](https://github.com/agilecustoms/ev-invoice/compare/1.34.2...1.34.3) (2026-10-10)
 
 ### Miscellaneous
