@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.3](https://github.com/agilecustoms/ev-invoice/compare/1.34.2...1.34.3) (2026-10-10)
+
+### Miscellaneous
+
+* validate infra with agilecustoms/gha-validate-terraform ([ee38e96](https://github.com/agilecustoms/ev-invoice/commit/ee38e963d4ec0d8cb792c62b06439877f5125277))
+
+
 ## [1.34.2](https://github.com/agilecustoms/ev-invoice/compare/1.34.1...1.34.2) (2026-10-09)
 
 ### Miscellaneous
