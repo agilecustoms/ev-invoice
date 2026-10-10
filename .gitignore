@@ -1,14 +1,23 @@
-# IntelliJ IDEA
-.idea/
-
-# Build
-/dist
-
-# dependencies
-/node_modules
-
-# Configs
-.env.local
-
-## System files
+# System files
 .DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Temp files
+.tmp
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test reports
+coverage/
+
+# Local config / secrets
+.env.local
