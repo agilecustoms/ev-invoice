@@ -1,5 +1,4 @@
 APP_NAME = ev-invoice
-GH_USER := $(shell gh api user --jq '.login' | tr '[:upper:]' '[:lower:]')
 ENV := "prod"
 
 _aws-login:
@@ -24,7 +23,7 @@ app2-test:
 app3-build:
 	@rm -rf dist; npm run build
 
-app3-generate-openapi: # needs to be called after build (ts ~~> js) but before package (bcz it remove --save-dev libs)
+app3-generate-openapi: # needs to be called after build (ts ~~> js)
 	@npm run openapi
 
 app3-package:
