@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.5](https://github.com/agilecustoms/ev-invoice/compare/v1.34.4...v1.34.5) (2026-10-12)
+
+### Miscellaneous
+
+* use make targets in build pipeline ([45629a6](https://github.com/agilecustoms/ev-invoice/commit/45629a668efed2db0094fc3e92b3aa51f4da418d))
+
+
 ## [1.34.4](https://github.com/agilecustoms/ev-invoice/compare/1.34.3...1.34.4) (2026-10-10)
 
 ### Miscellaneous
