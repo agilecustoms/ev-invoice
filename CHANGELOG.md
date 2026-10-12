@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.6](https://github.com/agilecustoms/ev-invoice/compare/v1.34.5...v1.34.6) (2026-10-12)
+
+### Miscellaneous
+
+* remove unused GH_USER from Makefile, fix app3-generate-openapi comment ([eb16aea](https://github.com/agilecustoms/ev-invoice/commit/eb16aea8d16ab7bd02027e934b15a57cff831a05))
+
+
 ## [1.34.5](https://github.com/agilecustoms/ev-invoice/compare/v1.34.4...v1.34.5) (2026-10-12)
 
 ### Miscellaneous
