@@ -20,32 +20,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # TODO: replace with gha-setup-node once I have private npm packages
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: 'npm'
 
-      # Once I have reusable npm package - add 'Prepare for Build' step like in Java build to generate npm token
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
-        run: npm run lint
+        run: make app1-lint
 
       - name: Test
-        run: npm run test
+        run: make app2-test
 
       - name: Build
-        run: npm run build
+        run: make app3-build
 
       - name: Generate OpenAPI spec
-        run: npm run openapi
+        run: make app3-generate-openapi
 
       - name: Package
-        run: |
-          npm prune --production
-          make app3-package
+        run: make app3-package
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main'

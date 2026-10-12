@@ -24,7 +24,7 @@ app2-test:
 app3-build:
 	@rm -rf dist; npm run build
 
-app3-generate-openapi: app3-build # needs to be called after build (ts ~~> js) but before package (bcz it remove --save-dev libs)
+app3-generate-openapi: # needs to be called after build (ts ~~> js) but before package (bcz it remove --save-dev libs)
 	@npm run openapi
 
 app3-package:
@@ -46,7 +46,7 @@ app3-package:
 	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**'; \
 	rm -rf ../tmp
 
-app4-build-as-ci: app0-install-deps app3-build app3-package
+app4-build-as-ci: app0-install-deps app1-lint app2-test app3-build app3-generate-openapi app3-package
 
 app4-hot-redeploy: app3-build app3-package
 	@export AWS_PROFILE=ac-ev-prod-admin; \
