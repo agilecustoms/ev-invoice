@@ -3,7 +3,7 @@ import { Global, Module } from '@nestjs/common'
 import type { APIGatewayProxyEvent, APIGatewayProxyEventV2, Context } from 'aws-lambda'
 import { LoggerModule } from 'nestjs-pino'
 import { destination, pino } from 'pino'
-import { APP_NAME, AppModule } from './app.module.js'
+import { AppModule } from './app.module.js'
 import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/airtable.client.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
 import { loadPlainSecret, loadSecret } from './util/secrets.js'
@@ -37,7 +37,7 @@ export const logger = pino(
     messageKey: 'message',
     errorKey: 'error',
     base: {
-      service: APP_NAME,
+      service: 'invoice', // app name w/o project prefix (ev-invoice -> invoice)
       env: process.env['AWS_ENV']
     },
     redact: ['req'],
