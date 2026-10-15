@@ -42,7 +42,8 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new LoggerErrorInterceptor()) // see https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   init(app)
   await app.init()
-  logger.level = 'info' // from now on log normally
+  // from now on log normally, at the level set in Lambda logging config (TRACE, DEBUG, INFO, WARN, ERROR, FATAL - same names in pino)
+  logger.level = process.env['AWS_LAMBDA_LOG_LEVEL']?.toLowerCase() || 'info'
 
   // @ts-expect-error by design
   proxyHandler = serverlessExpress({ app: expressApp }) as ProxyHandler
