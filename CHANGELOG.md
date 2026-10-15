@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.8](https://github.com/agilecustoms/ev-invoice/compare/v1.34.7...v1.34.8) (2026-10-15)
+
+### Miscellaneous
+
+* log timestamp in microseconds to sort logs within the same millisecond ([469eaae](https://github.com/agilecustoms/ev-invoice/commit/469eaaec69cee4df2faabeb88fc15b210aa40f37))
+
+
 ## [1.34.7](https://github.com/agilecustoms/ev-invoice/compare/v1.34.6...v1.34.7) (2026-10-15)
 
 ### Miscellaneous
