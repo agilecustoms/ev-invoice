@@ -24,9 +24,9 @@ export class SqsController {
   public async handle(event: SQSEvent, context: Context): Promise<void> {
     for (const record of event.Records) { // batch_size = 1, but don't rely on it
       const bindings = { requestId: context.awsRequestId, sqsMessageId: record.messageId }
+      const eventBridgeEvent = JSON.parse(record.body)
       await this.logger.runInContext(async () => {
         try {
-          const eventBridgeEvent = JSON.parse(record.body) // not validated, route() rejects unknown types
           await this.route(eventBridgeEvent)
         } catch (error) {
           // Lambda logs the thrown error in its own format, so log it ourselves (even though it causes double logging)
