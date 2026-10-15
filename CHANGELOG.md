@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.34.7](https://github.com/agilecustoms/ev-invoice/compare/v1.34.6...v1.34.7) (2026-10-15)
+
+### Miscellaneous
+
+* move JSON.parse out of try-catch block ([6af0a75](https://github.com/agilecustoms/ev-invoice/commit/6af0a759a30ebacb31c39bb940163a2c47409ca9))
+* normalize package.json key order [skip ci] ([5d4f1ab](https://github.com/agilecustoms/ev-invoice/commit/5d4f1abb8057445fba387ee70bdb24fe89e00a26))
+
+
 ## [1.34.6](https://github.com/agilecustoms/ev-invoice/compare/v1.34.5...v1.34.6) (2026-10-12)
 
 ### Miscellaneous
