@@ -1,11 +1,12 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { validate } from 'class-validator'
 import { AirTableClient } from '../client/airtable.client.js'
 import { PaypalClient } from '../client/paypal.client.js'
 import { ScheduleClient } from '../client/schedule.client.js'
 import { type OrderDto, OrderStatus, OrderType } from '../dto/order.dto.js'
+import { BusinessException } from '../exception/business.exception.js'
 import { parsePositiveDuration } from '../util/duration.js'
 
 // statuses under which the order is still expected to happen; Done/Cancelled/Unavailable have no invoice to raise
@@ -90,7 +91,7 @@ export class InvoiceService {
       return
     }
     if (existing.status !== 'DRAFT') {
-      throw new BadRequestException(`can't send invoice, it is already ${existing.status}`)
+      throw new BusinessException(`can't send invoice, it is already ${existing.status}`)
     }
     this.logger.warn(`Found an existing draft invoice ${existing.id}, deleting it before creating a new one`)
     // schedule first: if deleting the invoice then fails, a retry finds the draft again and repeats both,
@@ -99,27 +100,30 @@ export class InvoiceService {
     await this.paypalClient.deleteInvoice(existing.id)
   }
 
+  /**
+   * The request (recordId) is fine at this point, it's the order data that breaks business rules -> 422, not 400
+   */
   private async validate(request: OrderDto): Promise<void> {
     // the order comes from AirTable, not from the HTTP request, so the ValidationPipe never sees it
     const errors = await validate(request)
     if (errors.length > 0) {
       const messages = errors.flatMap(error => Object.values(error.constraints ?? {}))
-      throw new BadRequestException(messages)
+      throw new BusinessException(messages.join('; '))
     }
     if (!INVOICEABLE_STATUSES.has(request.status)) {
-      throw new BadRequestException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
+      throw new BusinessException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
     }
     if (Temporal.PlainDate.compare(request.serviceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
-      throw new BadRequestException('service date must be in the future')
+      throw new BusinessException('service date must be in the future')
     }
     if (request.type === OrderType.BRIDAL && !request.services?.trim()) {
-      throw new BadRequestException('services must not be empty for type Bridal')
+      throw new BusinessException('services must not be empty for type Bridal')
     }
     if (request.deposit !== undefined && request.deposit > request.price) {
-      throw new BadRequestException('deposit must not exceed price')
+      throw new BusinessException('deposit must not exceed price')
     }
     if (request.invoiceStatus !== undefined && request.invoiceStatus !== 'DRAFT') {
-      throw new BadRequestException('invoice status must be empty or DRAFT')
+      throw new BusinessException('invoice status must be empty or DRAFT')
     }
   }
 }

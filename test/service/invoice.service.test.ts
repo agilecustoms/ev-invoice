@@ -5,11 +5,19 @@ import { AirTableClient } from '../../src/client/airtable.client.js'
 import { PaypalClient } from '../../src/client/paypal.client.js'
 import { ScheduleClient } from '../../src/client/schedule.client.js'
 import { OrderDto, OrderStatus, OrderType } from '../../src/dto/order.dto.js'
+import { BusinessException } from '../../src/exception/business.exception.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
 
 const RECORD_ID = 'recDkcV8BUDP5kfkX'
 const config = { getOrThrow: () => 'PT24H' } as unknown as ConfigService
 const TERM = Temporal.Duration.from('PT24H')
+
+// business rule violations must be BusinessException (-> HTTP 422), not just any error
+async function expectBusinessException(promise: Promise<unknown>, message: RegExp): Promise<void> {
+  const error: unknown = await promise.then(() => undefined, (e: unknown) => e)
+  expect(error).toBeInstanceOf(BusinessException)
+  expect((error as Error).message).toMatch(message)
+}
 
 function validOrder(): OrderDto {
   const order = new OrderDto()
@@ -59,28 +67,28 @@ describe('InvoiceService', () => {
   it('rejects an order with invalid fields', async () => {
     order.customerEmail = 'not-an-email'
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow()
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /email/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects an order status that is not invoiceable', async () => {
     order.status = OrderStatus.DONE
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/status/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /status/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects a service date that is not in the future', async () => {
     order.serviceDate = Temporal.Now.plainDateISO('UTC')
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/future/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /future/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects an empty services for a Bridal order', async () => {
     order.services = '  '
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/services/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /services/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
@@ -88,14 +96,14 @@ describe('InvoiceService', () => {
     order.price = 100
     order.deposit = 150
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/deposit/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /deposit/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
   it('rejects an invoice status that is not empty or DRAFT', async () => {
     order.invoiceStatus = 'SENT'
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/invoice status/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /invoice status/)
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
   })
 
@@ -110,7 +118,7 @@ describe('InvoiceService', () => {
   it('rejects when PayPal already has a non-draft invoice for this order', async () => {
     vi.mocked(paypalClient.findInvoiceByReference).mockResolvedValue({ id: 'INV2-OLD', status: 'SENT' })
 
-    await expect(invoiceService.createInvoice(RECORD_ID)).rejects.toThrow(/already SENT/)
+    await expectBusinessException(invoiceService.createInvoice(RECORD_ID), /already SENT/)
     expect(paypalClient.deleteInvoice).not.toHaveBeenCalled()
     expect(scheduleClient.deleteExpiryCheck).not.toHaveBeenCalled()
     expect(paypalClient.createInvoice).not.toHaveBeenCalled()
