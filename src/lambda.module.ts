@@ -17,6 +17,18 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
 })
 
 /**
+ * pino puts the time in the log line as a raw JSON fragment (it is not part of the object seen by formatters.log),
+ * so emit both time keys here from a single clock reading:
+ * - 'timestamp': µs since epoch, to sort by
+ * - 'ftime': human-readable time (no date), helpful to read logs in CloudWatch console
+ */
+function timestamp(): string {
+  // Date.now() is only millisecond precision, so use performance.now() to get microseconds
+  const micros = Math.floor((performance.timeOrigin + performance.now()) * 1000)
+  return `,"timestamp":${micros},"ftime":"${formatter.format(Math.floor(micros / 1000))}"`
+}
+
+/**
  * Single pino instance for both request-scoped and out-of-request logs (otherwise nestjs-pino creates two),
  * so lambda.ts can change the level of all of them at once
  */
@@ -29,14 +41,9 @@ export const logger = pino(
       env: process.env['AWS_ENV']
     },
     redact: ['req'],
+    timestamp,
     formatters: {
-      level: label => ({ level: label.toUpperCase() }),
-      log: (object: Record<string, unknown>) => {
-        return {
-          ...object,
-          ftime: formatter.format(object['time'] as number)
-        }
-      }
+      level: label => ({ level: label.toUpperCase() })
     }
   },
   destination({
@@ -46,7 +53,7 @@ export const logger = pino(
 )
 
 /**
- * Capture current AWS request id and API Gateway request id and put them in every log record (like MDC in Java) - once per request
+ * Capture the current AWS request id and API Gateway request id and put them in every log record - once per request
  */
 function getRequestIds(): object {
   const { event, context } = getCurrentInvoke() as {
