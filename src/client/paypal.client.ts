@@ -153,7 +153,8 @@ export class PaypalClient {
       }
     }
 
-    this.logger.log(`Creating PayPal invoice with body: ${JSON.stringify(body, null, 2)}`)
+    // not the body: it has customer's name, email and phone (personal data does not belong in logs)
+    this.logger.log(`Creating PayPal invoice for order ${order.id}, price ${order.price}, deposit ${deposit}`)
     const response = await this.request('POST', '/v2/invoicing/invoices', body)
 
     // PayPal responds with a link to the new invoice: { rel: 'self', href: '.../v2/invoicing/invoices/INV2-...' }
