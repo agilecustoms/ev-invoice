@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.34.9](https://github.com/agilecustoms/ev-invoice/compare/v1.34.8...v1.34.9) (2026-10-15)
+
+### Miscellaneous
+
+* apply log level from Lambda logging config ([13ebb60](https://github.com/agilecustoms/ev-invoice/commit/13ebb60224f6f7b970d39e06dc40171e86ed88d3))
+* do not log customer personal data ([eae18fc](https://github.com/agilecustoms/ev-invoice/commit/eae18fccd4d3555c52c320fdec92d3cb061243f1))
+* log 'service' without project prefix ([4646429](https://github.com/agilecustoms/ev-invoice/commit/464642928359119f329a01491262c4e4dd40fd93))
+* set AWS_ENV for the lambda ([778a911](https://github.com/agilecustoms/ev-invoice/commit/778a91117dd7688b9d1e5d4521d11468137b8906))
+
+
 ## [1.34.8](https://github.com/agilecustoms/ev-invoice/compare/v1.34.7...v1.34.8) (2026-10-15)
 
 ### Miscellaneous
