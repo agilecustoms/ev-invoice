@@ -38,6 +38,15 @@ export interface InvoiceSummary {
 /**
  * Thin wrapper around PayPal REST API (https://developer.paypal.com/docs/api/invoicing/v2/)
  */
+/**
+ * Note the customer reads on the invoice, e.g. '$150 deposit due in 24 hours to reserve your date. Balance due on service date'
+ */
+export function invoiceNote(deposit: number | undefined, depositTerm: Temporal.Duration): string {
+  return deposit === undefined
+    ? 'Balance due on service date'
+    : `$${deposit} deposit due in ${formatDuration(depositTerm)} to reserve your date. Balance due on service date`
+}
+
 @Injectable()
 export class PaypalClient {
   private readonly logger = new Logger(PaypalClient.name)
@@ -107,9 +116,7 @@ export class PaypalClient {
       detail: {
         currency_code: 'USD',
         reference: order.recordId,
-        note: deposit === undefined
-          ? 'Balance due on service date'
-          : `$${deposit} deposit due in ${term} to reserve your date. Balance due on service date`,
+        note: invoiceNote(deposit, depositTerm),
         tip_presets: ['15', '20', '25'],
         payment_term: {
           term_type: 'DUE_ON_DATE_SPECIFIED',
