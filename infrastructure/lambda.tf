@@ -22,6 +22,7 @@ resource "aws_lambda_function" "app" {
 
   environment {
     variables = {
+      AWS_ENV            = var.env # put as 'env' in every log record (lambda.module.ts)
       AIRTABLE_SECRET_ID = aws_secretsmanager_secret.airtable.name
       EVENT_BUS_ARN      = var.event_bus_arn
       PAYPAL_SECRET_ID   = aws_secretsmanager_secret.paypal.name
