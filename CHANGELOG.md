@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.34.10](https://github.com/agilecustoms/ev-invoice/compare/v1.34.9...v1.34.10) (2026-10-15)
+
+### Miscellaneous
+
+* add BusinessException and global exception filter ([2259556](https://github.com/agilecustoms/ev-invoice/commit/2259556f158bc16fd18bbf291c6a15a240889b12))
+* business rule violations in InvoiceService respond with 422 ([b2745d9](https://github.com/agilecustoms/ev-invoice/commit/b2745d94f391325ceeeb78c2adab1ef53e4f7d99))
+* enable Nest decorators in tests ([e1dc0ef](https://github.com/agilecustoms/ev-invoice/commit/e1dc0effd912b3c625f548ee969ca4efc7ca6d56))
+
+
 ## [1.34.9](https://github.com/agilecustoms/ev-invoice/compare/v1.34.8...v1.34.9) (2026-10-15)
 
 ### Miscellaneous
