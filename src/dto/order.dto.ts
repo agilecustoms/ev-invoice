@@ -19,7 +19,7 @@ import {
 import { INVOICE_STATUSES, type InvoiceStatus } from '../client/paypal.client.js'
 
 @ValidatorConstraint({ name: 'isTemporalPlainDate' })
-class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
+export class IsTemporalPlainDateConstraint implements ValidatorConstraintInterface {
   /**
    * AirTable date field arrives as 2026-10-04
    */

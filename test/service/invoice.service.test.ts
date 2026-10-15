@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AirTableClient } from '../../src/client/airtable.client.js'
 import { PaypalClient } from '../../src/client/paypal.client.js'
 import { ScheduleClient } from '../../src/client/schedule.client.js'
+import { InvoicePreviewRequest } from '../../src/dto/invoice-preview.dto.js'
 import { OrderDto, OrderStatus, OrderType } from '../../src/dto/order.dto.js'
 import { BusinessException } from '../../src/exception/business.exception.js'
 import { InvoiceService } from '../../src/service/invoice.service.js'
@@ -235,5 +236,55 @@ describe('InvoiceService', () => {
     await invoiceService.createInvoice(RECORD_ID)
 
     expect(airTableClient.patch).toHaveBeenNthCalledWith(1, RECORD_ID, expect.objectContaining({ Deposit: 40 }))
+  })
+
+  describe('previewInvoice', () => {
+    function booking(): InvoicePreviewRequest {
+      const request = new InvoicePreviewRequest()
+      request.type = OrderType.SPECIAL_OCCASION
+      request.serviceDate = Temporal.Now.plainDateISO('UTC').add({ days: 30 })
+      request.price = 155
+      return request
+    }
+
+    it('applies the default deposit and computes balance and deadlines', () => {
+      const request = booking()
+
+      const preview = invoiceService.previewInvoice(request)
+
+      expect(preview).toMatchObject({
+        total: 155,
+        deposit: 40, // 20% of 155 = 31, rounded up to $10
+        defaultDeposit: true,
+        balance: 115,
+        balanceDueDate: request.serviceDate.toString(),
+        note: '$40 deposit due in 24 hours to reserve your date. Balance due on service date'
+      })
+      const dueInHours = Temporal.Instant.from(preview.depositDueBy).since(Temporal.Now.instant()).total('hours')
+      expect(dueInHours).toBeGreaterThan(23.9)
+      expect(dueInHours).toBeLessThanOrEqual(24)
+    })
+
+    it('keeps an explicit deposit', () => {
+      const request = booking()
+      request.deposit = 100
+
+      expect(invoiceService.previewInvoice(request)).toMatchObject({ deposit: 100, defaultDeposit: false, balance: 55 })
+    })
+
+    it('applies the same booking rules as createInvoice', async () => {
+      const request = booking()
+      request.type = OrderType.BRIDAL // without services
+
+      await expectBusinessException(Promise.resolve().then(() => invoiceService.previewInvoice(request)), /services/)
+    })
+
+    it('has no side effects', () => {
+      invoiceService.previewInvoice(booking())
+
+      expect(airTableClient.getOrder).not.toHaveBeenCalled()
+      expect(paypalClient.createInvoice).not.toHaveBeenCalled()
+      expect(scheduleClient.scheduleExpiryCheck).not.toHaveBeenCalled()
+    })
   })
 })

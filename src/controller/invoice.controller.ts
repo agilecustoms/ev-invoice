@@ -1,5 +1,7 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common'
+import { ApiOkResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger'
 import { PinoLogger } from 'nestjs-pino'
+import { InvoicePreviewRequest, InvoicePreviewResponse } from '../dto/invoice-preview.dto.js'
 import { InvoiceService } from '../service/invoice.service.js'
 
 @Controller()
@@ -23,5 +25,18 @@ export class InvoiceController {
     this.logger.assign({ endpoint: 'create', recordId })
     await this.invoiceService.createInvoice(recordId)
     return { status: 'success' }
+  }
+
+  /**
+   * Preview the invoice /create would send for a booking: deposit (default if not given), deadlines and balance.
+   * Read-only, so 200 (Nest default for POST is 201 Created)
+   */
+  @Post('/invoice/preview')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: InvoicePreviewResponse })
+  @ApiUnprocessableEntityResponse({ description: 'booking breaks a business rule, e.g. service date is not in the future' })
+  previewInvoice(@Body() booking: InvoicePreviewRequest): InvoicePreviewResponse {
+    this.logger.assign({ endpoint: 'preview' })
+    return this.invoiceService.previewInvoice(booking)
   }
 }

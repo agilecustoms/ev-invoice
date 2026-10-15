@@ -3,8 +3,9 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { validate } from 'class-validator'
 import { AirTableClient } from '../client/airtable.client.js'
-import { PaypalClient } from '../client/paypal.client.js'
+import { invoiceNote, PaypalClient } from '../client/paypal.client.js'
 import { ScheduleClient } from '../client/schedule.client.js'
+import type { InvoicePreviewRequest, InvoicePreviewResponse } from '../dto/invoice-preview.dto.js'
 import { type OrderDto, OrderStatus, OrderType } from '../dto/order.dto.js'
 import { BusinessException } from '../exception/business.exception.js'
 import { parsePositiveDuration } from '../util/duration.js'
@@ -60,6 +61,27 @@ export class InvoiceService {
 
     this.logger.log('Update AirTable invoice status to SENT')
     await this.airTableClient.patch(recordId, { 'Invoice Status': 'SENT' })
+  }
+
+  /**
+   * Dry run of createInvoice for a booking that is not in AirTable (yet): same booking rules and deposit default,
+   * but no side effects - nothing is read from or written to AirTable, PayPal or Scheduler
+   */
+  public previewInvoice(booking: InvoicePreviewRequest): InvoicePreviewResponse {
+    this.checkBookingRules(booking)
+    const deposit = booking.deposit ?? defaultDeposit(booking.price)
+    // through ZonedDateTime (UTC) because Instant can't add days, and the term may be configured in days
+    const depositDueBy = Temporal.Now.zonedDateTimeISO('UTC').add(this.depositTerm).toInstant()
+    this.logger.log(`Preview invoice for ${booking.type} on ${booking.serviceDate.toString()}, price ${booking.price}, deposit ${deposit}`)
+    return {
+      total: booking.price,
+      deposit,
+      defaultDeposit: booking.deposit === undefined,
+      depositDueBy: depositDueBy.toString({ smallestUnit: 'second' }),
+      balance: booking.price - deposit,
+      balanceDueDate: booking.serviceDate.toString(),
+      note: invoiceNote(deposit, this.depositTerm)
+    }
   }
 
   /**
