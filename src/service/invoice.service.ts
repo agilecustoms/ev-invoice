@@ -16,6 +16,9 @@ const INVOICEABLE_STATUSES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.CONFIRMED,
 ])
 
+// what is booked: the part of an order that business rules look at
+type Booking = Pick<OrderDto, 'type' | 'serviceDate' | 'price' | 'deposit' | 'services'>
+
 // no deposit in the order: assume 20% of the price, rounded up to the nearest $10
 function defaultDeposit(price: number): number {
   return Math.ceil(price * 0.2 / 10) * 10
@@ -113,17 +116,24 @@ export class InvoiceService {
     if (!INVOICEABLE_STATUSES.has(request.status)) {
       throw new BusinessException(`status must be one of: ${[...INVOICEABLE_STATUSES].join(', ')}`)
     }
-    if (Temporal.PlainDate.compare(request.serviceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
-      throw new BusinessException('service date must be in the future')
-    }
-    if (request.type === OrderType.BRIDAL && !request.services?.trim()) {
-      throw new BusinessException('services must not be empty for type Bridal')
-    }
-    if (request.deposit !== undefined && request.deposit > request.price) {
-      throw new BusinessException('deposit must not exceed price')
-    }
     if (request.invoiceStatus !== undefined && request.invoiceStatus !== 'DRAFT') {
       throw new BusinessException('invoice status must be empty or DRAFT')
+    }
+    this.checkBookingRules(request)
+  }
+
+  /**
+   * Rules about what is booked (not about the order lifecycle), so they can be checked for a booking that is not an order yet
+   */
+  private checkBookingRules(booking: Booking): void {
+    if (Temporal.PlainDate.compare(booking.serviceDate, Temporal.Now.plainDateISO('UTC')) <= 0) {
+      throw new BusinessException('service date must be in the future')
+    }
+    if (booking.type === OrderType.BRIDAL && !booking.services?.trim()) {
+      throw new BusinessException('services must not be empty for type Bridal')
+    }
+    if (booking.deposit !== undefined && booking.deposit > booking.price) {
+      throw new BusinessException('deposit must not exceed price')
     }
   }
 }
