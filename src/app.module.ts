@@ -4,6 +4,7 @@ import { APP_FILTER } from '@nestjs/core'
 import { AirTableClient } from './client/airtable.client.js'
 import { PaypalClient } from './client/paypal.client.js'
 import { ScheduleClient } from './client/schedule.client.js'
+import { loadConfig } from './config/config.js'
 import { HealthController } from './controller/health.controller.js'
 import { InvoiceController } from './controller/invoice.controller.js'
 import { SqsController } from './controller/sqs.controller.js'
@@ -12,13 +13,12 @@ import { InvoiceService } from './service/invoice.service.js'
 
 export const APP_NAME = 'ev-invoice'
 
-const profile = process.env['APP_PROFILE'] ?? 'prod'
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`.env.${profile}`]
+      ignoreEnvFile: true, // config/.env files are read by config.ts, see README
+      load: [loadConfig]
     })
   ],
   controllers: [

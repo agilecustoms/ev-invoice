@@ -7,7 +7,7 @@ import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/a
 import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 /**
- * Credentials come from .env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).
+ * Credentials come from config/.env.local via ConfigService (no AWS calls, see lambda.module.ts for AWS counterpart).
  * @Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
  */
 @Global()

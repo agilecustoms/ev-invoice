@@ -20,4 +20,4 @@ dist/
 coverage/
 
 # Local config / secrets
-.env.local
+config/.env.local
