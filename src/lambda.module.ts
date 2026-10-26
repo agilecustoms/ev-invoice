@@ -9,6 +9,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoade
 import { loadPlainSecret, loadSecret } from './util/secrets.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'UTC', // same as other apps; not relying on Lambda TZ (local runs would print local time)
   hour: '2-digit',
   minute: '2-digit',
   second: '2-digit',
