@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.34.11](https://github.com/agilecustoms/ev-invoice/compare/v1.34.10...v1.34.11) (2026-10-31)
+
+### Miscellaneous
+
+* format ftime in UTC explicitly ([dc97aea](https://github.com/agilecustoms/ev-invoice/commit/dc97aea51b2308f4360bd87283d75f310fb0c665))
+* profiles {env},{runtime},{runtime}-{env} via APP_PROFILES, config/.env files ([bc857c7](https://github.com/agilecustoms/ev-invoice/commit/bc857c7b8fb5a29a89594450cae833b46686a996))
+* route library logs (console.*, process warnings, depd deprecations) to pino ([de84218](https://github.com/agilecustoms/ev-invoice/commit/de84218102aeb82e79103b4de6b01bc672cce4d7))
+
+
 ## [1.34.10](https://github.com/agilecustoms/ev-invoice/compare/v1.34.9...v1.34.10) (2026-10-15)
 
 ### Miscellaneous
