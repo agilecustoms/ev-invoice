@@ -1,11 +1,12 @@
 import { getCurrentInvoke } from '@codegenie/serverless-express'
 import { Global, Module } from '@nestjs/common'
 import type { APIGatewayProxyEvent, APIGatewayProxyEventV2, Context } from 'aws-lambda'
-import { LoggerModule } from 'nestjs-pino'
+import { LoggerModule, PinoLogger } from 'nestjs-pino'
 import { destination, pino } from 'pino'
 import { AppModule } from './app.module.js'
 import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/airtable.client.js'
 import { PAYPAL_CREDENTIALS, type PayPalCredentials, type PayPalCredentialsLoader } from './client/paypal.client.js'
+import { captureLibraryLogs } from './util/library-logs.js'
 import { loadPlainSecret, loadSecret } from './util/secrets.js'
 
 const formatter = new Intl.DateTimeFormat('en-GB', {
@@ -67,6 +68,20 @@ function getRequestIds(): object {
   }
 }
 
+const loggerParams = {
+  pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
+    logger,
+    autoLogging: false, // do not log each request/response
+    customProps: getRequestIds
+  },
+  renameContext: 'logger'
+}
+
+// out of DI, so it works before Nest bootstrap. Same params as LoggerModule: they share one pino-http instance, so
+// PinoLogger.logger is the logger of the current request (HTTP or SqsController.runInContext) or the root one
+const requestLogger = new PinoLogger(loggerParams)
+captureLibraryLogs(() => requestLogger.logger)
+
 /**
  * AWS: PayPal and AirTable credentials come from Secrets Manager (PAYPAL_SECRET_ID / AIRTABLE_SECRET_ID are set in
  * infrastructure/lambda.tf). Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
@@ -91,14 +106,7 @@ class CredentialsModule {
 
 @Module({
   imports: [
-    LoggerModule.forRoot({
-      pinoHttp: { // 'pino-http' comes as dependency of 'nestjs-pino'
-        logger,
-        autoLogging: false, // do not log each request/response
-        customProps: getRequestIds
-      },
-      renameContext: 'logger'
-    }),
+    LoggerModule.forRoot(loggerParams),
     CredentialsModule,
     AppModule
   ]
