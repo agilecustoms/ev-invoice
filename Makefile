@@ -51,10 +51,10 @@ app4-hot-redeploy: app3-build app3-package
 
 #---------------------------------------------------
 
-local-run:
+run-local:
 	@npm run start
 
-local-run-dev:
+run-local-dev:
 	@npm run start:dev
 
 #---------------------------------------------------
