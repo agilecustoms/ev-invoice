@@ -45,8 +45,6 @@ app3-package:
 	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**'; \
 	rm -rf ../tmp
 
-app4-build-as-ci: app0-install-deps app1-lint app2-test app3-build app3-generate-openapi app3-package
-
 app4-hot-redeploy: app3-build app3-package
 	@export AWS_PROFILE=ac-ev-prod-admin; \
 	aws lambda update-function-code --function-name $(ENV)-$(APP_NAME) --zip-file fileb://dist/app.zip --no-cli-pager > /dev/null
