@@ -45,11 +45,7 @@ app3-package:
 	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**'; \
 	rm -rf ../tmp
 
-hot-redeploy: app3-build app3-package
-	@export AWS_PROFILE=ac-ev-prod-admin; \
-	aws lambda update-function-code --function-name $(ENV)-$(APP_NAME) --zip-file fileb://dist/app.zip --no-cli-pager > /dev/null
-
-#---------------------------------------------------
+# ---------------------------------------------------
 
 run-local:
 	@npm run start
@@ -57,7 +53,18 @@ run-local:
 run-local-dev:
 	@npm run start:dev
 
-#---------------------------------------------------
+# ---------------------------------------------------
+
+hot-redeploy: app3-build app3-package
+	@export AWS_PROFILE=ac-ev-prod-admin; \
+	aws lambda update-function-code --function-name $(ENV)-$(APP_NAME) --zip-file fileb://dist/app.zip --no-cli-pager > /dev/null
+
+# ---------------------------------------------------
+
+x-install-git-hooks:
+	@cp .github/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+# ---------------------------------------------------
 
 # Download Terraform modules to satisfy IDE
 terraform-get:
@@ -71,8 +78,3 @@ terraform-validate:
 
 terraform-format:
 	@cd infrastructure; terraform fmt -recursive
-
-# ---------------------------------------------------
-
-x-install-git-hooks:
-	@cp .github/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
