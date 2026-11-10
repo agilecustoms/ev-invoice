@@ -11,7 +11,8 @@ data "aws_cloudwatch_log_groups" "logs" {
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
-  count             = length(data.aws_cloudwatch_log_groups.logs.arns) == 0 ? 1 : 0
+  # prefix lookup also finds longer names (e.g. {name}-x), so check exact name
+  count             = contains(data.aws_cloudwatch_log_groups.logs.log_group_names, local.log_group_name) ? 0 : 1
   name              = local.log_group_name
   retention_in_days = local.logs_retention
   skip_destroy      = true # can review logs after CI build fail and env destroyed
