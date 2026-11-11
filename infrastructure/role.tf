@@ -1,3 +1,9 @@
+locals {
+  lambda_policies = [
+    aws_iam_policy.app.arn,
+  ]
+}
+
 data "aws_iam_policy_document" "trust" {
   statement {
     effect  = "Allow"
@@ -14,12 +20,6 @@ resource "aws_iam_role" "app" {
   name                 = local.full_app_name
   assume_role_policy   = data.aws_iam_policy_document.trust.json
   permissions_boundary = "arn:aws:iam::${local.account_id}:policy/boundary/boundary-app"
-}
-
-locals {
-  lambda_policies = [
-    aws_iam_policy.app.arn,
-  ]
 }
 
 resource "aws_iam_role_policy_attachment" "app" {
