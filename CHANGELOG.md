@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.15](https://github.com/agilecustoms/ev-invoice/compare/v1.34.14...v1.34.15) (2026-11-11)
+
+### Miscellaneous
+
+* don't package source maps and vitest cache ([4983a7c](https://github.com/agilecustoms/ev-invoice/commit/4983a7c5906a1bacc1524a876f6e707ed73f6050))
+
+
 ## [1.34.14](https://github.com/agilecustoms/ev-invoice/compare/v1.34.13...v1.34.14) (2026-11-11)
 
 ### Miscellaneous
