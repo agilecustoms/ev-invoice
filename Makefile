@@ -62,11 +62,6 @@ hot-redeploy: app3-build app3-package
 
 # ---------------------------------------------------
 
-x-install-git-hooks:
-	@cp .github/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
-
-# ---------------------------------------------------
-
 # Download Terraform modules to satisfy IDE
 terraform-get:
 	@cd infrastructure; terraform get -update
