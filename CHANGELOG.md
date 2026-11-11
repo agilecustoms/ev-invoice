@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.34.12](https://github.com/agilecustoms/ev-invoice/compare/v1.34.11...v1.34.12) (2026-11-11)
+
+### Dependencies update
+
+* app4-hot-redeploy -> hot-redeploy [skip ci] ([ab55650](https://github.com/agilecustoms/ev-invoice/commit/ab5565070b450d58599b561cd884691a7865da0a))
+* local-run -> run-local, local-run-dev -> run-local-dev [skip ci] ([389af20](https://github.com/agilecustoms/ev-invoice/commit/389af20e7541baa5399067188b822a5c44785003))
+* Makefile targets in standard order (_aws-login, app0-3, run, hot, x, terraform, debug) [skip ci] ([7b4e3b7](https://github.com/agilecustoms/ev-invoice/commit/7b4e3b73d36bc1ae117b7ea12b183003dbf30ce1))
+* mark Makefile targets not called by CI [skip ci] ([595603f](https://github.com/agilecustoms/ev-invoice/commit/595603f1eeddb2724d9a0e2188054785a2ef8244))
+* remove build-as-ci target, CI workflow is the source of truth [skip ci] ([0181de9](https://github.com/agilecustoms/ev-invoice/commit/0181de9cb629db79f6bbe61fe035a0faa916ff0b))
+* tsconfig lib ES2025 (no browser types in Lambda code) ([5e008c3](https://github.com/agilecustoms/ev-invoice/commit/5e008c37676436c4c05f2f220e3c9ab62137e24f))
+
+### Miscellaneous
+
+* log group lookup checks exact name (prefix lookup also matched longer names) [skip ci] ([a80ec79](https://github.com/agilecustoms/ev-invoice/commit/a80ec792ff3dc77f1c8cb390faeb97aae0e63b5c))
+
+
 ## [1.34.11](https://github.com/agilecustoms/ev-invoice/compare/v1.34.10...v1.34.11) (2026-10-31)
 
 ### Miscellaneous
