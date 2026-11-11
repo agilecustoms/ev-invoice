@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.13](https://github.com/agilecustoms/ev-invoice/compare/v1.34.12...v1.34.13) (2026-11-11)
+
+### Miscellaneous
+
+* tsconfig comments explain why NestJS needs legacy decorators and metadata ([cf9e813](https://github.com/agilecustoms/ev-invoice/commit/cf9e813ebe9ed08bc571778c3f4a24a2d5947cfe))
+
+
 ## [1.34.12](https://github.com/agilecustoms/ev-invoice/compare/v1.34.11...v1.34.12) (2026-11-11)
 
 ### Dependencies update
