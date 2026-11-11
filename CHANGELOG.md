@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.14](https://github.com/agilecustoms/ev-invoice/compare/v1.34.13...v1.34.14) (2026-11-11)
+
+### Miscellaneous
+
+* @nestjs/swagger is dev dependency (only openapi.ts uses it), Lambda zip 13.3 -> 7.5 MB (no typescript, swagger-ui) ([33af6b5](https://github.com/agilecustoms/ev-invoice/commit/33af6b5d07e4c9ae2e44427150fbcbca2605c708))
+
+
 ## [1.34.13](https://github.com/agilecustoms/ev-invoice/compare/v1.34.12...v1.34.13) (2026-11-11)
 
 ### Miscellaneous
