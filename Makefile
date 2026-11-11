@@ -29,7 +29,7 @@ app3-generate-openapi: # needs to be called after build (ts ~~> js)
 app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
-	zip -rq dist/app.zip dist -x 'dist/local.*' 'dist/openapi.*'; \
+	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/local.*' 'dist/openapi.*'; \
 	zip -rq dist/app.zip config -x 'config/.env.local*'; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
@@ -42,7 +42,8 @@ app3-package:
 	 '**/.jshintrc' '**/.editorconfig' '**/.eslintrc' '**/.eslintrc.js' '**/.nycrc' '**/.npmignore' '**/.prettierrc.json' \
 	 '**/.gitkeep' '**/Makefile' '**/karma.conf.js' '**/.nycrc' '**/.eslintignore' '**/.babelrc' \
 	 '**/__tests__/**' '**/test/**' '**/tests/**' '**/.idea/**' '**/.vscode/**' '**/.husky/**' \
-	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**'; \
+	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**' \
+	 'node_modules/.vite*'; \
 	rm -rf ../tmp
 
 # ---------------------------------------------------
