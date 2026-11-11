@@ -21,8 +21,8 @@
     "verbatimModuleSyntax": true, // force using 'import type' for types
 
     // ADDITIONAL SETTINGS (vary per project)
-    "experimentalDecorators": true, // as of TypeScript 5 the decorators still not part of language and need to be enabled explicitly
-    "emitDecoratorMetadata": true,  // another config for the same issue above
+    "experimentalDecorators": true, // legacy decorators: NestJS relies on them (TS 5 standard decorators have no parameter decorators)
+    "emitDecoratorMetadata": true,  // NestJS DI reads constructor param types from this metadata, works with legacy decorators only
     "sourceMap": true,
   }
 }
