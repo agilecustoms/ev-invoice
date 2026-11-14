@@ -5,7 +5,7 @@ import { OrderDto } from '../dto/order.dto.js'
 import type { InvoiceStatus } from './paypal.client.js'
 
 /**
- * Loads the API token on demand (Secrets Manager in AWS, .env.local locally). Called lazily on the first AirTable
+ * Loads the API token on demand (Secrets Manager in AWS, .env.localaws locally). Called lazily on the first AirTable
  * call, so bootstrap and endpoints that do not need AirTable (e.g. /health) never touch the secret
  */
 export type AirTableCredentialsLoader = () => Promise<string>

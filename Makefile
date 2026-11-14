@@ -30,7 +30,7 @@ app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
 	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/run_local.*' 'dist/openapi.*'; \
-	zip -rq dist/app.zip config -x 'config/.env.local*'; \
+	zip -rq dist/app.zip config -x 'config/.env.localaws*'; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
 	cd tmp; \
@@ -41,18 +41,20 @@ app3-package:
 	 '**/tsconfig*' '**/bower.json' '**/.package-lock.json' \
 	 '**/.jshintrc' '**/.editorconfig' '**/.eslintrc' '**/.eslintrc.js' '**/.nycrc' '**/.npmignore' '**/.prettierrc.json' \
 	 '**/.gitkeep' '**/Makefile' '**/karma.conf.js' '**/.nycrc' '**/.eslintignore' '**/.babelrc' \
-	 '**/__tests__/**' '**/test/**' '**/tests/**' '**/.idea/**' '**/.vscode/**' '**/.husky/**' \
+	 '**/__tests__/**' '**/test/**' '**/tests/**' '**/.claude/**' '**/.idea/**' '**/.vscode/**' '**/.husky/**' \
 	 'node_modules/aws-sdk/apis/**' 'node_modules/aws-sdk/Crashpad/**' 'node_modules/aws-sdk/dist-tools/**' 'node_modules/aws-sdk/scripts/**' \
 	 'node_modules/.vite*'; \
 	rm -rf ../tmp
 
 # ---------------------------------------------------
 
-run-local:
-	@npm run start
+# server on http://localhost:3000 with AWS resources of env prod, PayPal sandbox, AirTable (config/.env.localaws, see README)
+run-localaws:
+	@npm run start:localaws
 
-run-local-dev:
-	@npm run start:dev
+# same with reload on code change
+run-localaws-watch:
+	@npm run start:localaws:watch
 
 # ---------------------------------------------------
 

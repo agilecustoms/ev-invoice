@@ -20,4 +20,4 @@ dist/
 coverage/
 
 # Local config / secrets
-config/.env.local
+config/.env.localaws

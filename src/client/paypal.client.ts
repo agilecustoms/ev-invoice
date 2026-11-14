@@ -18,7 +18,7 @@ export interface PayPalCredentials {
 }
 
 /**
- * Loads credentials on demand (Secrets Manager in AWS, .env.local locally). Called lazily on the first PayPal call,
+ * Loads credentials on demand (Secrets Manager in AWS, .env.localaws locally). Called lazily on the first PayPal call,
  * so bootstrap and endpoints that do not need PayPal (e.g. /health) never touch the secret
  */
 export type PayPalCredentialsLoader = () => Promise<PayPalCredentials>
