@@ -32,7 +32,7 @@ function timestamp(): string {
 
 /**
  * Single pino instance for both request-scoped and out-of-request logs (otherwise nestjs-pino creates two),
- * so lambda.ts can change the level of all of them at once
+ * so lambda_handler.ts can change the level of all of them at once
  */
 export const logger = pino(
   {
@@ -85,7 +85,7 @@ captureLibraryLogs(() => requestLogger.logger)
 /**
  * AWS: PayPal and AirTable credentials come from Secrets Manager (PAYPAL_SECRET_ID / AIRTABLE_SECRET_ID are set in
  * infrastructure/lambda.tf). Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
- * (see local.ts for the local counterpart)
+ * (see run_local.ts for the local counterpart)
  */
 @Global()
 @Module({

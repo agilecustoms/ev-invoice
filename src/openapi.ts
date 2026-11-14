@@ -9,7 +9,7 @@ import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypa
 
 /**
  * The spec is generated from controllers, but the whole app has to start. Credentials are loaded lazily, so they are
- * never needed here (and in CI there is no access to Secrets Manager). See lambda.module.ts and local.ts for real ones
+ * never needed here (and in CI there is no access to Secrets Manager). See lambda.module.ts and run_local.ts for real ones
  */
 @Global()
 @Module({

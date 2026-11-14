@@ -15,7 +15,7 @@ resource "aws_lambda_function" "app" {
   runtime          = "nodejs24.x"
   s3_bucket        = var.dist_bucket
   s3_key           = local.binary_key
-  handler          = "dist/lambda.handler"
+  handler          = "dist/lambda_handler.handler"
   source_code_hash = data.aws_s3_object.binary.etag
 
   timeout = 10

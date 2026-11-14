@@ -27,7 +27,7 @@ export const APP_NAME = 'ev-invoice'
   ],
   providers: [
     InvoiceService, PaypalClient, AirTableClient, ScheduleClient, SqsController,
-    // global exception filter via DI (not app.useGlobalFilters) so it applies in every entry point: lambda.ts and local.ts
+    // global exception filter via DI (not app.useGlobalFilters) so it applies in every entry point: lambda_handler.ts and run_local.ts
     { provide: APP_FILTER, useClass: AppExceptionFilter }
   ]
 })

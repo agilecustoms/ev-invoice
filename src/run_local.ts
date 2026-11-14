@@ -55,7 +55,7 @@ class CredentialsModule {}
 class NestModule {}
 
 /**
- * This entry point is for local development only. AWS uses lambda.ts
+ * This entry point is for local development only. AWS uses lambda_handler.ts
  */
 async function bootstrap() {
   const app = await NestFactory.create(NestModule, { bufferLogs: true })

@@ -9,8 +9,8 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts'],
     coverage: {
       exclude: [
-        'src/lambda.ts',
-        'src/local.ts',
+        'src/lambda_handler.ts',
+        'src/run_local.ts',
         'src/openapi.ts',
         '**/*.module.ts',
         'src/auth/model/**',

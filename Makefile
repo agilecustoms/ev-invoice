@@ -29,7 +29,7 @@ app3-generate-openapi: # needs to be called after build (ts ~~> js)
 app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
-	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/local.*' 'dist/openapi.*'; \
+	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/run_local.*' 'dist/openapi.*'; \
 	zip -rq dist/app.zip config -x 'config/.env.local*'; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
