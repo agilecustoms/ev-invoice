@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.34.16](https://github.com/agilecustoms/ev-invoice/compare/v1.34.15...v1.34.16) (2026-11-14)
+
+### Dependencies update
+
+* git hooks in .githooks (core.hooksPath), drop x-install-git-hooks [skip ci] ([4d9d193](https://github.com/agilecustoms/ev-invoice/commit/4d9d193b4a6ee97f63342b4dece5db0cfa2f0523))
+* sort action inputs alphabetically [skip ci] ([142bc61](https://github.com/agilecustoms/ev-invoice/commit/142bc6113f46c5003c46f4127ad14a017d8c3182))
+
+### Documentation
+
+* IDE run configuration localaws, README sections Run locally, Run locally with AWS resources (localaws), Integration tests ([677ccc4](https://github.com/agilecustoms/ev-invoice/commit/677ccc4e2dc51a2bf28c2567d00c1031daf61b49))
+
+### Bug Fixes
+
+* declare aws in required_providers (ev-gitops passes an aliased provider) [skip ci] ([8a62262](https://github.com/agilecustoms/ev-invoice/commit/8a62262122bb7d56d5feab17306bb0e530d7e722))
+
+### Miscellaneous
+
+* entry points lambda_handler.ts, run_local.ts ([f807d80](https://github.com/agilecustoms/ev-invoice/commit/f807d80afb78d1ae042dbe781536300bcbde067e))
+* locals at the top of a file (after the data sources they use) [skip ci] ([8ad1278](https://github.com/agilecustoms/ev-invoice/commit/8ad1278ad7ea603b52394cb6880979b3300902c5))
+* runtime local -> localaws (AWS resources of prod): make run-localaws, run-localaws-watch, config/.env.localaws ([76ebb53](https://github.com/agilecustoms/ev-invoice/commit/76ebb53d93f11b7f418fe123b9f224afd1c4c6ef))
+* standard module structure: main.tf, variables.tf, outputs.tf [skip ci] ([bfa12a7](https://github.com/agilecustoms/ev-invoice/commit/bfa12a7f3f792ab81855d6acace38cebcb242d69))
+
+
 ## [1.34.15](https://github.com/agilecustoms/ev-invoice/compare/v1.34.14...v1.34.15) (2026-11-11)
 
 ### Miscellaneous
