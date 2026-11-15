@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.17](https://github.com/agilecustoms/ev-invoice/compare/v1.34.16...v1.34.17) (2026-11-15)
+
+### Miscellaneous
+
+* update deps, @stylistic/eslint-plugin 5 -> 6 (list-style rule off: several short items per line are fine) ([5ca2ec2](https://github.com/agilecustoms/ev-invoice/commit/5ca2ec2a031073ea90bd749ac7e8c220d20a30b9))
+
+
 ## [1.34.16](https://github.com/agilecustoms/ev-invoice/compare/v1.34.15...v1.34.16) (2026-11-14)
 
 ### Dependencies update
