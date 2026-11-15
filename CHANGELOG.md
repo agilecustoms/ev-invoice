@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.19](https://github.com/agilecustoms/ev-invoice/compare/v1.34.18...v1.34.19) (2026-11-15)
+
+### Miscellaneous
+
+* log timestamp from Temporal.Now (nanosecond wall clock, no drift of performance.now() in a warm Lambda), Error.isError ([84b65a3](https://github.com/agilecustoms/ev-invoice/commit/84b65a3d11a703f343870d0db4aa0680fb17ae3b))
+
+
 ## [1.34.18](https://github.com/agilecustoms/ev-invoice/compare/v1.34.17...v1.34.18) (2026-11-15)
 
 ### Miscellaneous
