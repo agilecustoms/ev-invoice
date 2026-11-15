@@ -2,11 +2,11 @@
   "include": [
     "src"
   ],
-  // Runtime is Node 24 (max available in AWS Lambda as of Apr 2026)
+  // Runtime is Node 26 (max available in AWS Lambda as of Nov 2026)
   "compilerOptions": {
     // MAIN SETTINGS (based on runtime)
-    "target": "ES2025",      // highest available, fully supported by Node 24
-    "lib": ["ES2025"],       // overrides default to tell compiler to NOT use browser libs
+    "target": "ES2025",      // highest available, fully supported by Node 26
+    "lib": ["ES2025", "ESNext.Temporal"], // no browser libs. Temporal is a global in Node 26
     "types": ["node"],       // include Node types for built-in modules and globals
     "module": "nodenext",    // preferred for modern Node projects
     "rootDir": "./src",      // if not specified, we get ./dist/src/ :(

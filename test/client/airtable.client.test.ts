@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AirTableClient } from '../../src/client/airtable.client.js'

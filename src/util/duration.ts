@@ -1,5 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
-
 const UNITS = ['days', 'hours', 'minutes', 'seconds'] as const
 
 /**

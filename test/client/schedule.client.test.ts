@@ -1,5 +1,4 @@
 import { CreateScheduleCommand, DeleteScheduleCommand, ResourceNotFoundException, SchedulerClient } from '@aws-sdk/client-scheduler'
-import { Temporal } from '@js-temporal/polyfill'
 import type { ConfigService } from '@nestjs/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ScheduleClient } from '../../src/client/schedule.client.js'
@@ -15,14 +14,13 @@ describe('ScheduleClient', () => {
   let send: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
-    vi.useFakeTimers({ toFake: ['Date'] })
-    vi.setSystemTime(new Date('2026-09-26T21:47:08.123Z'))
+    // native Temporal.Now doesn't read the faked Date, so stub it directly
+    vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(Temporal.PlainDateTime.from('2026-09-26T21:47:08.123'))
     send = vi.spyOn(SchedulerClient.prototype, 'send').mockResolvedValue({} as never)
   })
 
   afterEach(() => {
-    vi.useRealTimers()
-    send.mockRestore()
+    vi.restoreAllMocks()
   })
 
   it('schedules an expiry check event after the deposit term', async () => {

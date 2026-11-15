@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import { describe, expect, it } from 'vitest'
 import { formatDuration } from '../../src/util/duration.js'
 

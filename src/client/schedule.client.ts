@@ -4,7 +4,6 @@ import {
   ResourceNotFoundException,
   SchedulerClient
 } from '@aws-sdk/client-scheduler'
-import { Temporal } from '@js-temporal/polyfill'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 

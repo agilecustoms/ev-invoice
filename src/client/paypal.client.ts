@@ -1,4 +1,3 @@
-import type { Temporal } from '@js-temporal/polyfill'
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { parsePhoneNumberWithError } from 'libphonenumber-js'

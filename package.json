@@ -18,7 +18,6 @@
     "@aws-sdk/client-scheduler": "^3.1169.0",
     "@aws-sdk/client-secrets-manager": "^3.1169.0",
     "@codegenie/serverless-express": "^5.0.0",
-    "@js-temporal/polyfill": "^0.5.1",
     "@nestjs/common": "^12.5.0",
     "@nestjs/config": "^12.1.1",
     "@nestjs/core": "^12.5.0",
@@ -34,7 +33,7 @@
     "@stylistic/eslint-plugin": "^6.0.0",
     "@types/aws-lambda": "^8.10.164",
     "@types/express": "^5.0.6",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^10.15.0",
     "eslint-plugin-import-x": "^4.18.1",
@@ -46,9 +45,7 @@
     "vitest": "^5.1.0"
   },
   "updates-blocked": [
-    "typescript 6.0.3 -> 7.x: TS 7 has no JS compiler API and typescript-eslint peer range is <6.1.0. Wait until typescript-eslint supports TS 7, then upgrade",
-    "@types/node 24.x -> 26.x: Node must stay <= 24 (Lambda runtime nodejs24.x is the latest GA runtime; nodejs26.x is public-preview only as of 2026-09)",
-    "@js-temporal/polyfill can be removed (use the native globalThis.Temporal instead) once Lambda runs on Node 26, which has Temporal enabled by default. Node <= 24 only has it behind --harmony-temporal, which is not an allowed NODE_OPTIONS flag"
+    "typescript 6.0.3 -> 7.x: TS 7 has no JS compiler API and typescript-eslint peer range is <6.1.0. Wait until typescript-eslint supports TS 7, then upgrade"
   ],
   "allowScripts": {
     "@scarf/scarf": false,

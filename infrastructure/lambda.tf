@@ -12,7 +12,7 @@ resource "aws_lambda_function" "app" {
   memory_size      = 256
   function_name    = local.full_app_name
   role             = aws_iam_role.app.arn
-  runtime          = "nodejs24.x"
+  runtime          = "nodejs26.x"
   s3_bucket        = var.dist_bucket
   s3_key           = local.binary_key
   handler          = "dist/lambda_handler.handler"
