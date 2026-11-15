@@ -6,7 +6,7 @@
   "compilerOptions": {
     // MAIN SETTINGS (based on runtime)
     "target": "ES2025",      // highest available, fully supported by Node 26
-    "lib": ["ES2025", "ESNext.Temporal"], // no browser libs. Temporal is a global in Node 26
+    "lib": ["ES2025", "ESNext.Temporal", "ESNext.Error"], // no browser libs. ESNext.*: available in Node 26
     "types": ["node"],       // include Node types for built-in modules and globals
     "module": "nodenext",    // preferred for modern Node projects
     "rootDir": "./src",      // if not specified, we get ./dist/src/ :(

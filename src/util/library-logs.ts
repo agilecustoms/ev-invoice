@@ -15,7 +15,7 @@ const levels = { trace: 'trace', debug: 'debug', info: 'info', log: 'info', warn
 export function captureLibraryLogs(getLogger: () => Logger): void {
   for (const [method, level] of Object.entries(levels)) {
     console[method as keyof typeof levels] = (...args: unknown[]) => {
-      const error = args.find(arg => arg instanceof Error)
+      const error = args.find(Error.isError)
       const message = format(...args.filter(arg => arg !== error)) || error?.message
       getLogger()[level]({ logger: 'console', ...error && { error } }, message)
     }

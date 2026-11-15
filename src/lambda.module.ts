@@ -25,8 +25,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
  * - 'ftime': human-readable time (no date), helpful to read logs in CloudWatch console
  */
 function timestamp(): string {
-  // Date.now() is only millisecond precision, so use performance.now() to get microseconds
-  const micros = Math.floor((performance.timeOrigin + performance.now()) * 1000)
+  const micros = Number(Temporal.Now.instant().epochNanoseconds / 1000n)
   return `,"timestamp":${micros},"ftime":"${formatter.format(Math.floor(micros / 1000))}"`
 }
 
