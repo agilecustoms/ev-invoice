@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.18](https://github.com/agilecustoms/ev-invoice/compare/v1.34.17...v1.34.18) (2026-11-15)
+
+### Miscellaneous
+
+* Node 24 -> 26: Lambda runtime nodejs26.x, CI, @types/node; native Temporal instead of @js-temporal/polyfill ([ac965a0](https://github.com/agilecustoms/ev-invoice/commit/ac965a02e275e3fa89ba390f8e5f65d5d54b56fa))
+
+
 ## [1.34.17](https://github.com/agilecustoms/ev-invoice/compare/v1.34.16...v1.34.17) (2026-11-15)
 
 ### Miscellaneous
