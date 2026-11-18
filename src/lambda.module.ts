@@ -102,9 +102,12 @@ captureLibraryLogs(() => requestLogger.logger)
 class CredentialsModule {
 }
 
+// also used by invoke.ts so its output is the same as in CloudWatch
+export const LambdaLoggerModule = LoggerModule.forRoot(loggerParams)
+
 @Module({
   imports: [
-    LoggerModule.forRoot(loggerParams),
+    LambdaLoggerModule,
     CredentialsModule,
     AppModule
   ]

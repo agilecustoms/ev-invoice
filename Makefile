@@ -29,7 +29,7 @@ app3-generate-openapi: # needs to be called after build (ts ~~> js)
 app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
-	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/run_local.*' 'dist/openapi.*'; \
+	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/run_local.*' 'dist/invoke.*' 'dist/local.module.*' 'dist/openapi.*'; \
 	zip -rq dist/app.zip config -x 'config/.env.localaws*'; \
 	mkdir tmp; \
 	cp -R package.json package-lock.json node_modules tmp/; \
@@ -55,6 +55,10 @@ run-localaws:
 # same with reload on code change
 run-localaws-watch:
 	@npm run start:localaws:watch
+
+# Lambda handler once with an event from a file (no local runtime, so localaws as run-localaws): make invoke-localaws EVENT=events/health.json
+invoke-localaws:
+	@$(if $(EVENT),,$(error EVENT is required: make invoke-localaws EVENT=events/health.json))npm run invoke:localaws -- $(EVENT)
 
 # ---------------------------------------------------
 

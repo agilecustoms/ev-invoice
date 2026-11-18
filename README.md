@@ -47,6 +47,9 @@ region = us-east-1
 - create `config/.env.localaws` (gitignored) from `config/.env.localaws.example`: PayPal sandbox credentials, AirTable token
 - start the app: IDE run configuration "localaws" (debug) or `make run-localaws`, `make run-localaws-watch` reloads on code change
 - send GET http://localhost:3000/health
+- or invoke: the Lambda handler once with an event from a file (`events/`: API Gateway request, SQS message), prints JSON logs
+  as in CloudWatch and the response, exit code 1 on error or HTTP 5xx: `make invoke-localaws EVENT=events/health.json`.
+  Runs with the same config and credentials as above, refuses runtime `aws`
 
 ## PayPal integration
 

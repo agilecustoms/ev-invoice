@@ -11,6 +11,7 @@ export default defineConfig({
       exclude: [
         'src/lambda_handler.ts',
         'src/run_local.ts',
+        'src/invoke.ts',
         'src/openapi.ts',
         '**/*.module.ts',
         'src/auth/model/**',

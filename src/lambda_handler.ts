@@ -1,4 +1,5 @@
 import serverlessExpress from '@codegenie/serverless-express'
+import type { Type } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter } from '@nestjs/platform-express'
 import type {
@@ -22,14 +23,15 @@ type ApiGatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2
 type ApiGatewayResult = APIGatewayProxyResult | APIGatewayProxyStructuredResultV2
 type ProxyHandler = (event: ApiGatewayEvent, context: Context) => Promise<ApiGatewayResult>
 
-// one Nest app serves both API Gateway (through express) and SQS events, created on first invocation
-let proxyHandler: ProxyHandler
-let sqsController: SqsController
+export type Handler = (event: ApiGatewayEvent | SQSEvent, context: Context) => Promise<ApiGatewayResult | void>
 
-async function bootstrap(): Promise<void> {
+type Handlers = { proxyHandler: ProxyHandler, sqsController: SqsController }
+
+// one Nest app serves both API Gateway (through express) and SQS events
+async function bootstrap(rootModule: Type): Promise<Handlers> {
   const expressApp = express()
   const app = await NestFactory.create(
-    LambdaModule,
+    rootModule,
     new ExpressAdapter(expressApp),
     {
       bufferLogs: true, // don't write logs just yet, to get a chance to configure a logger first
@@ -46,8 +48,8 @@ async function bootstrap(): Promise<void> {
   logger.level = process.env['AWS_LAMBDA_LOG_LEVEL']?.toLowerCase() || 'info'
 
   // @ts-expect-error by design
-  proxyHandler = serverlessExpress({ app: expressApp }) as ProxyHandler
-  sqsController = app.get(SqsController)
+  const proxyHandler = serverlessExpress({ app: expressApp }) as ProxyHandler
+  return { proxyHandler, sqsController: app.get(SqsController) }
 }
 
 // the same discriminator serverless-express uses to choose its event adapter
@@ -85,17 +87,24 @@ function isSqs(event: ApiGatewayEvent | SQSEvent): event is SQSEvent {
   return (event as SQSEvent).Records?.[0]?.eventSource === 'aws:sqs'
 }
 
-// noinspection JSUnusedGlobalSymbols
-export const handler = async (event: ApiGatewayEvent | SQSEvent, context: Context): Promise<ApiGatewayResult | void> => {
-  if (!proxyHandler) {
-    await bootstrap()
+/**
+ * Handler over a root module: LambdaModule in AWS, local credentials in invoke.ts.
+ * The app is created on the first invocation
+ */
+export function createHandler(rootModule: Type): Handler {
+  let handlers: Handlers | undefined
+  return async (event, context) => {
+    handlers ??= await bootstrap(rootModule)
+
+    if (isSqs(event)) {
+      return handlers.sqsController.handle(event, context)
+    }
+
+    normalizePath(event)
+
+    return handlers.proxyHandler(event, context)
   }
-
-  if (isSqs(event)) {
-    return sqsController.handle(event, context)
-  }
-
-  normalizePath(event)
-
-  return proxyHandler(event, context)
 }
+
+// noinspection JSUnusedGlobalSymbols
+export const handler = createHandler(LambdaModule)

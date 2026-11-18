@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "00000000-0000-0000-0000-000000000000",
+      "receiptHandle": "local",
+      "body": "{\"version\": \"0\", \"id\": \"00000000-0000-0000-0000-000000000000\", \"detail-type\": \"invoice.expiry-check\", \"source\": \"ev-invoice.scheduler\", \"account\": \"123456789012\", \"time\": \"2026-11-17T12:00:00Z\", \"region\": \"us-east-1\", \"resources\": [], \"detail\": {\"recordId\": \"recXXXXXXXXXXXXXX\", \"invoiceId\": \"INV2-XXXX-XXXX-XXXX-XXXX\"}}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1795435200000",
+        "SenderId": "local",
+        "ApproximateFirstReceiveTimestamp": "1795435200000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:prod-ev-invoice",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/a
 import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 /**
- * Local entry point (run_local.ts): credentials come from config/.env.localaws via ConfigService,
+ * Local entry points (run_local.ts, invoke.ts): credentials come from config/.env.localaws via ConfigService,
  * no Secrets Manager calls (see lambda.module.ts for AWS counterpart).
  * @Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
  */

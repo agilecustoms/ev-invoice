@@ -1,0 +1,21 @@
+{
+  "resource": "/ev-invoice/health",
+  "path": "/ev-invoice/health",
+  "httpMethod": "GET",
+  "headers": { "Accept": "*/*" },
+  "multiValueHeaders": { "Accept": ["*/*"] },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourcePath": "/ev-invoice/health",
+    "httpMethod": "GET",
+    "path": "/prod/ev-invoice/health",
+    "stage": "prod",
+    "requestId": "00000000-0000-0000-0000-000000000000",
+    "identity": { "sourceIp": "127.0.0.1" }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

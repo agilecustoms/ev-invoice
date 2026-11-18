@@ -12,7 +12,8 @@
     "postbuild": "cp package.json dist/",
     "openapi": "APP_PROFILES=openapi node dist/openapi",
     "start:localaws": "tsc && APP_PROFILES=dev,localaws,localaws-dev AWS_PROFILE=ac-ev-prod-invoice node dist/run_local",
-    "start:localaws:watch": "APP_PROFILES=dev,localaws,localaws-dev AWS_PROFILE=ac-ev-prod-invoice tsc-watch --onSuccess \"node dist/run_local\""
+    "start:localaws:watch": "APP_PROFILES=dev,localaws,localaws-dev AWS_PROFILE=ac-ev-prod-invoice tsc-watch --onSuccess \"node dist/run_local\"",
+    "invoke:localaws": "tsc && APP_PROFILES=dev,localaws,localaws-dev AWS_PROFILE=ac-ev-prod-invoice node dist/invoke"
   },
   "dependencies": {
     "@aws-sdk/client-scheduler": "^3.1169.0",
