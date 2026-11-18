@@ -17,12 +17,6 @@ import { LocalCredentialsModule } from './local.module.js'
 })
 class InvokeModule {}
 
-const profiles = (process.env['APP_PROFILES'] ?? '').split(',').map(p => p.trim())
-if (profiles.includes('aws')) {
-  process.stderr.write(`invoke refuses runtime 'aws' (APP_PROFILES=${process.env['APP_PROFILES']}), use localaws\n`)
-  process.exit(2)
-}
-
 const eventFile = process.argv[2]
 if (!eventFile) {
   process.stderr.write('usage: node dist/invoke events/<name>.json\n')

@@ -49,7 +49,7 @@ region = us-east-1
 - send GET http://localhost:3000/health
 - or invoke: the Lambda handler once with an event from a file (`events/`: API Gateway request, SQS message), prints JSON logs
   as in CloudWatch and the response, exit code 1 on error or HTTP 5xx: `make invoke-localaws EVENT=events/health.json`.
-  Runs with the same config and credentials as above, refuses runtime `aws`
+  Runs with the same config and credentials as above
 
 ## PayPal integration
 
