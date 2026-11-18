@@ -8,8 +8,8 @@ import { AIRTABLE_CREDENTIALS, type AirTableCredentialsLoader } from './client/a
 import { PAYPAL_CREDENTIALS, type PayPalCredentialsLoader } from './client/paypal.client.js'
 
 /**
- * The spec is generated from controllers, but the whole app has to start. Credentials are loaded lazily, so they are
- * never needed here (and in CI there is no access to Secrets Manager). See lambda.module.ts and run_local.ts for real ones
+ * The spec is generated from controllers, but the whole app has to start.
+ * Credentials are loaded lazily, so they are never needed here
  */
 @Global()
 @Module({

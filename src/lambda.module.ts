@@ -84,7 +84,6 @@ captureLibraryLogs(() => requestLogger.logger)
 /**
  * AWS: PayPal and AirTable credentials come from Secrets Manager (PAYPAL_SECRET_ID / AIRTABLE_SECRET_ID are set in
  * infrastructure/lambda.tf). Global, so PaypalClient/AirTableClient in the shared AppModule can inject them
- * (see run_local.ts for the local counterpart)
  */
 @Global()
 @Module({
