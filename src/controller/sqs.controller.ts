@@ -23,8 +23,12 @@ export class SqsController {
 
   public async handle(event: SQSEvent, context: Context): Promise<void> {
     for (const record of event.Records) { // batch_size = 1, but don't rely on it
-      const bindings = { requestId: context.awsRequestId, sqsMessageId: record.messageId }
       const eventBridgeEvent = JSON.parse(record.body)
+      const bindings = {
+        requestId: context.awsRequestId,
+        sqsMessageId: record.messageId,
+        route: eventBridgeEvent['detail-type']
+      }
       await this.logger.runInContext(async () => {
         try {
           await this.route(eventBridgeEvent)

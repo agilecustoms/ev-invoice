@@ -20,7 +20,7 @@ export class InvoiceController {
     if (!/^rec[A-Za-z0-9]{14}$/.test(recordId ?? '')) {
       throw new BadRequestException('recordId must be an AirTable record id (recXXXXXXXXXXXXXX)')
     }
-    this.logger.assign({ endpoint: 'create', recordId })
+    this.logger.assign({ recordId })
     await this.invoiceService.createInvoice(recordId)
     return { status: 'success' }
   }
