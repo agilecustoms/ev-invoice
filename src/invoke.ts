@@ -17,12 +17,7 @@ import { LocalCredentialsModule } from './local.module.js'
 })
 class InvokeModule {}
 
-const eventFile = process.argv[2]
-if (!eventFile) {
-  process.stderr.write('usage: node dist/invoke events/<name>.json\n')
-  process.exit(2)
-}
-
+const eventFile = process.argv[2]!
 const event = JSON.parse(readFileSync(eventFile, 'utf8'))
 // only what the handler and serverless-express read
 const context = {

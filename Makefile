@@ -58,7 +58,7 @@ run-localaws-watch:
 
 # Lambda handler once with an event from a file (no local runtime, so localaws as run-localaws): make invoke-localaws EVENT=events/health.json
 invoke-localaws:
-	@$(if $(EVENT),,$(error EVENT is required: make invoke-localaws EVENT=events/health.json))npm run invoke:localaws -- $(EVENT)
+	@npm run invoke:localaws -- $(EVENT)
 
 # ---------------------------------------------------
 
