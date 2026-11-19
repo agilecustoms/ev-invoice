@@ -25,7 +25,7 @@ Files never change env vars (NestJS env file loading is off).
 |------------|-----------------------------|---------------------------------------------------------------------|
 | `aws`      | `{env},aws,aws-{env}`       | `infrastructure/lambda.tf`                                          |
 | `localaws` | `dev,localaws,localaws-dev` | `npm run start:localaws` (IDE `.run/localaws`, `make run-localaws`) |
-| `openapi`  | `openapi`                   | `npm run openapi` (`make app3-generate-openapi`)                    |
+| `openapi`  | `openapi`                   | `npm run openapi` (`make openapi`)                    |
 
 `openapi` has no environment: spec is built once for all envs
 
@@ -38,7 +38,7 @@ tests mock them (see Integration tests)
 
 Uses AWS resources of env prod (event bus, EventBridge Scheduler), PayPal sandbox and AirTable
 
-- `make app0-install-deps`
+- `make deps-install`
 - place the following profile in `~/.aws/config`
 ```
 [profile ac-ev-prod-invoice]
@@ -61,4 +61,4 @@ region = us-east-1
 ## Integration tests
 
 No integration tests: PayPal, AirTable (`fetch`) and EventBridge Scheduler (SDK client) are mocked in client tests,
-they run as part of `make app2-test`
+they run as part of `make test`

@@ -1,3 +1,5 @@
+.PHONY: test
+
 APP_NAME = ev-invoice
 ENV := "prod"
 
@@ -5,28 +7,26 @@ _aws-login:
 	@aws sso login
 
 # npm list --all - show dependency tree
-app0-install-deps:
+deps-install:
 	@npm install
 
-app0-update-deps:
+deps-update:
 	@npm update; npm install; npm outdated; npm find-dupes
 
-app1-lint:
-	@npm run lint
+# eslint, then type check (tsc)
+# fix: npm run lint -- --fix
+lint-app:
+	@npm run lint && npm run typecheck
 
-app1-lint-fix: # not called by CI (local only: fixes lint errors in place)
-	@npm run lint:fix
+# fix: terraform fmt -recursive infrastructure
+lint-tf:
+	@terraform fmt -check -recursive infrastructure
 
-app2-test:
+test:
 	@npm run test
 
-app3-build:
+build:
 	@rm -rf dist; npm run build
-
-app3-generate-openapi: # needs to be called after build (ts ~~> js)
-	@npm run openapi
-
-app3-package:
 	@set -e; \
 	rm -rf tmp dist/app.zip; \
 	zip -rq dist/app.zip dist -x 'dist/*.map' 'dist/run_local.*' 'dist/invoke.*' 'dist/local.module.*' 'dist/openapi.*'; \
@@ -46,6 +46,9 @@ app3-package:
 	 'node_modules/.vite*'; \
 	rm -rf ../tmp
 
+openapi: # needs to be called after build (ts ~~> js)
+	@npm run openapi
+
 # ---------------------------------------------------
 
 # server on http://localhost:3000 with AWS resources of env prod, PayPal sandbox, AirTable (config/.env.localaws, see README)
@@ -62,7 +65,7 @@ invoke-localaws:
 
 # ---------------------------------------------------
 
-hot-redeploy: app3-build app3-package
+hot-redeploy: build
 	@export AWS_PROFILE=ac-ev-prod-admin; \
 	aws lambda update-function-code --function-name $(ENV)-$(APP_NAME) --zip-file fileb://dist/app.zip --no-cli-pager > /dev/null
 
@@ -74,9 +77,3 @@ terraform-get:
 
 terraform-init:
 	@cd infrastructure; terraform init
-
-terraform-validate:
-	@cd infrastructure; terraform validate
-
-terraform-format:
-	@cd infrastructure; terraform fmt -recursive

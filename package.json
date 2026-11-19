@@ -6,7 +6,7 @@
   "main": "dist/main.js",
   "scripts": {
     "lint": "eslint *.{ts,mjs} \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint:fix": "npm run lint -- --fix",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "build": "tsc",
     "postbuild": "cp package.json dist/",
