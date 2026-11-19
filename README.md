@@ -1,4 +1,5 @@
 # ev-invoice
+
 Lambda function to create invoice for Evelin business
 
 ## @codegenie/serverless-express
@@ -8,6 +9,7 @@ Lambda function to create invoice for Evelin business
 - @codegenie/serverless-express is express adapter to use in AWS Lambda
 
 ## Profiles
+
 App gets up to 4 profiles via env var `APP_PROFILES`, in this order (later wins)
 1. default - always loaded
 2. environment - `dev`, `test`, `prod` (Terraform `var.env_type`)
